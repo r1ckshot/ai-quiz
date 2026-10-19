@@ -7,7 +7,7 @@
 
   { id: "W03-02", w: "W03", c: "hierarchia-danych", type: "single",
     q: "Jaką warstwę danych w AI reprezentuje baza wektorowa (Vector DB)?",
-    options: ["Surowe zbiory (Raw Data)", "Wiedzę semantyczną (Semantic Knowledge)", "Metadane i stan (Metadata/State)", "Checkpointy treningowe"],
+    options: ["Surowe zbiory danych (Raw Data)", "Wiedzę semantyczną (Semantic Knowledge)", "Metadane i stan (Metadata/State)", "Checkpointy treningowe (Checkpoints)"],
     correct: [1], explain: "Vector DB przechowuje wiedzę semantyczną, np. dla systemów RAG.", src: "W03, slajd 141", note: "W03-modele-danych" },
 
   { id: "W03-03", w: "W03", c: "rdbms-ograniczenia", type: "single",
@@ -22,7 +22,7 @@
 
   { id: "W03-05", w: "W03", c: "semantic-cache", type: "single",
     q: "System RAG często dostaje to samo pytanie innymi słowami. Co pozwala uniknąć kosztownego odpytywania LLM za każdym razem?",
-    options: ["Semantic Cache (wyszukiwanie podobnych pytań w RAM)", "MongoDB z konfiguracjami w BSON", "Object Storage z wersjonowaniem", "Kwantyzacja Produktowa"],
+    options: ["Semantic Cache (podobne pytania w RAM)", "MongoDB z konfiguracjami w BSON", "Object Storage z wersjonowaniem", "Kwantyzacja Produktowa (PQ) wektorów"],
     correct: [0], explain: "Semantic Cache, np. w Redis, szuka podobnych pytań w pamięci i zwraca zapisaną odpowiedź.", src: "W03, slajd 143", note: "W03-modele-danych" },
 
   { id: "W03-06", w: "W03", c: "object-storage", type: "single",
@@ -32,7 +32,7 @@
 
   { id: "W03-07", w: "W03", c: "embeddings", type: "single",
     q: "Czym są embeddings według wykładu?",
-    options: ["Rzadkimi wektorami binarnymi słów kluczowych", "Gęstymi wektorami liczb zmiennoprzecinkowych reprezentującymi cechy ukryte", "Kodami stratnymi po kwantyzacji PQ", "Indeksami B-Tree dla danych skalarnych"],
+    options: ["Rzadkimi wektorami binarnymi obecności słów kluczowych", "Gęstymi wektorami liczb zmiennoprzecinkowych (cechy ukryte)", "Krótkimi kodami stratnymi po kwantyzacji produktowej PQ", "Indeksami B-Tree budowanymi dla danych skalarnych"],
     correct: [1], explain: "Embedding to gęsty wektor float z latent features. Podobieństwo znaczeniowe = bliskość geometryczna.", src: "W03, slajd 145", note: "W03-modele-danych" },
 
   { id: "W03-08", w: "W03", c: "metryki", type: "single",
@@ -47,12 +47,12 @@
 
   { id: "W03-10", w: "W03", c: "ann", type: "single",
     q: "Na czym polega przejście z k-NN na ANN?",
-    options: ["Na świadomej rezygnacji z ok. 1% celności na rzecz ok. 1000-krotnego przyspieszenia", "Na zwiększeniu dokładności kosztem 1000-krotnego spowolnienia", "Na zastąpieniu embeddingów indeksem B-Tree", "Na przeszukiwaniu sekwencyjnym wszystkich wektorów"],
+    options: ["Na oddaniu ok. 1% celności za ok. 1000-krotne przyspieszenie", "Na zwiększeniu dokładności kosztem 1000-krotnego spowolnienia", "Na zastąpieniu embeddingów skalarnym indeksem B-Tree", "Na przeszukiwaniu sekwencyjnym wszystkich wektorów"],
     correct: [0], explain: "ANN wyszukuje przybliżenie. k-NN to dokładny Flat Search o złożoności O(N*D).", src: "W03, slajd 147", note: "W03-modele-danych" },
 
   { id: "W03-11", w: "W03", c: "ann", type: "single",
     q: "Jaką złożoność ma dokładne wyszukiwanie k-NN (Flat Search)?",
-    options: ["O(log N)", "O(N * D)", "O(1)", "O(D)"],
+    options: ["O(log N)", "O(N * D)", "O(N log N)", "O(D log N)"],
     correct: [1], explain: "Flat Search porównuje zapytanie z każdym z N wektorów o D wymiarach. O(log N) daje HNSW.", src: "W03, slajd 147, 152", note: "W03-modele-danych" },
 
   { id: "W03-12", w: "W03", c: "ivf", type: "single",
@@ -62,12 +62,12 @@
 
   { id: "W03-13", w: "W03", c: "hnsw", type: "single",
     q: "Jak zbudowany jest indeks HNSW?",
-    options: ["Płaska lista centroidów z komórkami Woronoja", "Hierarchia warstw: górne z rzadkimi dalekimi skokami, dolna L0 z gęstym grafem wszystkich dokumentów", "Drzewo B-Tree dla danych skalarnych", "Jeden gęsty graf bez warstw"],
+    options: ["Płaska lista centroidów z przypisanymi komórkami Woronoja", "Hierarchia warstw: rzadkie dalekie skoki u góry, gęsty graf L0 na dole", "Zbalansowane drzewo B-Tree dla danych skalarnych w kolumnie", "Jeden płaski, gęsty graf wszystkich dokumentów bez warstw"],
     correct: [1], explain: "HNSW przypomina skip-list. Wyszukiwanie zaczyna się od punktu wejścia na górze i schodzi do L0.", src: "W03, slajd 149, 152", note: "W03-modele-danych" },
 
   { id: "W03-14", w: "W03", c: "hnsw", type: "single",
     q: "Co robi heurystyka doboru sąsiadów w HNSW?",
-    options: ["Zawsze łączy węzeł z najbliższymi punktami", "Szuka sąsiadów w różnych kierunkach geometrycznych, by zapobiec izolacji klastrów", "Losuje numer warstwy dla nowego węzła", "Kompresuje wektory do 16 bajtów"],
+    options: ["Zawsze łączy nowy węzeł z M geometrycznie najbliższymi punktami", "Dobiera sąsiadów w różnych kierunkach, by nie izolować klastrów", "Losuje numer najwyższej warstwy dla nowego węzła", "Kompresuje wektory sąsiadów do kodów 16-bajtowych"],
     correct: [1], explain: "Heurystyka odrzuca część najbliższych punktów na rzecz zróżnicowania kierunków. Losowanie warstwy to osobny mechanizm.", src: "W03, slajd 151-153", note: "W03-modele-danych" },
 
   { id: "W03-15", w: "W03", c: "hnsw-param", type: "single",
@@ -87,12 +87,12 @@
 
   { id: "W03-18", w: "W03", c: "rrf", type: "single",
     q: "Użytkownik szuka produktu po kodzie „RTX-8900X”, a wyszukiwanie wektorowe zwraca nietrafne wyniki. Co proponuje wykład?",
-    options: ["Zwiększyć efSearch", "Wyszukiwanie hybrydowe HNSW + BM25/FTS połączone RRF", "Przejść na Kwantyzację Binarną", "Zastosować Post-filtering"],
+    options: ["Zwiększyć parametr efSearch w indeksie HNSW", "Zastosować wyszukiwanie hybrydowe HNSW + BM25 z RRF", "Przejść na Kwantyzację Binarną embeddingów", "Zastosować Post-filtering wyników po metadanych"],
     correct: [1], explain: "Wektory łapią intencję, ale gubią ścisłe identyfikatory. Słowa kluczowe BM25/FTS to uzupełniają.", src: "W03, slajd 155", note: "W03-modele-danych" },
 
   { id: "W03-19", w: "W03", c: "rrf", type: "single",
     q: "Na czym opiera się algorytm Reciprocal Rank Fusion (RRF)?",
-    options: ["Na sumowaniu surowych wyników punktowych systemów", "Na pozycjach (rangach) dokumentu w rankingach, bez względu na skalę punktową", "Na odległości kosinusowej między rankingami", "Na liczbie krawędzi w grafie HNSW"],
+    options: ["Na sumowaniu surowych wyników punktowych obu systemów", "Na pozycjach dokumentu w rankingach, bez względu na skalę punktów", "Na odległości kosinusowej między wektorami rankingów", "Na liczbie krawędzi węzła dokumentu w grafie HNSW"],
     correct: [1], explain: "score(d) = suma 1/(k + r_m(d)), gdzie r_m(d) to ranga w systemie m.", src: "W03, slajd 155", note: "W03-modele-danych" },
 
   { id: "W03-20", w: "W03", c: "pgvector-vs-dedyk", type: "single",
@@ -107,7 +107,7 @@
 
   { id: "W03-22", w: "W03", c: "chunking", type: "single",
     q: "Dlaczego nie osadza się całego 50-stronicowego PDF jako jednego embeddingu?",
-    options: ["Bo przekracza limit typu vector(384)", "Bo generuje szum semantyczny i niszczy trafność (Lost in the Middle)", "Bo protokół COPY nie obsługuje dużych plików", "Bo HNSW nie przyjmuje długich wektorów"],
+    options: ["Bo przekracza limit kolumny typu vector(384)", "Bo szum semantyczny obniża trafność (Lost in the Middle)", "Bo protokół COPY nie obsługuje dużych plików", "Bo HNSW nie przyjmuje zbyt długich wektorów"],
     correct: [1], explain: "Problem Lost in the Middle rozwiązuje chunking, np. 512 tokenów z overlapem 64.", src: "W03, slajd 157", note: "W03-modele-danych" },
 
   { id: "W03-23", w: "W03", c: "statefulset", type: "single",
@@ -117,7 +117,7 @@
 
   { id: "W03-24", w: "W03", c: "metryki-obs", type: "single",
     q: "Jak mierzy się celność indeksu ANN?",
-    options: ["Tail Latency p99", "Recall@k względem brute-force k-NN", "Cache Hit Ratio", "Liczbą krawędzi M"],
+    options: ["Metryką Tail Latency p99", "Metryką Recall@k względem k-NN", "Metryką Cache Hit Ratio", "Liczbą krawędzi M w grafie"],
     correct: [1], explain: "Recall@k porównuje wyniki przybliżone z prawdą absolutną z dokładnego k-NN.", src: "W03, slajd 161", note: "W03-modele-danych" },
 
   { id: "W03-25", w: "W03", c: "kwantyzacja", type: "single",

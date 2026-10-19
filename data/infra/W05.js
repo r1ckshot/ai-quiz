@@ -2,7 +2,7 @@
   // ===== W05 — Narzędzia do zarządzania kontenerami (Kubernetes) =====
   { id: "W05-01", w: "W05", c: "control-plane", type: "single",
     q: "Który komponent Control Plane jest sercem komunikacji i jedynym punktem wejścia do klastra Kubernetes?",
-    options: ["etcd", "kube-scheduler", "kube-apiserver", "Kubelet"],
+    options: ["etcd", "kube-scheduler", "kube-apiserver", "kube-controller-manager"],
     correct: [2], explain: "kube-apiserver to jedyny punkt wejścia i waliduje każde żądanie. etcd tylko przechowuje stan.", src: "W05, slajd 90", note: "W05-kubernetes" },
 
   { id: "W05-02", w: "W05", c: "control-plane", type: "single",
@@ -17,7 +17,7 @@
 
   { id: "W05-04", w: "W05", c: "pod", type: "single",
     q: "Co dzielą między sobą kontenery wewnątrz jednego Poda?",
-    options: ["Tylko obraz kontenera", "Adres IP (localhost), przestrzeń nazw sieciowych i wolumeny", "Tylko limity CPU i RAM", "Nic, każdy ma własny IP i własne wolumeny"],
+    options: ["Obraz kontenera, ale nie adres IP ani wolumeny", "Adres IP, przestrzeń nazw sieciowych i wolumeny", "Limity CPU i RAM, ale każdy ma własny IP", "Nic, każdy ma własny IP i własne wolumeny"],
     correct: [1], explain: "Pod to najmniejsza jednostka K8s. Jego kontenery dzielą IP, sieć i wolumeny.", src: "W05, slajd 96", note: "W05-kubernetes" },
 
   { id: "W05-05", w: "W05", c: "pod-wzorce", type: "single",
@@ -67,7 +67,7 @@
 
   { id: "W05-14", w: "W05", c: "secrets-base64", type: "single",
     q: "Które zdanie o domyślnych Secrets w Kubernetes jest prawdziwe?",
-    options: ["Base64 to silne szyfrowanie symetryczne", "Base64 to tylko kodowanie, a sekrety są jawne dla osób z dostępem do etcd", "Sekrety są zawsze szyfrowane przez KMS", "Sekrety nie mogą trafić do etcd"],
+    options: ["Base64 to silne szyfrowanie symetryczne kluczem", "Base64 to tylko kodowanie, sekret jest jawny w etcd", "Sekrety są domyślnie szyfrowane przez zewnętrzny KMS", "Sekrety nie są zapisywane w etcd, tylko w RAM"],
     correct: [1], explain: "Base64 to nie szyfrowanie. Na produkcji wymagane jest Encryption at Rest.", src: "W05, slajd 105, 127", note: "W05-kubernetes" },
 
   { id: "W05-15", w: "W05", c: "encryption-at-rest", type: "single",
@@ -77,7 +77,7 @@
 
   { id: "W05-16", w: "W05", c: "secrets-tmpfs", type: "single",
     q: "Dlaczego wolumen sekretu (tmpfs) jest bezpieczniejszy niż zmienne środowiskowe?",
-    options: ["Bo jest zapisywany na trwałym dysku węzła", "Bo dane są w RAM węzła, bez zapisu na dysk, i znikają po usunięciu Poda", "Bo szyfruje dane algorytmem Base64", "Bo jest widoczny w /proc/1/environ"],
+    options: ["Bo jest zapisywany na szyfrowanym dysku węzła", "Bo dane są tylko w RAM i znikają po usunięciu Poda", "Bo szyfruje dane algorytmem Base64 przed zapisem", "Bo sekret trafia do zmiennych w /proc/1/environ"],
     correct: [1], explain: "tmpfs trzyma sekret w RAM. Zmienne ENV mogą wyciec do logów i są widoczne w /proc/1/environ.", src: "W05, slajd 130", note: "W05-kubernetes" },
 
   { id: "W05-17", w: "W05", c: "eso", type: "single",
@@ -102,7 +102,7 @@
 
   { id: "W05-21", w: "W05", c: "taints", type: "single",
     q: "Węzły H100 mają być dostępne tylko dla Podów badaczy, a inne Pody mają być od nich odpychane. Co zastosować?",
-    options: ["Taint na węźle i Toleration w Podach badaczy", "NodeSelector w Podach frontendu", "Readiness Probe", "Service typu ClusterIP"],
+    options: ["Taint na węźle i Toleration w Podach badaczy", "NodeSelector z etykietą H100 w Podach frontendu", "Readiness Probe na węzłach H100", "Service ClusterIP dla Podów badaczy"],
     correct: [0], explain: "Taint odpycha niechciane Pody. Toleration to przepustka Poda na węzeł z piętnem.", src: "W05, slajd 110", note: "W05-kubernetes" },
 
   { id: "W05-22", w: "W05", c: "sondy", type: "single",
@@ -112,7 +112,7 @@
 
   { id: "W05-23", w: "W05", c: "hpa", type: "single",
     q: "Dlaczego HPA w AI często potrzebuje Custom Metrics (Prometheus, NVIDIA DCGM Exporter)?",
-    options: ["Bo K8s nie zbiera metryk RAM", "Bo przy 100% obciążeniu GPU zużycie CPU bywa niskie", "Bo HPA działa tylko z KEDA", "Bo metryki CPU blokuje RBAC"],
+    options: ["Bo Kubernetes nie zbiera metryk RAM z węzłów", "Bo przy pełnym GPU zużycie CPU bywa niskie", "Bo HPA działa wyłącznie razem z KEDA", "Bo metryki CPU są blokowane przez RBAC"],
     correct: [1], explain: "Standardowe CPU/RAM zawodzą w AI. Skalowanie po obciążeniu rdzeni CUDA wymaga metryk dedykowanych.", src: "W05, slajd 112", note: "W05-kubernetes" },
 
   { id: "W05-24", w: "W05", c: "strategie", type: "single",

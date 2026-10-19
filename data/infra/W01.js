@@ -17,7 +17,7 @@
 
   { id: "W01-04", w: "W01", c: "data-vs-concept-drift", type: "single",
     q: "Ewolucja relacji między wejściem a wynikiem (X → Y) to:",
-    options: ["Concept Drift (dryft pojęciowy)", "Data Drift (dryft danych)", "Model Registry", "Data Lineage"],
+    options: ["Concept Drift (dryft pojęciowy)", "Data Drift (dryft danych)", "Model Registry (rejestr modeli)", "Data Lineage (rodowód danych)"],
     correct: [0], explain: "Concept Drift — zmienia się sama zależność X → Y. Data Drift dotyczy tylko rozkładu X.", src: "W01, slajd 26", note: "W01-wprowadzenie" },
 
   { id: "W01-05", w: "W01", c: "data-vs-concept-drift", type: "single",
@@ -32,7 +32,7 @@
 
   { id: "W01-07", w: "W01", c: "mlops-trojca", type: "single",
     q: "Co NIE jest jedną z trzech osi zmiany w „Trójcy Świętej MLOps”?",
-    options: ["Dane", "Infrastruktura sprzętowa", "Modele", "Kod"],
+    options: ["Dane (Data)", "Infrastruktura", "Modele (Models)", "Kod (Code)"],
     correct: [1], explain: "Trzy osie: KOD, DANE, MODELE. Sprzęt nie jest osią wersjonowania.", src: "W01, slajd 11", note: "W01-wprowadzenie" },
 
   { id: "W01-08", w: "W01", c: "ct", type: "single",
@@ -62,12 +62,12 @@
 
   { id: "W01-13", w: "W01", c: "namespaces-cgroups", type: "single",
     q: "Za co odpowiadają Namespaces (przestrzenie nazw) w kontenerach?",
-    options: ["Za limitowanie zużycia CPU i RAM", "Za emulację sprzętu", "Za izolację widoku systemu (pliki, sieć, procesy)", "Za wstrzykiwanie GPU do kontenera"],
+    options: ["Za limitowanie zużycia CPU i RAM procesów", "Za emulację sprzętu dla systemu gościa", "Za izolację widoku plików, sieci i procesów", "Za wstrzykiwanie sterowników GPU do kontenera"],
     correct: [2], explain: "Namespaces izolują to, co proces widzi (pliki, sieć, PID=1). Limity zasobów to cgroups, GPU — NVIDIA Container Toolkit.", src: "W01, slajd 18", note: "W01-wprowadzenie" },
 
   { id: "W01-14", w: "W01", c: "vm-vs-container", type: "single",
     q: "Które stwierdzenie o kontenerach jest prawdziwe?",
-    options: ["Każdy kontener ma własny, kompletny Guest OS", "Kontener współdzieli jedno fizyczne jądro hosta z innymi procesami", "Czas startu kontenera mierzy się w minutach", "Obrazy kontenerów ważą zwykle dziesiątki GB"],
+    options: ["Każdy kontener ma własny, kompletny Guest OS z jądrem", "Kontener współdzieli jądro hosta z innymi procesami", "Czas startu kontenera mierzy się zwykle w minutach", "Obrazy kontenerów ważą zwykle dziesiątki gigabajtów"],
     correct: [1], explain: "Kontener to nie VM — współdzieli jądro hosta, startuje w ms, obrazy mają setki MB. Guest OS, minuty i dziesiątki GB to cechy VM.", src: "W01, slajd 17, 18", note: "W01-wprowadzenie" },
 
   { id: "W01-15", w: "W01", c: "dvc", type: "single",
@@ -107,21 +107,21 @@
 
   { id: "W01-22", w: "W01", c: "makefile", type: "single",
     q: "Jaką rolę pełni Makefile w projekcie MLOps według wykładu?",
-    options: ["Zastępuje system kontroli wersji Git", "Jest abstrakcyjną warstwą API nad powłoką i skodyfikowaną dokumentacją budowania, testowania i wdrażania", "Przechowuje wagi modelu", "Limituje zasoby CPU/RAM kontenera"],
+    options: ["Zastępuje Git jako system kontroli wersji kodu i danych", "Jest warstwą API nad powłoką i dokumentacją budowania, testów i wdrożeń", "Przechowuje wagi modelu i metadane eksperymentów treningowych", "Limituje zasoby CPU i RAM kontenera za pomocą cgroups"],
     correct: [1], explain: "Makefile = „uniwersalny kontrakt uruchomieniowy”: to samo polecenie działa lokalnie i na serwerze CI; łańcuchy (make deploy → testy, build, push).", src: "W01, slajd 34", note: "W01-wprowadzenie" },
 
   { id: "W01-23", w: "W01", c: "pre-commit", type: "single",
     q: "Jaka jest główna korzyść kosztowa z pre-commit hooks?",
-    options: ["Błędy składniowe nie docierają do płatnych agentów CI w chmurze", "Model trenuje się szybciej na GPU", "Dane są automatycznie wysyłane do S3", "Kontener startuje w milisekundach"],
+    options: ["Błędy składni nie trafiają do płatnych agentów CI", "Model trenuje się szybciej na GPU w chmurze", "Dane trafiają automatycznie do kubełka S3", "Kontener startuje w milisekundach zamiast minut"],
     correct: [0], explain: "Pre-commit = lokalna pętla kontroli jakości (Black, Flake8) przed commitem → oszczędność na płatnych runnerach CI.", src: "W01, slajd 32", note: "W01-wprowadzenie" },
 
   { id: "W01-24", w: "W01", c: "dependency-hell", type: "single",
     q: "Jakie rozwiązanie wykład proponuje na Dependency Hell (Hardware → Sterownik → CUDA → cuDNN → Python → Framework)?",
-    options: ["Ręczną aktualizację bibliotek na serwerze", "Paradygmat Immutable Infrastructure — środowisko jako nienaruszalny pakiet binarny", "Pracę wyłącznie w Jupyter Notebook", "Model SaaS"],
+    options: ["Ręczną aktualizację sterowników i bibliotek na serwerze", "Paradygmat Immutable Infrastructure (nienaruszalny pakiet binarny)", "Pracę wyłącznie w Jupyter Notebook na lokalnej maszynie", "Przeniesienie całego stosu do modelu SaaS dostawcy"],
     correct: [1], explain: "Immutable Infrastructure + ścisła izolacja kodu, zależności i zmiennych środowiskowych od hosta.", src: "W01, slajd 16", note: "W01-wprowadzenie" },
 
   { id: "W01-25", w: "W01", c: "reproducibility", type: "single",
     q: "Reprodukowalność w MLOps oznacza możliwość odtworzenia stanu systemu przez powiązanie:",
-    options: ["Commitu Git, hasha zbioru danych (DVC) i pliku wag modelu", "Tylko commitu Git", "Logów aplikacji i adresu IP serwera", "Obrazu VM i hasła administratora"],
+    options: ["Commitu Git, hasha danych (DVC) i wag modelu", "Commitu Git i nazwy gałęzi w repozytorium", "Logów aplikacji, adresu IP i nazwy serwera", "Snapshotu VM i hasła administratora systemu"],
     correct: [0], explain: "Trzy elementy naraz: kod (commit), dane (hash DVC), model (wagi). Sam Git nie wystarczy.", src: "W01, slajd 11", note: "W01-wprowadzenie" },
 ]});

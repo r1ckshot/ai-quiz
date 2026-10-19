@@ -2,7 +2,7 @@
   // ===== W11 — Monitorowanie i zarządzanie systemami AI w chmurze =====
   { id: "W11-01", w: "W11", c: "silent-failure", type: "single",
     q: "Jak nazywa się zjawisko, w którym system zwraca HTTP 200 OK, ale model generuje błędne lub szkodliwe wyniki?",
-    options: ["Thermal Throttling", "Cicha awaria (Silent Failure)", "Alert Fatigue", "Kaskadowa awaria"],
+    options: ["Thermal Throttling GPU", "Cicha awaria (Silent Failure)", "Zmęczenie alertami (Alert Fatigue)", "Awaria kaskadowa (Cascading Failure)"],
     correct: [1], explain: "Cicha awaria nie daje wyjątków ani błędów 5xx. Spada tylko jakość predykcji.", src: "W11, slajd 342", note: "W11-monitorowanie" },
 
   { id: "W11-02", w: "W11", c: "silent-failure", type: "single",
@@ -62,7 +62,7 @@
 
   { id: "W11-13", w: "W11", c: "kl-emd", type: "single",
     q: "Która miara jest odporna na rozłączne nośniki rozkładów i stabilna numerycznie?",
-    options: ["Dywergencja KL", "Dystans Wassersteina (EMD)", "PSI", "Test HTTP 200"],
+    options: ["Dywergencja Kullbacka-Leiblera", "Dystans Wassersteina (EMD)", "PSI (Population Stability Index)", "Korekta Benjamini-Hochberga"],
     correct: [1], explain: "Wasserstein (Earth Mover's Distance) jest odporny na rozłączne nośniki. KL jest asymetryczna i wrażliwa na zera.", src: "W11, slajd 346", note: "W11-monitorowanie" },
 
   { id: "W11-14", w: "W11", c: "alert-fatigue", type: "single",
@@ -72,12 +72,12 @@
 
   { id: "W11-15", w: "W11", c: "async-drift", type: "single",
     q: "Gdzie we wzorcu Asynchronous Drift Detection wykonuje się obliczenia statystyczne?",
-    options: ["W wątku inferencji, przy każdym żądaniu", "Poza ścieżką krytyczną API, w Kubernetes CronJob", "W sterowniku NVIDIA przez NVML", "W przeglądarce użytkownika"],
+    options: ["W wątku inferencji, przy każdym żądaniu", "Poza ścieżką krytyczną API, w CronJob", "W sterowniku NVIDIA przez NVML", "Po stronie klienta, w przeglądarce"],
     correct: [1], explain: "Obliczenia dryftu idą poza ścieżką krytyczną API, np. jako CronJob.", src: "W11, slajd 347", note: "W11-monitorowanie" },
 
   { id: "W11-16", w: "W11", c: "payload-logging", type: "single",
     q: "Na czym polega rozprzężenie (Decoupling) we wzorcu Asynchronous Payload Logging?",
-    options: ["Na synchronicznym zapisie każdej predykcji do bazy SQL", "Na emisji zdarzeń do kolejek (Kafka, Azure Event Hubs) bez blokowania wątku inferencji", "Na zapisie logów w formacie wierszowym", "Na wyłączeniu logowania predykcji"],
+    options: ["Na synchronicznym zapisie każdej predykcji do bazy SQL", "Na emisji zdarzeń do kolejki Kafka bez blokowania inferencji", "Na zapisie logów w formacie wierszowym zamiast kolumnowego", "Na wyłączeniu logowania predykcji w godzinach szczytu"],
     correct: [1], explain: "Kolejka odcina inferencję od zapisu. Synchroniczny zapis do SQL to wąskie gardło I/O.", src: "W11, slajd 349", note: "W11-monitorowanie" },
 
   { id: "W11-17", w: "W11", c: "payload-logging", type: "single",
@@ -87,7 +87,7 @@
 
   { id: "W11-18", w: "W11", c: "sidecar", type: "single",
     q: "Który wzorzec przechwytuje logi strukturalne (stdout) przez agentów takich jak FluentBit?",
-    options: ["Sidecar Container Pattern", "Data Lakehouse", "Dynamic Batching", "Metric Relabeling"],
+    options: ["Sidecar Container Pattern", "Data Lakehouse Pattern", "Dynamic Batching w Tritonie", "Prometheus Metric Relabeling"],
     correct: [0], explain: "Wzorzec przyczepki (Sidecar) to dodatkowy kontener z agentem zbierającym stdout.", src: "W11, slajd 349", note: "W11-monitorowanie" },
 
   { id: "W11-19", w: "W11", c: "dcgm-exporter", type: "single",
@@ -102,7 +102,7 @@
 
   { id: "W11-21", w: "W11", c: "rollback", type: "single",
     q: "Co według wykładu dzieje się po wykryciu skoku błędów 5xx w wersji Canary?",
-    options: ["Uruchamia się retrening w Kubeflow", "Istio automatycznie wycofuje ruch do stabilnej wersji Blue", "DCGM Exporter restartuje węzeł GPU", "PSI zostaje przeliczony od nowa"],
+    options: ["Uruchamia się retrening w Kubeflow", "Istio cofa ruch do stabilnej wersji Blue", "DCGM Exporter restartuje węzeł GPU", "PSI zostaje przeliczony dla wersji Canary"],
     correct: [1], explain: "Automatyczny rollback: monitoring zintegrowany z Istio cofa ruch z Canary do Blue.", src: "W11, slajd 355", note: "W11-monitorowanie" },
 
   { id: "W11-22", w: "W11", c: "petla", type: "single",
@@ -112,16 +112,16 @@
 
   { id: "W11-23", w: "W11", c: "petla", type: "single",
     q: "Jaka jest kolejność etapów zamkniętej pętli MLOps po alercie Prometheus/Grafana?",
-    options: ["Webhook → retrening (GitHub Actions/Kubeflow) → MLflow → ArgoCD", "MLflow → Webhook → ArgoCD → retrening", "ArgoCD → MLflow → retrening → Webhook", "Retrening → Webhook → ArgoCD → MLflow"],
+    options: ["Webhook → retrening → MLflow → ArgoCD", "MLflow → Webhook → ArgoCD → retrening", "ArgoCD → MLflow → retrening → Webhook", "Retrening → Webhook → ArgoCD → MLflow"],
     correct: [0], explain: "Alertmanager wysyła webhook, potem CT, rejestr MLflow i wdrożenie przez ArgoCD.", src: "W11, slajd 356, 358", note: "W11-monitorowanie" },
 
   { id: "W11-24", w: "W11", c: "llm-metryki", type: "single",
     q: "Która metryka LLM mierzy latencję do wygenerowania pierwszego słowa i jest krytyczna dla UX?",
-    options: ["ITL (Inter-Token Latency)", "TTFT (Time-to-First-Token)", "Token Throughput", "PSI"],
+    options: ["ITL (Inter-Token Latency)", "TTFT (Time-to-First-Token)", "Token Throughput (tokeny/s)", "PSI (Population Stability Index)"],
     correct: [1], explain: "TTFT to czas do pierwszego tokena. ITL to czas między kolejnymi tokenami.", src: "W11, slajd 359", note: "W11-monitorowanie" },
 
   { id: "W11-25", w: "W11", c: "llm-judge", type: "single",
     q: "Do czego służą biblioteki Ragas i TruLens w LLM Observability?",
-    options: ["Do śledzenia kosztów tokenów Prompt i Completion", "Do ewaluacji semantycznej (LLM-as-a-Judge): halucynacje i toksyczność", "Do eksportu metryk GPU przez NVML", "Do buforowania zdarzeń telemetrii"],
+    options: ["Do śledzenia kosztów tokenów Prompt i Completion", "Do wykrywania halucynacji i toksyczności (LLM-as-a-Judge)", "Do eksportu metryk GPU przez NVML do Prometheusa", "Do buforowania zdarzeń telemetrii w kolejce Kafka"],
     correct: [1], explain: "Ragas i TruLens realizują LLM-as-a-Judge. Koszty tokenów to FinOps Observability.", src: "W11, slajd 359", note: "W11-monitorowanie" },
 ]});

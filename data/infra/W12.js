@@ -27,12 +27,12 @@
 
   { id: "W12-06", w: "W12", c: "sla-pulapka", type: "single",
     q: "Dlaczego bardzo rygorystyczne SLA (opóźnienie poniżej 50 ms) prowadzi do wykładniczego wzrostu kosztów?",
-    options: ["Wymusza trening QAT zamiast PTQ", "Uniemożliwia Dynamic Batching i wymusza „gorące” instancje GPU", "Blokuje tagowanie zasobów", "Wymusza eksport modelu do ONNX"],
+    options: ["Wymusza kosztowny trening QAT zamiast PTQ", "Blokuje Dynamic Batching, wymusza „gorące” GPU", "Uniemożliwia tagowanie zasobów i atrybucję kosztów", "Wymusza eksport modelu do formatu ONNX"],
     correct: [1], explain: "Bez grupowania zapytań trzeba trzymać nieobciążone instancje. To prowadzi do GPU idling i marnowania budżetu.", src: "W12, slajd 363, 365", note: "W12-finops-optymalizacja" },
 
   { id: "W12-07", w: "W12", c: "spot", type: "single",
     q: "Który mechanizm zapewnia odporność na awarie przy treningu na instancjach Spot?",
-    options: ["Dynamic Batching", "Checkpointing stanów do S3/Blob Storage", "Tagowanie zasobów", "Constant Folding"],
+    options: ["Dynamic Batching w Tritonie", "Checkpointing do S3/Blob Storage", "Tagowanie zasobów w FinOps", "Constant Folding w ONNX Runtime"],
     correct: [1], explain: "Instancje Spot to tania, niewykorzystana moc chmury. Checkpointing pozwala wznowić pracę po ich odebraniu.", src: "W12, slajd 366", note: "W12-finops-optymalizacja" },
 
   { id: "W12-08", w: "W12", c: "tagowanie", type: "single",
@@ -42,7 +42,7 @@
 
   { id: "W12-09", w: "W12", c: "bottleneck", type: "single",
     q: "Jakie wąskie gardło sprzętowe wykład podaje jako najczęstszy problem LLM?",
-    options: ["Compute Bottleneck (moc rdzeni)", "Memory Bandwidth Bottleneck (przepustowość szyny VRAM)", "Data Egress", "Cold Start"],
+    options: ["Compute Bottleneck (moc rdzeni)", "Memory Bandwidth Bottleneck (VRAM)", "Data Egress między regionami", "Cold Start przy ładowaniu wag"],
     correct: [1], explain: "Najczęstszy problem LLM to przepustowość pamięci VRAM, nie czysta moc obliczeniowa rdzeni.", src: "W12, slajd 367", note: "W12-finops-optymalizacja" },
 
   { id: "W12-10", w: "W12", c: "trojkat", type: "single",
@@ -92,7 +92,7 @@
 
   { id: "W12-19", w: "W12", c: "triton", type: "single",
     q: "Kilka modeli ma współdzielić jedną kartę GPU w Tritonie. Który mechanizm to zapewnia?",
-    options: ["Dynamic Batching", "Model Hot-Swapping", "Concurrent Model Execution", "Kernel Auto-Tuning"],
+    options: ["Dynamic Batching zapytań", "Model Hot-Swapping", "Concurrent Model Execution", "Kernel Auto-Tuning w TensorRT"],
     correct: [2], explain: "Concurrent Model Execution to wiele modeli na jednym GPU. Dynamic Batching łączy zapytania w partie.", src: "W12, slajd 372", note: "W12-finops-optymalizacja" },
 
   { id: "W12-20", w: "W12", c: "triton", type: "single",
@@ -102,17 +102,17 @@
 
   { id: "W12-21", w: "W12", c: "pruning", type: "single",
     q: "Który rodzaj przycinania wymaga wsparcia sprzętowego (np. NVIDIA cusPARSE)?",
-    options: ["Strukturalny, bo usuwa kanały i filtry", "Niestrukturalny, bo zeruje pojedyncze wagi (Sparsity)", "Oba w równym stopniu", "Żaden, pruning działa na dowolnym procesorze"],
+    options: ["Strukturalny, bo usuwa kanały i filtry", "Niestrukturalny, bo zeruje pojedyncze wagi", "Oba, bo każdy daje rzadkie macierze", "Żaden, pruning działa na dowolnym procesorze"],
     correct: [1], explain: "Niestrukturalny daje rzadkie macierze. Strukturalny daje mniejszą, gęstą sieć na dowolnym procesorze.", src: "W12, slajd 373", note: "W12-finops-optymalizacja" },
 
   { id: "W12-22", w: "W12", c: "destylacja", type: "single",
     q: "Która technika używa „miękkich etykiet” (Soft Targets) i funkcji straty KL-Divergence?",
-    options: ["Kwantyzacja QAT", "Pruning niestrukturalny", "Destylacja wiedzy (Teacher–Student)", "Constant Folding"],
+    options: ["Kwantyzacja QAT", "Pruning niestrukturalny", "Destylacja wiedzy", "Constant Folding"],
     correct: [2], explain: "Destylacja przenosi wiedzę z dużego Nauczyciela do małego Ucznia.", src: "W12, slajd 373", note: "W12-finops-optymalizacja" },
 
   { id: "W12-23", w: "W12", c: "keda", type: "single",
     q: "Na podstawie czego skaluje KEDA, w odróżnieniu od tradycyjnego HPA?",
-    options: ["Wyłącznie użycia CPU i RAM", "Zdarzeń i metryk biznesowych, np. liczby wiadomości w kolejce", "Liczby tagów zasobów", "Rozmiaru obrazu kontenera"],
+    options: ["Wyłącznie użycia CPU i RAM w Podach", "Zdarzeń, np. liczby wiadomości w kolejce", "Liczby tagów zasobów w przestrzeni nazw", "Rozmiaru obrazu kontenera w rejestrze"],
     correct: [1], explain: "KEDA skaluje np. po kolejce Kafka/RabbitMQ lub metrykach Prometheus. HPA po CPU/RAM zawodzi przy asynchronicznym AI.", src: "W12, slajd 374", note: "W12-finops-optymalizacja" },
 
   { id: "W12-24", w: "W12", c: "scale-to-zero", type: "single",

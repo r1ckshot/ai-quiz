@@ -2,7 +2,7 @@
   // ===== W04 — Platformy chmurowe wspierające sztuczną inteligencję =====
   { id: "W04-01", w: "W04", c: "platforma-ai", type: "single",
     q: "Jak na wykładzie zdefiniowano platformę AI?",
-    options: ["Warstwa abstrakcji nad IaaS/PaaS integrująca pełny cykl życia MLOps", "Zestaw kart GPU wynajmowanych na godziny", "Hurtownia danych z wbudowanym SQL", "Biblioteka do trenowania sieci neuronowych"],
+    options: ["Warstwa nad IaaS/PaaS łącząca cały cykl życia MLOps", "Zestaw kart GPU wynajmowanych na godziny w chmurze", "Hurtownia danych z wbudowanym silnikiem SQL do analiz", "Biblioteka Open Source do trenowania sieci neuronowych"],
     correct: [0], explain: "Platforma AI to warstwa nad infrastrukturą IaaS/PaaS. Łączy cały cykl życia MLOps.", src: "W04, slajd 263", note: "W04-platformy-ai" },
 
   { id: "W04-02", w: "W04", c: "mlops-poziomy", type: "single",
@@ -32,22 +32,22 @@
 
   { id: "W04-07", w: "W04", c: "sagemaker", type: "single",
     q: "Jaka jest struktura kontraktu kontenerowego SageMaker?",
-    options: ["/opt/ml/ z katalogami input/data, model, output", "/var/lib/docker/overlay2", "/dev/nvidia*", "/mnt/data z plikiem config.yaml"],
+    options: ["/opt/ml/ z katalogami input/data, model, output", "/var/lib/docker/ z katalogami overlay2, volumes", "/srv/ml/ z katalogami datasets, checkpoints", "/mnt/data/ z plikiem config.yaml i katalogiem weights"],
     correct: [0], explain: "Kontener SageMaker czyta dane z /opt/ml/input/data i zapisuje model w /opt/ml/model.", src: "W04, slajd 267–268", note: "W04-platformy-ai" },
 
   { id: "W04-08", w: "W04", c: "spot", type: "single",
     q: "Instancje Spot dają zniżkę do 90%. Co jest wymagane, żeby trening na nich był niezawodny?",
-    options: ["Dynamic Batching", "Checkpointing (np. na S3)", "Szyfrowanie CMK", "Scale-to-Zero"],
+    options: ["Dynamic Batching (Triton)", "Checkpointing (np. na S3)", "Szyfrowanie kluczem CMK", "Scale-to-Zero (KServe)"],
     correct: [1], explain: "Spot to nadwyżki mocy, które mogą zostać odebrane. Checkpointing pozwala wznowić trening.", src: "W04, slajd 267, 283", note: "W04-platformy-ai" },
 
   { id: "W04-09", w: "W04", c: "vertex", type: "single",
     q: "Których silników wykonawczych Open Source używa Vertex AI Pipelines?",
-    options: ["Kubeflow Pipelines (KFP) i TFX", "MLflow i Feast", "Ray i Optuna", "SageMaker Pipelines i Bedrock"],
+    options: ["Kubeflow Pipelines (KFP) i TFX", "Apache Airflow i Argo Workflows", "MLflow Projects i Feast", "SageMaker Pipelines i Bedrock"],
     correct: [0], explain: "Vertex AI unifikuje cykl życia ML wokół potoków na KFP i TensorFlow Extended.", src: "W04, slajd 269", note: "W04-platformy-ai" },
 
   { id: "W04-10", w: "W04", c: "bigquery-ml", type: "single",
     q: "Jaką główną zaletę BigQuery ML wskazano na wykładzie?",
-    options: ["Trening w hurtowni danych przez SQL bez wąskiego gardła transferu I/O", "Dostęp do modeli GPT-4", "Podział A100 na 7 instancji", "Automatyczne szyfrowanie mTLS"],
+    options: ["Trening przez SQL w hurtowni, bez wąskiego gardła I/O", "Dostęp do modeli GPT-4 przez API z hurtowni danych", "Sprzętowy podział A100 na 7 izolowanych instancji", "Automatyczne szyfrowanie ruchu mTLS między usługami"],
     correct: [0], explain: "BigQuery ML trenuje XGBoost i DNN w hurtowni. Dane nie wędrują do osobnego klastra.", src: "W04, slajd 271", note: "W04-platformy-ai" },
 
   { id: "W04-11", w: "W04", c: "azure", type: "single",
@@ -97,7 +97,7 @@
 
   { id: "W04-20", w: "W04", c: "hpo", type: "single",
     q: "Co robi Hyperband Pruner w Optunie?",
-    options: ["Agresywnie przerywa słabo rokujące próby, oszczędzając zasoby chmury", "Łączy zapytania użytkowników w jeden batch", "Synchronizuje Offline i Online Store", "Szyfruje ruch między Podami"],
+    options: ["Przerywa słabo rokujące próby, oszczędzając zasoby", "Łączy zapytania użytkowników w jeden batch na GPU", "Synchronizuje cechy między Offline i Online Store", "Szyfruje ruch między Podami protokołem mTLS"],
     correct: [0], explain: "Pruner kończy słabe próby wcześnie. Łączenie zapytań to Dynamic Batching w Tritonie.", src: "W04, slajd 279", note: "W04-platformy-ai" },
 
   { id: "W04-21", w: "W04", c: "serving", type: "single",
@@ -107,7 +107,7 @@
 
   { id: "W04-22", w: "W04", c: "finops", type: "single",
     q: "Co według strategii Lokalności Danych należy robić?",
-    options: ["Przenosić obliczenia do danych, w tym samym regionie chmury", "Kopiować dane do regionu z najtańszym GPU", "Trzymać dane w kontenerze treningowym", "Rozpraszać dane po wielu chmurach"],
+    options: ["Przenosić obliczenia do regionu, w którym są dane", "Kopiować dane do regionu z najtańszym GPU", "Trzymać dane wewnątrz kontenera treningowego", "Rozpraszać dane po wielu chmurach i regionach"],
     correct: [0], explain: "Obliczenia idą do danych, nigdy odwrotnie. Inaczej rośnie koszt Network Egress.", src: "W04, slajd 283", note: "W04-platformy-ai" },
 
   { id: "W04-23", w: "W04", c: "finops", type: "single",
@@ -117,7 +117,7 @@
 
   { id: "W04-24", w: "W04", c: "security", type: "single",
     q: "Co zastępuje statyczne hasła w procesach według wykładu o bezpieczeństwie AI?",
-    options: ["Managed Identities / IRSA (wstrzykiwanie ról)", "Prompt Injection", "Dynamic Batching", "Fast File Mode"],
+    options: ["Managed Identities / IRSA (wstrzykiwanie ról)", "Klucze dostępu zapisane w obrazie Docker", "Zero-Trust Network z mTLS (Istio)", "Tokeny API w plikach .env kontenera"],
     correct: [0], explain: "Role wstrzykuje się do procesów. Istio z mTLS to z kolei Zero-Trust Network.", src: "W04, slajd 282", note: "W04-platformy-ai" },
 
   { id: "W04-25", w: "W04", c: "build-buy", type: "single",

@@ -7,12 +7,12 @@
 
   { id: "W08-02", w: "W08", c: "sla-metryki", type: "single",
     q: "Jak na wykładzie zdefiniowano Cost Efficiency w serwowaniu modeli?",
-    options: ["Koszt jednej godziny pracy GPU", "Koszt infrastruktury w przeliczeniu na 1000 inferencji", "Liczba zapytań na sekundę na dolara", "Koszt treningu jednej epoki"],
+    options: ["Koszt jednej godziny pracy GPU", "Koszt infrastruktury na 1000 inferencji", "Liczba zapytań na sekundę na dolara", "Koszt treningu jednej epoki modelu"],
     correct: [1], explain: "Cost Efficiency to koszt infrastruktury na 1000 inferencji.", src: "W08, slajd 314", note: "W08-serwowanie-modeli" },
 
   { id: "W08-03", w: "W08", c: "sla-metryki", type: "single",
     q: "Jaką miarą opisuje się Latency dla modeli LLM?",
-    options: ["QPS", "Time to First Token", "CTR", "Correlation ID"],
+    options: ["Queries Per Second (QPS)", "Time to First Token", "Click-Through Rate (CTR)", "Correlation ID żądania"],
     correct: [1], explain: "Dla LLM opóźnienie to czas do pierwszego tokenu (Time to First Token).", src: "W08, slajd 314", note: "W08-serwowanie-modeli" },
 
   { id: "W08-04", w: "W08", c: "real-time", type: "single",
@@ -37,12 +37,12 @@
 
   { id: "W08-08", w: "W08", c: "batch", type: "single",
     q: "Jaki jest cel wzorca Batch Scoring według wykładu?",
-    options: ["Minimalne opóźnienie pojedynczej odpowiedzi", "Maksymalizacja przepustowości i optymalizacja kosztów FinOps", "Dynamiczny podział ruchu między modele", "Buforowanie skoków danych w brokerze"],
+    options: ["Minimalne opóźnienie pojedynczej odpowiedzi", "Przepustowość i optymalizacja kosztów FinOps", "Dynamiczny podział ruchu między modele", "Buforowanie skoków danych w brokerze"],
     correct: [1], explain: "Batch celuje w przepustowość i koszty. Niskie opóźnienie to cel Real-Time.", src: "W08, slajd 318", note: "W08-serwowanie-modeli" },
 
   { id: "W08-09", w: "W08", c: "streaming", type: "single",
     q: "Który wzorzec jest hybrydą Real-time i Batch, przetwarzającą dane w locie przez brokera komunikatów?",
-    options: ["Batch Scoring", "Streaming Inference", "A/B Testing", "Feature Store"],
+    options: ["Batch Scoring", "Streaming Inference", "Real-Time Inference", "Feature Store"],
     correct: [1], explain: "Streaming Inference to hybryda. Fundamentem są magistrale zdarzeń, np. Kafka.", src: "W08, slajd 319", note: "W08-serwowanie-modeli" },
 
   { id: "W08-10", w: "W08", c: "streaming", type: "single",
@@ -67,7 +67,7 @@
 
   { id: "W08-14", w: "W08", c: "ab-mab", type: "single",
     q: "Który wzorzec dynamicznie przekierowuje ruch w czasie rzeczywistym, np. algorytmem Thompson Sampling?",
-    options: ["A/B Testing", "Multi-Armed Bandits", "Batch Scoring", "Time-Slicing"],
+    options: ["A/B Testing", "Multi-Armed Bandits", "Streaming Inference", "Real-Time Inference"],
     correct: [1], explain: "MAB promuje lepszy model w trakcie testu. A/B dzieli ruch statycznie.", src: "W08, slajd 321", note: "W08-serwowanie-modeli" },
 
   { id: "W08-15", w: "W08", c: "ab-mab", type: "single",
@@ -87,7 +87,7 @@
 
   { id: "W08-18", w: "W08", c: "gpu-sharing", type: "single",
     q: "Która technika współdzielenia GPU dzieli sprzętowo kartę A100/H100 na 7 izolowanych instancji z własną pamięcią L2?",
-    options: ["Time-Slicing", "MPS (Multi-Process Service)", "MIG (Multi-Instance GPU)", "HPA"],
+    options: ["Time-Slicing (podział czasu)", "MPS (Multi-Process Service)", "MIG (Multi-Instance GPU)", "HPA (Horizontal Pod Autoscaler)"],
     correct: [2], explain: "MIG to podział sprzętowy. Time-Slicing przełącza kontekst programowo bez izolacji VRAM.", src: "W08, slajd 324", note: "W08-serwowanie-modeli" },
 
   { id: "W08-19", w: "W08", c: "gpu-sharing", type: "single",

@@ -22,7 +22,7 @@
 
   { id: "W02-05", w: "W02", c: "macierz", type: "single",
     q: "Który model obliczeniowy ma według macierzy wyboru rozliczanie transakcyjne (za liczbę wywołań i milisekundy)?",
-    options: ["IaaS", "PaaS", "Serverless / FaaS", "On-Premises"],
+    options: ["IaaS (maszyny wirtualne)", "PaaS (platforma zarządzana)", "Serverless / FaaS", "On-Premises (własna serwerownia)"],
     correct: [2], explain: "Serverless: Pay-per-Execution. IaaS to opłata godzinowa, PaaS to rozliczanie mieszane.", src: "W02, slajd 57", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-06", w: "W02", c: "macierz", type: "single",
@@ -37,7 +37,7 @@
 
   { id: "W02-08", w: "W02", c: "cold-start", type: "single",
     q: "Czym jest Cold Start w mikrousługach AI?",
-    options: ["Opóźnieniem przez alokację zasobów i ładowanie wag modelu do RAM", "Wstrzymaniem procesu po wyczerpaniu kwoty CPU", "Bezczynnym czekaniem GPU na dane od CPU", "Zabiciem procesu przez OOM Killer"],
+    options: ["Opóźnieniem przez alokację zasobów i ładowanie wag do RAM", "Wstrzymaniem procesu po wyczerpaniu kwoty CPU w cgroups", "Bezczynnym czekaniem GPU na dane od workerów CPU", "Zabiciem procesu przez OOM Killer po przekroczeniu RAM"],
     correct: [0], explain: "Cold Start to opóźnienie startu. Wstrzymanie po kwocie to Throttling, czekanie GPU to GPU Starvation.", src: "W02, slajd 55", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-09", w: "W02", c: "vcpu", type: "single",
@@ -57,7 +57,7 @@
 
   { id: "W02-12", w: "W02", c: "gpu-starvation", type: "single",
     q: "GPU jest bezczynne, bo czeka na dane od workerów CPU. Co wskazano jako przyczynę i jak to diagnozować?",
-    options: ["Za mało VRAM; nvidia-smi", "Throttling CFS w warstwie przygotowania danych; licznik nr_throttled w cgroups", "Brak MIG; UUID instancji", "Wyciek pamięci Off-Heap; Garbage Collector"],
+    options: ["Brak VRAM na karcie; kolumna Memory-Usage w nvidia-smi", "Throttling CFS workerów danych; licznik nr_throttled", "Brak partycjonowania MIG; lista UUID instancji GPU", "Wyciek pamięci Off-Heap; logi Garbage Collectora JVM"],
     correct: [1], explain: "GPU Starvation wynika z dławienia CPU przez CFS. Diagnoza: licznik nr_throttled.", src: "W02, slajd 61", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-13", w: "W02", c: "mem-limits", type: "single",
@@ -77,7 +77,7 @@
 
   { id: "W02-16", w: "W02", c: "gpu-virt", type: "single",
     q: "Kilka VM korzysta naprzemiennie z rdzeni jednej karty, a czas odpowiedzi jest niedeterministyczny (Latency Jitter). O jakim mechanizmie mowa?",
-    options: ["MIG", "vGPU z Time-Slicing", "GPU Passthrough", "Pinned Memory"],
+    options: ["MIG (Multi-Instance GPU)", "vGPU z Time-Slicing", "GPU Passthrough (PCIe)", "Pinned Memory hosta"],
     correct: [1], explain: "Time-Slicing w vGPU powoduje walkę o szczeliny czasowe, stąd Latency Jitter.", src: "W02, slajd 65", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-17", w: "W02", c: "gpu-tpu", type: "single",
@@ -87,7 +87,7 @@
 
   { id: "W02-18", w: "W02", c: "container-toolkit", type: "single",
     q: "Co jest mostem między sterownikami jądra na hoście a bibliotekami CUDA w kontenerze?",
-    options: ["NVIDIA Container Toolkit", "OverlayFS", "tini", "Apache Maven"],
+    options: ["NVIDIA Container Toolkit", "System plików OverlayFS", "Proces init tini (PID 1)", "Narzędzie Apache Maven"],
     correct: [0], explain: "Toolkit (nvidia-container-runtime, libnvidia-container) wstrzykuje GPU do kontenera.", src: "W02, slajd 67", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-19", w: "W02", c: "pytorch-vram", type: "single",
@@ -102,12 +102,12 @@
 
   { id: "W02-21", w: "W02", c: "volumes", type: "single",
     q: "Dlaczego plików wag .pth lub .zip nie należy składować wewnątrz kontenera?",
-    options: ["Kontenery są efemeryczne, a zapis dużych plików ma narzut Copy-on-Write", "Docker nie obsługuje plików binarnych", "OverlayFS szyfruje warstwy", "Distroless nie ma systemu plików"],
+    options: ["Kontener jest efemeryczny, a Copy-on-Write spowalnia zapis", "Docker nie obsługuje plików binarnych w warstwach", "OverlayFS szyfruje warstwy, co blokuje odczyt wag", "Obrazy Distroless w ogóle nie mają systemu plików"],
     correct: [0], explain: "Kontener znika z danymi, a CoW spowalnia zapis. Rozwiązanie: wolumeny.", src: "W02, slajd 71", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-22", w: "W02", c: "multi-stage", type: "single",
     q: "Co trafia do etapu Runner w wielofazowym budowaniu obrazu dla DL4J?",
-    options: ["Pełne JDK i Maven", "Tylko binarny artefakt (uber-jar) w czystym JRE", "Kod źródłowy i pom.xml", "Wszystkie zależności z Maven Central"],
+    options: ["Pełne JDK z Maven i cache zależności", "Tylko artefakt uber-jar w czystym JRE", "Kod źródłowy, pom.xml i testy jednostkowe", "Wszystkie zależności z Maven Central"],
     correct: [1], explain: "Builder ma JDK i Maven. Runner dostaje tylko uber-jar, np. na obrazie distroless.", src: "W02, slajd 72–73", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-23", w: "W02", c: "distroless", type: "single",
@@ -117,11 +117,11 @@
 
   { id: "W02-24", w: "W02", c: "pid1", type: "single",
     q: "Po co w Dockerfile ustawia się ENTRYPOINT [\"/usr/bin/tini\", \"--\"]?",
-    options: ["Żeby tini był PID 1: sprząta procesy zombie i przekazuje sygnały (SIGTERM)", "Żeby przyspieszyć Layer Caching", "Żeby udostępnić GPU kontenerowi", "Żeby ograniczyć RAM kontenera"],
+    options: ["Żeby tini jako PID 1 sprzątał zombie i przekazywał sygnały", "Żeby przyspieszyć Layer Caching przy budowaniu obrazu", "Żeby udostępnić GPU kontenerowi przez sterownik hosta", "Żeby ograniczyć zużycie RAM kontenera przez cgroups"],
     correct: [0], explain: "Python/Java słabo pełnią rolę Init. tini adoptuje osierocone procesy i propaguje sygnały.", src: "W02, slajd 80–81", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-25", w: "W02", c: "compose", type: "single",
     q: "W docker-compose.yml usługa api ma QDRANT_HOST=vector-db. Dzięki czemu to działa?",
-    options: ["Dzięki depends_on", "Kontenery widzą się po nazwach usług w wewnętrznej sieci Dockera", "Dzięki NVIDIA Container Toolkit", "Dzięki wolumenowi qdrant_data"],
+    options: ["Dzięki kolejności startu z depends_on", "Dzięki rozwiązywaniu nazw usług w sieci Dockera", "Dzięki NVIDIA Container Toolkit na hoście", "Dzięki współdzielonemu wolumenowi qdrant_data"],
     correct: [1], explain: "To Service Discovery po nazwie usługi. depends_on ustala tylko kolejność startu.", src: "W02, slajd 82, 84", note: "W02-modele-obliczeniowe" },
 ]});

@@ -2,7 +2,7 @@
   // ===== W09 — Bezpieczeństwo w chmurowych systemach AI (SecMLOps) =====
   { id: "W09-01", w: "W09", c: "shared-resp-sec", type: "single",
     q: "Za co w modelu współdzielonej odpowiedzialności odpowiada dostawca chmury (a nie architekt AI)?",
-    options: ["Dane treningowe i wagi modeli", "Izolacja hipernadzorcy i bezpieczeństwo sprzętowe GPU", "Bezpieczeństwo punktów końcowych API", "Zarządzanie dostępem do modeli"],
+    options: ["Dane treningowe i wagi modeli AI", "Izolacja hipernadzorcy i ochrona sprzętu GPU", "Bezpieczeństwo punktów końcowych API", "Zarządzanie dostępem (IAM) do modeli"],
     correct: [1], explain: "Dostawca odpowiada za infrastrukturę fizyczną, hipernadzorcę i GPU. Dane, wagi, API i dostęp to zadania architekta AI.", src: "W09, slajd 328", note: "W09-bezpieczenstwo" },
 
   { id: "W09-02", w: "W09", c: "shared-resp-sec", type: "single",
@@ -22,17 +22,17 @@
 
   { id: "W09-05", w: "W09", c: "adversarial", type: "single",
     q: "Czym są ataki kontradyktoryjne (Adversarial / Evasion Attacks)?",
-    options: ["Niewidocznymi modyfikacjami wejścia (szum) powodującymi błędną klasyfikację podczas wnioskowania", "Manipulacją zbiorem treningowym w celu degradacji modelu", "Odtwarzaniem danych treningowych z pewności modelu", "Zapytaniami wymuszającymi maksymalną liczbę operacji zmiennoprzecinkowych"],
+    options: ["Niewidocznym szumem na wejściu, wywołującym błąd w fazie wnioskowania", "Manipulacją zbiorem treningowym w celu degradacji modelu", "Odtwarzaniem danych treningowych z pewności odpowiedzi modelu", "Zapytaniami wymuszającymi maksymalną liczbę operacji zmiennoprzecinkowych"],
     correct: [0], explain: "Evasion dodaje niewidoczny szum do wejścia w fazie wnioskowania. Manipulacja zbiorem treningowym to Data Poisoning.", src: "W09, slajd 329", note: "W09-bezpieczenstwo" },
 
   { id: "W09-06", w: "W09", c: "inversion", type: "single",
     q: "Który atak polega na odtwarzaniu danych treningowych (np. PII) poprzez analizę odpowiedzi i pewności modelu?",
-    options: ["Prompt Injection", "Data Poisoning", "Inwersja modelu / Membership Inference", "Jailbreaking"],
+    options: ["Prompt Injection", "Data Poisoning", "Inwersja modelu", "Jailbreaking"],
     correct: [2], explain: "Inwersja modelu i Membership Inference wyciągają informacje o danych treningowych z odpowiedzi modelu.", src: "W09, slajd 329", note: "W09-bezpieczenstwo" },
 
   { id: "W09-07", w: "W09", c: "prompt-injection", type: "single",
     q: "Złośliwa instrukcja ukryta w dokumencie pobranym przez system RAG zmienia zachowanie LLM. Jak nazywa się ten atak?",
-    options: ["Pośredni Prompt Injection", "Data Poisoning", "Sponge Attack", "Membership Inference"],
+    options: ["Pośredni Prompt Injection", "Data Poisoning", "Bezpośredni Jailbreaking", "Membership Inference"],
     correct: [0], explain: "Slajd wymienia pośredni Prompt Injection, np. przez systemy RAG.", src: "W09, slajd 329", note: "W09-bezpieczenstwo" },
 
   { id: "W09-08", w: "W09", c: "envelope", type: "single",
@@ -47,7 +47,7 @@
 
   { id: "W09-10", w: "W09", c: "encryption-states", type: "single",
     q: "Co według wykładu stosuje się do szyfrowania ruchu wewnątrz klastra Kubernetes?",
-    options: ["Envelope Encryption", "mTLS przez Service Mesh (Istio/Linkerd)", "Customer-Managed Keys w AWS KMS", "Azure Immutable Blob"],
+    options: ["Envelope Encryption z KMS", "mTLS w Service Mesh (Istio)", "Customer-Managed Keys w AWS KMS", "Azure Immutable Blob"],
     correct: [1], explain: "In-Transit: TLS 1.3 na zewnątrz, mTLS przez Istio/Linkerd wewnątrz klastra.", src: "W09, slajd 330", note: "W09-bezpieczenstwo" },
 
   { id: "W09-11", w: "W09", c: "oidc", type: "single",
@@ -72,12 +72,12 @@
 
   { id: "W09-15", w: "W09", c: "network", type: "single",
     q: "Który element zapewnia komunikację z S3/Blob Storage wyłącznie wewnątrz sieci szkieletowej chmury?",
-    options: ["Private Endpoints (PrivateLink)", "Kubernetes Network Policies", "WAF", "Service Mesh"],
+    options: ["Private Endpoints (PrivateLink)", "Kubernetes Network Policies", "WAF (Web Application Firewall)", "Service Mesh (Istio)"],
     correct: [0], explain: "Private Endpoints (Azure/AWS PrivateLink) trzymają ruch do storage w sieci chmury.", src: "W09, slajd 334", note: "W09-bezpieczenstwo" },
 
   { id: "W09-16", w: "W09", c: "pickle-safetensors", type: "single",
     q: "Dlaczego format Pickle (.pkl, .pt, .bin) jest krytyczną podatnością w łańcuchu dostaw ML?",
-    options: ["Nie obsługuje mapowania w pamięci", "Umożliwia wykonanie dowolnego kodu (RCE) podczas deserylizacji wag", "Nie pozwala na podpisywanie Cosign", "Przechowuje wagi bez kompresji"],
+    options: ["Nie obsługuje mapowania wag w pamięci (mmap)", "Pozwala wykonać dowolny kod przy deserylizacji", "Nie pozwala na podpisywanie wag Cosign", "Przechowuje wagi w formacie bez kompresji"],
     correct: [1], explain: "Deserylizacja Pickle może uruchomić złośliwy kod. Safetensors parsuje tylko dane numeryczne.", src: "W09, slajd 336, 337", note: "W09-bezpieczenstwo" },
 
   { id: "W09-17", w: "W09", c: "pickle-safetensors", type: "single",
@@ -97,16 +97,16 @@
 
   { id: "W09-20", w: "W09", c: "guardrails", type: "single",
     q: "Która warstwa Defense-in-Depth to proxy (np. Llama Guard) weryfikujące semantycznie wejście i wyjście modelu?",
-    options: ["WAF", "Rate Limiting", "AI Guardrails", "SIEM"],
+    options: ["Web Application Firewall", "Rate Limiting", "AI Guardrails", "SIEM (Sentinel)"],
     correct: [2], explain: "AI Guardrails sprawdzają treść semantycznie. WAF filtruje ruch na krawędzi sieci.", src: "W09, slajd 338", note: "W09-bezpieczenstwo" },
 
   { id: "W09-21", w: "W09", c: "audit", type: "single",
     q: "W jakich magazynach rejestruje się niezmienne logi audytowe zapytań i decyzji modelu?",
-    options: ["WORM (Write-Once-Read-Many), np. AWS Object Lock", "tmpfs w pamięci RAM kontenera", "Natywne obiekty K8s Secret", "DVC remote"],
+    options: ["WORM, np. AWS Object Lock", "tmpfs w pamięci RAM kontenera", "Natywne obiekty K8s Secret", "Zdalne repozytorium DVC"],
     correct: [0], explain: "Logi audytowe trafiają do magazynów WORM: Azure Immutable Blob lub AWS Object Lock.", src: "W09, slajd 339", note: "W09-bezpieczenstwo" },
 
   { id: "W09-22", w: "W09", c: "audit", type: "single",
     q: "Na czym polega kryptograficzny Data Lineage według wykładu?",
-    options: ["Na szyfrowaniu danych kluczami CMK", "Na śledzeniu ścieżki od commita w Git, przez hash danych w DVC, do ID modelu w MLflow", "Na wysyłaniu telemetrii ML do Microsoft Sentinel", "Na podpisywaniu wag narzędziem Cosign"],
+    options: ["Na szyfrowaniu danych treningowych kluczami CMK", "Na powiązaniu commita Git, hasha DVC i ID modelu MLflow", "Na wysyłaniu telemetrii ML do Microsoft Sentinel", "Na podpisywaniu wag modelu narzędziem Cosign"],
     correct: [1], explain: "Data Lineage to pełna identyfikowalność: Git, DVC, MLflow.", src: "W09, slajd 339", note: "W09-bezpieczenstwo" },
 ]});

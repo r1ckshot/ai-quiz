@@ -17,7 +17,7 @@
 
   { id: "W07-04", w: "W07", c: "data-lake", type: "single",
     q: "Co oznacza Schema-on-Read w Data Lake?",
-    options: ["Schemat jest wymuszany przy każdym zapisie", "Schemat jest nakładany dynamicznie podczas odczytu przez silnik rozproszony", "Dane są normalizowane do 3NF przed zapisem", "Zapisy naruszające strukturę są blokowane"],
+    options: ["Schemat jest wymuszany przy każdym zapisie", "Schemat jest nakładany dopiero podczas odczytu danych", "Dane są normalizowane do 3NF przed zapisem", "Zapisy naruszające strukturę są blokowane"],
     correct: [1], explain: "W Data Lake najpierw zapisuje się surowe dane (ELT), a schemat nakłada się przy odczycie. Wymuszanie przy zapisie to Schema-on-Write hurtowni.", src: "W07, slajd 170, 171", note: "W07-dane-dla-ai" },
 
   { id: "W07-05", w: "W07", c: "data-lake", type: "single",
@@ -42,12 +42,12 @@
 
   { id: "W07-09", w: "W07", c: "mapreduce", type: "single",
     q: "Zasada Data Locality w MapReduce polega na:",
-    options: ["Replikacji danych na trzech dyskach HDFS", "Przesyłaniu kodu do węzłów z danymi zamiast danych do centralnego procesora", "Trzymaniu danych w RAM zamiast na dysku", "Tasowaniu danych po kluczu przez sieć"],
+    options: ["Replikacji danych na trzech dyskach HDFS", "Wysyłaniu kodu do węzłów, na których leżą dane", "Trzymaniu danych w RAM zamiast na dysku", "Tasowaniu danych po kluczu przez sieć"],
     correct: [1], explain: "Kod ma kilobajty, dane terabajty. Wysyła się więc kod do danych.", src: "W07, slajd 178", note: "W07-dane-dla-ai" },
 
   { id: "W07-10", w: "W07", c: "mapreduce", type: "single",
     q: "Która faza MapReduce jest według wykładu najdroższa?",
-    options: ["Map", "Shuffle & Sort", "Reduce", "Odczyt bloków HDFS"],
+    options: ["Map (mapowanie)", "Shuffle & Sort", "Reduce (agregacja)", "Odczyt bloków HDFS"],
     correct: [1], explain: "Shuffle & Sort tasuje dane po kluczu przez sieć klastra (M×R połączeń).", src: "W07, slajd 178", note: "W07-dane-dla-ai" },
 
   { id: "W07-11", w: "W07", c: "spark-topology", type: "single",
@@ -77,7 +77,7 @@
 
   { id: "W07-16", w: "W07", c: "dag", type: "single",
     q: "W którym miejscu DAGScheduler dzieli Job na kolejne Stage?",
-    options: ["Po każdej transformacji", "Na barierze Shuffle (zależność szeroka)", "Na każdej partycji", "Po każdym wywołaniu map()"],
+    options: ["Po każdej transformacji wąskiej", "Na barierze Shuffle (zależność szeroka)", "Na granicy każdej partycji danych", "Po każdym wywołaniu map() lub filter()"],
     correct: [1], explain: "Stage kończy się na barierze wymiany danych przez sieć. Zależności wąskie są łączone w jeden etap.", src: "W07, slajd 187", note: "W07-dane-dla-ai" },
 
   { id: "W07-17", w: "W07", c: "dag", type: "single",
@@ -87,7 +87,7 @@
 
   { id: "W07-18", w: "W07", c: "api", type: "single",
     q: "Dlaczego w PySpark DataFrame jest szybszy od klasycznego RDD?",
-    options: ["Bo trzyma dane na dysku zamiast w RAM", "Bo ma schemat i trafia do wspólnego planu wykonania, bez narzutu Pickle", "Bo sprawdza typy w czasie kompilacji", "Bo omija Driver i działa tylko na Executorach"],
+    options: ["Bo trzyma dane na dysku zamiast w pamięci RAM", "Bo ma schemat i wspólny plan bez narzutu Pickle", "Bo sprawdza typy już w czasie kompilacji", "Bo omija Driver i działa tylko na Executorach"],
     correct: [1], explain: "Schemat pozwala silnikowi optymalizować plan i Python osiąga wydajność Scali. Kontrola typów w kompilacji to Dataset.", src: "W07, slajd 189", note: "W07-dane-dla-ai" },
 
   { id: "W07-19", w: "W07", c: "catalyst", type: "single",
@@ -97,7 +97,7 @@
 
   { id: "W07-20", w: "W07", c: "skew", type: "single",
     q: "W logach dominuje jeden region i jeden rdzeń liczy minuty, a reszta klastra stoi. Jaka technika wymusza sprawiedliwy podział?",
-    options: ["Range Partitioning", "Salting (solenie kluczy)", "Column Pruning", "Zwiększenie TTL"],
+    options: ["Range Partitioning", "Salting (solenie kluczy)", "Column Pruning przy odczycie", "Hash Partitioning"],
     correct: [1], explain: "Salting dodaje losowy wektor do klucza grupowania. To lek na Data Skew i Straggler Tasks.", src: "W07, slajd 192", note: "W07-dane-dla-ai" },
 
   { id: "W07-21", w: "W07", c: "lambda-kappa", type: "single",
@@ -117,7 +117,7 @@
 
   { id: "W07-24", w: "W07", c: "feature-store", type: "single",
     q: "Jak nazywa się wersjonowany punkt końcowy Feature Store, który definiuje zestaw cech potrzebny konkretnemu modelowi?",
-    options: ["Entity", "Feature View", "Feature Service", "Registry"],
+    options: ["Entity (encja)", "Feature View", "Feature Service", "Registry (rejestr)"],
     correct: [2], explain: "Feature Service to wersjonowany zestaw cech dla modelu. Feature View to grupa cech z jednego źródła.", src: "W07, slajd 209", note: "W07-dane-dla-ai" },
 
   { id: "W07-25", w: "W07", c: "lineage", type: "single",

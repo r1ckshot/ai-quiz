@@ -2,7 +2,7 @@
   // ===== W10 — Automatyzacja wdrażania AI w chmurze (CD4ML) =====
   { id: "W10-01", w: "W10", c: "filary", type: "single",
     q: "Który filar CD4ML oznacza możliwość odtworzenia modelu przez spięcie kodu, danych i środowiska?",
-    options: ["Jakość (Quality)", "Powtarzalność (Reproducibility)", "Automatyzacja (Automation)", "Interdyscyplinarność"],
+    options: ["Jakość (Quality Gates)", "Powtarzalność (Reproducibility)", "Automatyzacja (Automation)", "Interdyscyplinarność zespołów"],
     correct: [1], explain: "Powtarzalność to odtworzenie artefaktu. Jakość to bramki, automatyzacja to brak ręcznych interwencji.", src: "W10, slajd 289", note: "W10-cd4ml" },
 
   { id: "W10-02", w: "W10", c: "filary", type: "single",
@@ -22,12 +22,12 @@
 
   { id: "W10-05", w: "W10", c: "osie", type: "single",
     q: "Hiperparametry, wersje CUDA i limity K8s należą według wykładu do której osi zmienności?",
-    options: ["Kod", "Dane", "Konfiguracja", "Infrastruktura"],
+    options: ["Oś kodu źródłowego", "Oś danych treningowych", "Oś konfiguracji", "Oś infrastruktury"],
     correct: [2], explain: "Oś konfiguracji jest zarządzana przez MLflow/Helm. Kod to Git, dane to DVC/Delta Lake.", src: "W10, slajd 290", note: "W10-cd4ml" },
 
   { id: "W10-06", w: "W10", c: "wyzwalacze", type: "single",
     q: "Co w referencyjnej architekturze potoku wyzwala fazę Continuous Training przy degradacji modelu?",
-    options: ["Git Push / Pull Request", "Drift Alert z systemu monitorowania", "Skan Trivy", "Kubectl rollout undo"],
+    options: ["Git Push / Pull Request", "Drift Alert z monitoringu", "Raport CVE ze skanu Trivy", "Kubectl rollout undo"],
     correct: [1], explain: "Git Push/PR inicjuje CI. Drift Alert z monitoringu wyzwala CT.", src: "W10, slajd 292", note: "W10-cd4ml" },
 
   { id: "W10-07", w: "W10", c: "przeplyw", type: "single",
@@ -42,7 +42,7 @@
 
   { id: "W10-09", w: "W10", c: "great-expectations", type: "single",
     q: "Które narzędzie w fazie CI waliduje kontrakty danych i odrzuca „zatrute” zbiory przed treningiem?",
-    options: ["flake8", "Great Expectations", "Syft", "Cosign"],
+    options: ["flake8 i black", "Great Expectations", "Syft i Trivy", "Sigstore Cosign"],
     correct: [1], explain: "Great Expectations testuje rozkłady i brakujące wartości w locie.", src: "W10, slajd 295", note: "W10-cd4ml" },
 
   { id: "W10-10", w: "W10", c: "ct-strategie", type: "single",
@@ -57,7 +57,7 @@
 
   { id: "W10-12", w: "W10", c: "idempotentnosc", type: "single",
     q: "Co oznacza zasada idempotentności w fazie CT?",
-    options: ["Trening odbywa się w izolowanych Namespaces", "Identyczne dane wejściowe generują statystycznie spójny wynik", "Kontenery są niszczone po treningu", "Model jest retrenowany co tydzień"],
+    options: ["Trening odbywa się w izolowanych Namespaces", "Te same dane wejściowe dają statystycznie spójny wynik", "Kontenery treningowe są niszczone po każdym przebiegu", "Model jest retrenowany według stałego harmonogramu"],
     correct: [1], explain: "Izolowane Namespaces to efemeryczność. Idempotentność dotyczy spójności wyniku.", src: "W10, slajd 297", note: "W10-cd4ml" },
 
   { id: "W10-13", w: "W10", c: "dvc-mlflow", type: "single",
@@ -77,7 +77,7 @@
 
   { id: "W10-16", w: "W10", c: "devsecops", type: "single",
     q: "Do czego służy SBOM w fazie CD?",
-    options: ["Do skanowania luk CVE", "Do automatycznej inwentaryzacji bibliotek", "Do podpisywania obrazów", "Do generowania krótkotrwałych tokenów"],
+    options: ["Do skanowania obrazów na luki CVE", "Do inwentaryzacji użytych bibliotek", "Do kryptograficznego podpisywania obrazów", "Do generowania krótkotrwałych tokenów"],
     correct: [1], explain: "SBOM to inwentaryzacja bibliotek (np. Syft). CVE skanuje Trivy.", src: "W10, slajd 301", note: "W10-cd4ml" },
 
   { id: "W10-17", w: "W10", c: "shadow-canary", type: "single",
@@ -92,7 +92,7 @@
 
   { id: "W10-19", w: "W10", c: "ewaluacja", type: "single",
     q: "Model ma wyższe średnie Accuracy, ale drastycznie gorsze wyniki dla klientów VIP. Która technika to wykryje?",
-    options: ["Ewaluacja wycinkowa (slice-based)", "Analiza statyczna flake8", "Step Caching", "SBOM"],
+    options: ["Ewaluacja wycinkowa (slice-based)", "Analiza statyczna flake8", "Step Caching w Kubeflow", "Skanowanie SBOM narzędziem Syft"],
     correct: [0], explain: "Slice-based evaluation testuje metryki dla podzbiorów. Chroni przed pułapką globalnych metryk.", src: "W10, slajd 303", note: "W10-cd4ml" },
 
   { id: "W10-20", w: "W10", c: "iac", type: "single",
@@ -112,7 +112,7 @@
 
   { id: "W10-23", w: "W10", c: "sekrety", type: "single",
     q: "Jakie rozwiązanie zastępuje statyczne klucze API w GitHub Secrets bezkluczowym uwierzytelnianiem?",
-    options: ["Sigstore", "OpenID Connect (OIDC)", "Kyverno", "SBOM"],
+    options: ["Sigstore i Cosign", "OpenID Connect (OIDC)", "Kyverno / Gatekeeper", "Skanowanie Trivy"],
     correct: [1], explain: "OIDC daje runnerowi krótkotrwały token tożsamości akceptowany przez chmurę.", src: "W10, slajd 308", note: "W10-cd4ml" },
 
   { id: "W10-24", w: "W10", c: "rollback", type: "single",
@@ -122,6 +122,6 @@
 
   { id: "W10-25", w: "W10", c: "silent-failure", type: "single",
     q: "System zwraca HTTP 200 OK, ale model przetwarza zamienione kolumny z SQL. Jak nazywa się taka awaria?",
-    options: ["Schema Mismatch", "Cicha awaria (Silent Failure)", "Model Poisoning", "Drift infrastrukturalny"],
+    options: ["Schema Mismatch w Feature Store", "Cicha awaria (Silent Failure)", "Zatrucie modelu (Model Poisoning)", "Drift infrastrukturalny"],
     correct: [1], explain: "Silent Failure nie rzuca wyjątków. Daje błędne biznesowo decyzje.", src: "W10, slajd 311", note: "W10-cd4ml" },
 ]});
