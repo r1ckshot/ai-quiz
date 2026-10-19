@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EDF1F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F151A" media="(prefers-color-scheme: dark)">
+<title>ai-quiz — testy z wykładów, AI semestr 2</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ai-quiz">
+<!-- Bez internetu czcionki się nie wczytają i strona użyje systemowych -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+:root {
+  --paper: #EDF1F4; --sheet: #FFFFFF; --soft: #F4F7F9; --ink: #14202A; --muted: #5A6772; --line: #D3DBE1;
+  --ok: #1C8A55; --okbg: #E3F3EA; --bad: #CC3D33; --badbg: #FBE8E6; --accent: #c2410c;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --text: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #0F151A; --sheet: #172028; --soft: #1D2731; --ink: #E4EBF0; --muted: #8D9AA6; --line: #2A3641;
+          --ok: #4CC287; --okbg: #143021; --bad: #F0675C; --badbg: #3A1C1A; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.55 var(--text); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+code { background: var(--soft); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-size: 90%; }
+
+/* Układ: telefon — przedmioty u góry, komputer — kolumna po lewej */
+.layout { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+#nav { position: sticky; top: 0; z-index: 5; background: var(--paper); margin: 0 -16px; padding: 12px 16px 10px; }
+.brand { font: 800 20px/1 var(--display); letter-spacing: -.01em; }
+.brand-sub { display: none; }
+.subjects { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-top: 10px; padding-bottom: 2px; }
+.subjects::-webkit-scrollbar { display: none; }
+.subj { flex: none; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 7px 14px; color: inherit; text-decoration: none;
+        border: 1px solid var(--line); background: var(--sheet); border-radius: 999px; cursor: pointer; }
+.subj .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; }
+.subj .full { display: none; }
+.subj .n { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.subj[aria-current="page"] { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, var(--sheet)); font-weight: 700; }
+.subj.empty { color: var(--muted); }
+.subj.empty .dot { opacity: .45; }
+body.running #nav .subjects { display: none; }
+main { min-width: 0; padding-bottom: 8px; }
+@media (min-width: 900px) {
+  .layout { display: grid; grid-template-columns: 250px minmax(0, 760px); gap: 40px; justify-content: center; padding-top: 28px; }
+  #nav { top: 28px; align-self: start; margin: 0; padding: 0; background: none; }
+  .brand-sub { display: block; color: var(--muted); font-size: 15px; line-height: 1.4; margin: 6px 0 18px; }
+  .subjects { flex-direction: column; overflow: visible; margin-top: 0; gap: 2px; }
+  .subj { width: 100%; text-align: left; border: 0; background: none; border-radius: 10px; padding: 9px 12px; }
+  .subj .nm { flex: 1; }
+  .subj .full { display: inline; }
+  .subj .short { display: none; }
+  .subj:hover { background: var(--soft); }
+  .subj[aria-current="page"] { background: var(--sheet); box-shadow: inset 3px 0 0 var(--c); }
+  body.running #nav .subjects { display: flex; opacity: .45; pointer-events: none; }
+}
+
+/* Arkusz */
+.sheet { background: var(--sheet); border: 1px solid var(--line); border-radius: 16px; padding: 22px 20px; }
+@media (min-width: 600px) { .sheet { padding: 30px 34px; } }
+.title { font: 800 clamp(26px, 5vw, 34px)/1.1 var(--display); letter-spacing: -.02em; margin: 0 0 10px; text-wrap: balance; }
+.facts { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--muted); font-size: 15px; margin: 0; }
+.lead { color: var(--muted); margin: 8px 0 0; }
+.block { margin-top: 28px; }
+.lbl { font: 600 15px/1.2 var(--display); color: var(--muted); margin: 0 0 10px; }
+.lbl-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.hint { color: var(--muted); font-size: 15px; margin: 8px 0 0; }
+.links { display: flex; gap: 8px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Tryby */
+.modes { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 600px) { .modes { grid-template-columns: repeat(3, 1fr); } }
+.mode { display: flex; flex-direction: column; gap: 2px; text-align: left; padding: 12px 14px; cursor: pointer;
+        border: 1.5px solid var(--line); background: none; border-radius: 12px; }
+.mode b { font: 700 17px/1.2 var(--display); display: flex; align-items: center; gap: 8px; }
+.mode span { color: var(--muted); font-size: 14px; line-height: 1.35; }
+.mode[aria-checked="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--sheet)); }
+.mode:disabled { opacity: .45; cursor: default; }
+.badge { font: 600 12px/1 var(--text); background: var(--bad); color: #fff; border-radius: 999px; padding: 3px 7px; }
+
+/* Wykłady: wybór i postęp w jednym kafelku */
+.lects { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+@media (max-width: 420px) { .lects { grid-template-columns: 1fr 1fr; } }
+.lect { display: grid; grid-template-columns: auto 1fr; grid-template-areas: "code num" "topic topic" "bar bar"; gap: 2px 8px;
+        align-items: baseline; text-align: left; padding: 8px 10px; cursor: pointer;
+        border: 1.5px solid var(--line); background: none; border-radius: 10px; }
+.lect .code { grid-area: code; font: 700 16px/1.2 var(--display); }
+.lect .mnum { grid-area: num; justify-self: end; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.lect .topic { grid-area: topic; color: var(--muted); font-size: 14px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lect .mbar { grid-area: bar; height: 4px; margin-top: 6px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.lect .mbar i { display: block; height: 100%; background: var(--ok); }
+.lect[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--sheet)); }
+.lect[aria-pressed="false"] .code { color: var(--muted); }
+
+/* Liczba pytań */
+.count { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; }
+.stepper { display: inline-flex; border: 1.5px solid var(--line); border-radius: 12px; overflow: hidden; }
+.stepper button { width: 44px; height: 44px; border: 0; background: none; cursor: pointer; font-size: 22px; line-height: 1; }
+.stepper button:hover { background: var(--soft); }
+.stepper input { width: 64px; border: 0; border-inline: 1.5px solid var(--line); background: none; color: var(--ink);
+                 text-align: center; font: 700 18px var(--display); -moz-appearance: textfield; appearance: textfield; }
+.stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Przyciski */
+.actionbar:empty { display: none; }
+.actionbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 28px; }
+.btn { min-height: 48px; padding: 11px 20px; border: 1.5px solid transparent; border-radius: 12px; cursor: pointer; font-weight: 700; }
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.ghost { background: none; border-color: var(--line); }
+.btn.small { min-height: 36px; padding: 6px 12px; border-radius: 10px; font-size: 15px; font-weight: 600; }
+.btn.danger { color: var(--bad); }
+.btn:disabled { opacity: .45; cursor: default; }
+@media (hover: hover) { .btn.primary:hover:not(:disabled) { filter: brightness(1.08); } .btn.ghost:hover:not(:disabled) { background: var(--soft); } }
+#start { flex: 1; font-size: 18px; }
+@media (min-width: 600px) { #start { flex: none; min-width: 260px; } }
+@media (max-width: 599px) {
+  .actionbar.sticky { position: sticky; bottom: 0; z-index: 2; background: var(--sheet); margin: 20px -20px -22px;
+                      padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); border-radius: 0 0 16px 16px; }
+  .actionbar .btn { flex: 1; }
+}
+.help { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; }
+.help summary { cursor: pointer; }
+.help ul { margin: 10px 0 0; padding-left: 18px; }
+.help li { margin: 4px 0; }
+.reset { margin-top: 8px; font-size: 15px; }
+.reset p { margin: 0 0 8px; }
+
+/* Pytanie */
+.runbar { display: flex; flex-direction: column; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+@media (max-width: 599px) {
+  .run .runbar { position: sticky; top: 0; z-index: 3; background: var(--sheet); margin: -22px -20px 0; padding: 14px 20px 12px; border-radius: 16px 16px 0 0; }
+}
+.strip { display: flex; flex-wrap: wrap; gap: 5px; }
+.dot { flex: none; width: 12px; height: 12px; padding: 0; border-radius: 50%; border: 1.5px solid var(--line); background: none;
+       transition: background-color .2s, border-color .2s, transform .2s; }
+button.dot { width: 18px; height: 18px; cursor: pointer; }
+.dot.cur { border-color: var(--ink); transform: scale(1.2); }
+.dot.ans { background: var(--accent); border-color: var(--accent); }
+.dot.ok { background: var(--ok); border-color: var(--ok); }
+.dot.bad { background: var(--bad); border-color: var(--bad); }
+.dot.pop { animation: pop .35s ease-out; }
+.runmeta { display: flex; align-items: center; gap: 16px; color: var(--muted); font-size: 15px; font-variant-numeric: tabular-nums; }
+.runmeta .pos { color: var(--ink); font-weight: 700; }
+#quit { margin-left: auto; }
+.timer.low { color: var(--bad); font-weight: 700; }
+.qmeta { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: 14px; margin: 18px 0 6px; }
+.qmeta span:first-child { color: var(--accent); font-weight: 700; }
+.q { font: 600 clamp(20px, 4.6vw, 24px)/1.35 var(--text); margin: 0 0 18px; text-wrap: pretty; }
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt { display: flex; align-items: flex-start; gap: 12px; width: 100%; min-height: 52px; padding: 12px 14px; text-align: left; cursor: pointer;
+       border: 1.5px solid var(--line); background: none; border-radius: 12px; transition: border-color .15s, background-color .2s; }
+.opt .k { flex: none; display: grid; place-items: center; width: 28px; height: 28px; margin-top: -1px; border-radius: 50%;
+          border: 1.5px solid var(--line); color: var(--muted); font: 700 14px/1 var(--display); }
+.opt .t { flex: 1; padding-top: 1px; }
+@media (hover: hover) { .opt:hover:not(:disabled) { border-color: var(--accent); } }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--sheet)); }
+.opt[aria-pressed="true"] .k { background: var(--accent); border-color: var(--accent); color: #fff; }
+.opt:disabled { cursor: default; color: inherit; }
+.opt.ok { border-color: var(--ok); background: var(--okbg); }
+.opt.ok .k { background: var(--ok); border-color: var(--ok); color: #fff; }
+.opt.bad { border-color: var(--bad); background: var(--badbg); animation: shake .4s ease-out; }
+.opt.bad .k { background: var(--bad); border-color: var(--bad); color: #fff; }
+.field { width: 100%; padding: 12px 14px; font: inherit; color: var(--ink); background: var(--soft); border: 1.5px solid var(--line); border-radius: 12px; }
+.fb { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); animation: fade .25s ease-out; }
+.fb-head { display: flex; align-items: center; gap: 10px; margin: 0; font: 700 18px/1.2 var(--display); }
+.fb.ok .fb-head { color: var(--ok); }
+.fb.bad .fb-head { color: var(--bad); }
+.fb-text { margin: 10px 0 0; }
+.mark { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--sheet); font: 700 14px/1 var(--text); }
+.ok > .mark, .ok .mark { background: var(--ok); }
+.bad > .mark, .bad .mark { background: var(--bad); }
+.fb.info .mark { background: var(--accent); }
+.src { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: 14px; margin: 8px 0 0; }
+.src a { color: var(--accent); }
+.confirm { margin-top: 14px; padding: 14px 16px; border-radius: 12px; background: var(--soft); border: 1.5px solid var(--accent); animation: fade .2s ease-out; }
+.confirm p { margin: 0 0 10px; }
+
+/* Wynik */
+.score { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 24px; margin: 4px 0; }
+.pct { font: 800 clamp(64px, 16vw, 96px)/.95 var(--display); letter-spacing: -.04em; color: var(--accent); font-variant-numeric: tabular-nums; }
+.score-txt p { margin: 2px 0; }
+.big-line { font: 700 20px/1.3 var(--display); }
+.verdict { font-weight: 700; }
+.verdict.pass { color: var(--ok); }
+.verdict.fail { color: var(--bad); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); gap: 5px; margin-top: 22px; }
+.sq { display: grid; place-items: center; aspect-ratio: 1; padding: 0; border: 0; border-radius: 8px; font: 700 14px/1 var(--display);
+      animation: fill .3s ease-out backwards; animation-delay: calc(var(--d) * 22ms); }
+.sq.ok { background: var(--okbg); color: var(--ok); }
+.sq.bad { background: var(--bad); color: #fff; cursor: pointer; }
+.sq.skip { background: var(--soft); color: var(--muted); }
+.sec { font: 800 22px var(--display); margin: 34px 0 4px; }
+.review { list-style: none; margin: 0; padding: 0; }
+.review li { padding: 16px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 90px; }
+.review li:last-child { border-bottom: 0; }
+.rq { display: flex; gap: 10px; font-weight: 600; margin: 0 0 10px; }
+.rn { flex: none; min-width: 26px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ans { display: flex; align-items: flex-start; gap: 10px; margin: 6px 0 0 36px; }
+.ans .mark { margin-top: 1px; }
+.ans.bad span:last-child { color: var(--muted); text-decoration: line-through 1px color-mix(in srgb, var(--muted) 70%, transparent); }
+.ans.none span:last-child { color: var(--muted); }
+.ans.none .mark { background: var(--line); color: var(--muted); }
+.rx, .review .src { margin: 10px 0 0 36px; }
+.review li.flash { animation: flash 1.4s ease-out; }
+
+.foot { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 18px 4px calc(24px + env(safe-area-inset-bottom)); }
+.foot p { margin: 0 0 4px; }
+body.running .foot { display: none; }
+
+/* Ruch: tylko jako odpowiedź na działanie */
+@keyframes fade  { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pop   { 0% { transform: scale(1); } 45% { transform: scale(1.45); } 100% { transform: scale(1); } }
+@keyframes shake { 0%, 100% { transform: none; } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+@keyframes fill  { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: none; } }
+@keyframes flash { from { background: color-mix(in srgb, var(--accent) 16%, transparent); } to { background: transparent; } }
+.enter { animation: fade .28s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav id="nav" aria-label="Przedmioty"></nav>
+  <main>
+    <div id="app"></div>
+    <footer class="foot">
+      <p>Pytania powstały na podstawie slajdów z wykładów i mogą zawierać błędy. Postęp zapisuje się tylko w tej przeglądarce.</p>
+    </footer>
+  </main>
+</div>
+
+<script>
+// Przedmioty: klucz (= folder data/<klucz>/), nazwa, krótka nazwa na telefon, folder w Obsidian, kolor, próg zaliczenia (%), sekundy na pytanie w trybie Egzamin
+const SUBJECTS = [
+  { key: "maszynowe",     name: "Uczenie maszynowe",                   short: "Uczenie",       dir: "Uczenie maszynowe",                                                         color: "#2563eb", prog: null, sec: null },
+  { key: "bazy",          name: "Bazy danych dla AI",                  short: "Bazy",          dir: "Bazy danych dla sztucznej inteligencji",                                    color: "#0f766e", prog: 55,   sec: null },
+  { key: "infra",         name: "Infrastruktura chmurowa dla AI",      short: "Infra",         dir: "Infrastruktura i architektura chmurowa dla systemów sztucznej inteligencji", color: "#c2410c", prog: 51,   sec: 60 },
+  { key: "data",          name: "Data mining",                         short: "Data mining",   dir: "Data mining",                                                               color: "#7c3aed", prog: 51,   sec: null },
+  { key: "prompty",       name: "Generatywna AI i prompt engineering", short: "Prompty",       dir: "Generatywna sztuczna inteligencja i prompt engineering",                    color: "#be185d", prog: 55,   sec: null },
+  { key: "wizja",         name: "Wizja komputerowa",                   short: "Wizja",         dir: "Wizja komputerowa",                                                         color: "#15803d", prog: null, sec: null },
+  { key: "przetwarzanie", name: "Przetwarzanie języka naturalnego",    short: "Przetwarzanie", dir: "Przetwarzanie języka naturalnego",                                          color: "#a16207", prog: 51,   sec: null },
+];
+const VAULT = "2 semestr";
+window.QUIZ_DATA = window.QUIZ_DATA || [];
+</script>
+
+<!-- Pytania: data/<klucz>/W01.js … W15.js i egzamin.js (w: "Egzamin"). Brakujący plik jest pomijany. -->
+<script>
+for (const s of SUBJECTS) {
+  for (let n = 1; n <= 15; n++)
+    document.write(`<script src="data/${s.key}/W${String(n).padStart(2, "0")}.js"><\/script>`);
+  document.write(`<script src="data/${s.key}/egzamin.js"><\/script>`);
+}
+</script>
+
+<script>
+const $ = (sel, el = document) => el.querySelector(sel);
+const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
+const app = $("#app"), nav = $("#nav");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\n/g, "<br>");
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const conceptOf = q => q.c || q.id;
+const subjOf = key => SUBJECTS.find(s => s.key === key) || SUBJECTS[0];
+const mmss = ms => { const t = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
+const isLecture = w => /^W\d/.test(w);
+const LETTERS = "abcdefghij";
+const isLocal = location.protocol === "file:"; // link do Obsidiana ma sens tylko na komputerze autora
+// Polska odmiana: 1 pytanie, 2–4 pytania, 5+ pytań
+const plural = (n, one, few, many) => { const d = n % 10, h = n % 100; return n === 1 ? one : d >= 2 && d <= 4 && (h < 12 || h > 14) ? few : many; };
+const pl = (n, one, few, many) => `${n} ${plural(n, one, few, many)}`;
+
+// localStorage bywa niedostępny (tryb prywatny) — wtedy działa bez pamięci
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+
+const bank = {};
+for (const pack of window.QUIZ_DATA) (bank[pack.subject] ||= []).push(...pack.questions);
+
+const TYPE = { single: "jednokrotny wybór", multi: "wielokrotny wybór", open: "pytanie otwarte", calc: "obliczenia" };
+const MODES = {
+  nauka:   { name: "Nauka",      desc: "Wyjaśnienie i źródło po każdej odpowiedzi",   go: "Rozpocznij naukę" },
+  egzamin: { name: "Egzamin",    desc: "Bez podpowiedzi, z limitem czasu, wynik na końcu", go: "Rozpocznij egzamin" },
+  bledy:   { name: "Moje błędy", desc: "Pomylone pojęcia wracają w innym wariancie",  go: "Powtórz błędy" },
+};
+
+const fromHash = location.hash.slice(1);
+const state = {
+  subj: SUBJECTS.some(s => s.key === fromHash) ? fromHash : LS.get("quiz.subj", "infra"),
+  mode: "nauka", lectures: null, count: null,
+};
+let run = null, timerId = null;
+
+// Pamięć: lista błędów (pojęcie → id wariantów z pomyłką) i ostatni wynik każdego pojęcia
+const wrongKey = s => "quiz.wrong." + s.key;
+const statKey = s => "quiz.stats." + s.key;
+function markResult(s, q, ok) {
+  const c = conceptOf(q), wrong = LS.get(wrongKey(s), {}), stats = LS.get(statKey(s), {});
+  if (ok) delete wrong[c]; else wrong[c] = [...new Set([...(wrong[c] || []), q.id])];
+  stats[c] = ok ? 1 : 0;
+  LS.set(wrongKey(s), wrong);
+  LS.set(statKey(s), stats);
+}
+
+function lecturesOf(key) {
+  const rank = w => isLecture(w) ? 0 : 1; // „Egzamin” na końcu listy
+  return [...new Set((bank[key] || []).map(q => q.w))].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+}
+function defaultLectures(ws) {
+  if (state.mode !== "nauka") return ws.slice();
+  const lec = ws.filter(isLecture);
+  return lec.length ? lec.slice(-1) : ws.slice(0, 1);
+}
+function topicOf(key, w) {
+  if (!isLecture(w)) return "pytania powtórkowe";
+  const q = (bank[key] || []).find(q => q.w === w && q.note);
+  if (!q) return "";
+  const t = q.note.replace(/^W\d+-?/, "").split("-").map(x => WORDS[x] || x).join(" ");
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+// Temat bierze się z nazwy pliku konspektu (małe litery, bez polskich znaków), więc skróty i znaki przywracamy ręcznie
+const WORDS = { bezpieczenstwo: "bezpieczeństwo", ai: "AI", ml: "ML", cd4ml: "CD4ML", gpu: "GPU", finops: "FinOps", nlp: "NLP", sql: "SQL", llm: "LLM", cnn: "CNN" };
+function lectureStats(s, w) {
+  const cs = new Set((bank[s.key] || []).filter(q => q.w === w).map(conceptOf));
+  const stats = LS.get(statKey(s), {});
+  let ok = 0;
+  cs.forEach(c => { if (stats[c] === 1) ok++; });
+  return { ok, total: cs.size };
+}
+
+// Warianty jednego pojęcia (pole c) z wybranych wykładów lub z podanego zbioru pojęć
+function groups(s, only) {
+  const g = new Map(), wrong = state.mode === "bledy" ? LS.get(wrongKey(s), {}) : null;
+  for (const q of bank[s.key] || []) {
+    const c = conceptOf(q);
+    if (only) { if (!only.has(c)) continue; }
+    else if (!state.lectures.includes(q.w) || (wrong && !wrong[c])) continue;
+    if (!g.has(c)) g.set(c, []);
+    g.get(c).push(q);
+  }
+  return g;
+}
+
+/* ---------- Nawigacja ---------- */
+function renderNav() {
+  nav.innerHTML = `<div class="brand">ai-quiz</div>
+    <p class="brand-sub">Informatyka, specjalność AI<br>semestr 2</p>
+    <div class="subjects">${SUBJECTS.map(s => {
+      const n = (bank[s.key] || []).length;
+      return `<a class="subj${n ? "" : " empty"}" href="#${s.key}" ${s.key === state.subj ? 'aria-current="page"' : ""} ${run ? 'tabindex="-1"' : ""} style="--c:${s.color}">
+        <span class="dot"></span><span class="nm"><span class="full">${esc(s.name)}</span><span class="short">${esc(s.short)}</span></span>
+        <span class="n">${n || "wkrótce"}</span></a>`;
+    }).join("")}</div>`;
+  const cur = $(".subj[aria-current='page']", nav);
+  if (cur && innerWidth < 900) cur.scrollIntoView({ block: "nearest", inline: "center" });
+}
+function selectSubject(k) {
+  if (run) return history.replaceState(null, "", "#" + state.subj); // w trakcie testu przedmiot się nie zmienia
+  if (k === state.subj) return;
+  state.subj = k; state.lectures = null; state.count = null;
+  LS.set("quiz.subj", k);
+  setup();
+  scrollTo({ top: 0 });
+}
+addEventListener("hashchange", () => {
+  const k = location.hash.slice(1);
+  if (SUBJECTS.some(s => s.key === k)) selectSubject(k);
+});
+
+/* ---------- Ustawienia testu ---------- */
+function setup(animate = true) {
+  run = null; stopTimer();
+  document.body.classList.remove("running");
+  const s = subjOf(state.subj);
+  document.documentElement.style.setProperty("--accent", s.color);
+  renderNav();
+  const qs = bank[s.key] || [];
+  if (!qs.length) {
+    app.innerHTML = `<section class="sheet${animate ? " enter" : ""}"><h1 class="title">${esc(s.dir)}</h1>
+      <p class="lead">Pytań z tego przedmiotu jeszcze nie ma. Wybierz inny przedmiot.</p></section>`;
+    return;
+  }
+  const ws = lecturesOf(s.key);
+  if (!state.lectures || !state.lectures.every(w => ws.includes(w))) state.lectures = defaultLectures(ws);
+  const nWrong = Object.keys(LS.get(wrongKey(s), {})).length;
+  if (state.mode === "bledy" && !nWrong) { state.mode = "nauka"; state.lectures = defaultLectures(ws); }
+  const avail = groups(s).size;
+  if (state.count == null) state.count = state.mode === "egzamin" ? Math.min(avail, 30) : avail;
+  state.count = clamp(state.count, avail ? 1 : 0, avail);
+  const facts = [pl(qs.length, "pytanie", "pytania", "pytań"), pl(ws.filter(isLecture).length, "wykład", "wykłady", "wykładów"),
+                 s.prog ? `próg zaliczenia ${s.prog}%` : "próg zaliczenia nieznany"];
+  if (s.sec) facts.push(`${s.sec} s na pytanie`);
+
+  app.innerHTML = `<section class="sheet${animate ? " enter" : ""}">
+    <h1 class="title">${esc(s.dir)}</h1>
+    <p class="facts">${facts.map(f => `<span>${f}</span>`).join("")}</p>
+
+    <div class="block">
+      <h2 class="lbl" id="l-mode">Tryb</h2>
+      <div class="modes" role="radiogroup" aria-labelledby="l-mode">${Object.entries(MODES).map(([m, d]) => {
+        const off = m === "bledy" && !nWrong;
+        return `<button class="mode" role="radio" aria-checked="${state.mode === m}" data-m="${m}" ${off ? "disabled" : ""}>
+          <b>${d.name}${m === "bledy" && nWrong ? ` <span class="badge">${nWrong}</span>` : ""}</b>
+          <span>${off ? "Na razie brak błędów" : d.desc}</span></button>`;
+      }).join("")}</div>
+    </div>
+
+    <div class="block">
+      <div class="lbl-row"><h2 class="lbl">Wykłady</h2>
+        <span class="links"><button class="btn small ghost" data-sel="all">Wszystkie</button><button class="btn small ghost" data-sel="none">Żadne</button></span></div>
+      <div class="lects">${ws.map(w => {
+        const st = lectureStats(s, w);
+        return `<button class="lect" data-w="${w}" aria-pressed="${state.lectures.includes(w)}" title="${esc(topicOf(s.key, w))}">
+          <span class="code">${esc(w)}</span><span class="mnum" aria-label="opanowane ${st.ok} z ${st.total}">${st.ok}/${st.total}</span>
+          <span class="topic">${esc(topicOf(s.key, w))}</span><span class="mbar"><i style="width:${st.total ? st.ok / st.total * 100 : 0}%"></i></span></button>`;
+      }).join("")}</div>
+      <p class="hint">${state.lectures.length ? "Pasek pokazuje opanowane pojęcia." : "Zaznacz co najmniej jeden wykład."}</p>
+    </div>
+
+    <div class="block">
+      <h2 class="lbl"><label for="cnt">Liczba pytań</label></h2>
+      <div class="count">
+        <span class="stepper"><button data-step="-1" aria-label="Mniej pytań">−</button><input id="cnt" type="number" inputmode="numeric" min="1" max="${avail}" value="${state.count}"><button data-step="1" aria-label="Więcej pytań">+</button></span>
+        <span class="hint" style="margin:0">z ${avail} dostępnych</span>
+      </div>
+    </div>
+
+    <div class="actionbar sticky"><button class="btn primary" id="start" ${avail ? "" : "disabled"}>${MODES[state.mode].go}</button></div>
+
+    <details class="help"><summary>Jak to działa?</summary><ul>
+      <li>W trybie Nauka po każdej odpowiedzi widać wyjaśnienie i slajd, z którego pochodzi pytanie.</li>
+      <li>Egzamin działa jak test na Moodle: bez podpowiedzi, z limitem czasu i wynikiem na końcu. Między pytaniami można się cofać.</li>
+      <li>Każda pomyłka trafia do „Moje błędy”. Tam pojęcie wraca w innym wariancie pytania, aż odpowiedź będzie poprawna.</li>
+      <li>Skróty na komputerze: 1–9 lub a–d wybiera odpowiedź, Enter przechodzi dalej, strzałki zmieniają pytanie w egzaminie.</li>
+    </ul></details>
+    <div class="reset" id="reset"><button class="btn small ghost danger" id="resetAsk">Wyczyść postęp z tego przedmiotu</button></div>
+  </section>`;
+
+  $$("[data-m]", app).forEach(b => b.onclick = () => { state.mode = b.dataset.m; state.lectures = defaultLectures(ws); state.count = null; setup(false); });
+  $$("[data-w]", app).forEach(b => b.onclick = () => {
+    const w = b.dataset.w;
+    state.lectures = state.lectures.includes(w) ? state.lectures.filter(x => x !== w) : [...state.lectures, w];
+    state.count = null; setup(false);
+  });
+  $$("[data-sel]", app).forEach(b => b.onclick = () => { state.lectures = b.dataset.sel === "all" ? ws.slice() : []; state.count = null; setup(false); });
+  const cnt = $("#cnt");
+  const setCount = v => { state.count = clamp(Math.round(v) || 1, avail ? 1 : 0, avail); cnt.value = state.count; };
+  $$("[data-step]", app).forEach(b => b.onclick = () => setCount(state.count + +b.dataset.step));
+  cnt.onchange = () => setCount(+cnt.value);
+  $("#start").onclick = () => { setCount(+cnt.value); start(s, state.count); };
+  $("#resetAsk").onclick = () => {
+    $("#reset").innerHTML = `<p>Usunąć postęp i listę błędów z przedmiotu ${esc(s.name)}?</p>
+      <div class="row"><button class="btn ghost" id="resetNo">Anuluj</button><button class="btn primary" id="resetYes">Wyczyść postęp</button></div>`;
+    $("#resetNo").onclick = () => setup(false);
+    $("#resetYes").onclick = () => { LS.del(wrongKey(s)); LS.del(statKey(s)); state.mode = "nauka"; setup(false); };
+  };
+}
+
+/* ---------- Test ---------- */
+function prepare(q) {
+  const it = { q, sel: new Set(), done: false, ok: false, given: "" };
+  if (q.type === "single" || q.type === "multi") {
+    it.order = shuffle(q.options.map((_, i) => i)); // pokazana pozycja → indeks w q.options
+    it.correct = new Set(it.order.flatMap((o, i) => q.correct.includes(o) ? [i] : []));
+  }
+  return it;
+}
+const answered = it => it.done || it.sel.size > 0 || it.given.trim() !== "";
+
+function start(s, n, only) {
+  const wrong = LS.get(wrongKey(s), {});
+  const items = shuffle([...groups(s, only).entries()].map(([c, vs]) => {
+    if (state.mode !== "bledy") return pick(vs);
+    const fresh = vs.filter(v => !(wrong[c] || []).includes(v.id));
+    return pick(fresh.length ? fresh : vs);
+  })).slice(0, n).map(prepare);
+  if (!items.length) return;
+  run = { s, items, i: 0, mode: state.mode, t0: Date.now() };
+  if (run.mode === "egzamin" && s.sec) run.deadline = run.t0 + items.length * s.sec * 1000;
+  document.body.classList.add("running");
+  renderNav();
+  startTimer();
+  showQ(true);
+  scrollTo({ top: 0 });
+}
+
+function startTimer() { stopTimer(); timerId = setInterval(tick, 500); }
+function stopTimer() { clearInterval(timerId); timerId = null; }
+function tick() {
+  const el = $("#timer");
+  if (!run) return stopTimer();
+  if (run.deadline) {
+    const left = run.deadline - Date.now();
+    if (el) { el.textContent = mmss(left); el.classList.toggle("low", left < 60000); }
+    if (left <= 0) finish("time");
+  } else if (el) el.textContent = mmss(Date.now() - run.t0);
+}
+
+function stripHTML(pop = -1) {
+  const exam = run.mode === "egzamin";
+  return run.items.map((it, i) => {
+    const cls = ["dot"];
+    if (i === run.i) cls.push("cur");
+    if (exam) { if (answered(it)) cls.push("ans"); }
+    else if (it.done) cls.push(it.ok ? "ok" : "bad");
+    if (i === pop) cls.push("pop");
+    return exam
+      ? `<button class="${cls.join(" ")}" data-go="${i}" aria-label="Pytanie ${i + 1}${answered(it) ? ", z odpowiedzią" : ""}"></button>`
+      : `<span class="${cls.join(" ")}"></span>`;
+  }).join("");
+}
+const refreshStrip = pop => { const el = $("#strip"); if (el) el.innerHTML = stripHTML(pop); };
+
+function showQ(animate) {
+  const it = run.items[run.i], q = it.q, exam = run.mode === "egzamin";
+  app.innerHTML = `<section class="sheet run${animate ? " enter" : ""}">
+    <div class="runbar">
+      <div class="strip" id="strip" aria-label="Postęp testu">${stripHTML()}</div>
+      <div class="runmeta"><span class="pos">${run.i + 1} / ${run.items.length}</span>
+        <span class="timer" id="timer" aria-label="${run.deadline ? "Pozostały czas" : "Czas"}"></span>
+        <button class="btn small ghost" id="quit">Zakończ</button></div>
+    </div>
+    <div id="confirm"></div>
+    <p class="qmeta"><span>${esc(q.w)}</span>${q.type !== "single" ? `<span>${TYPE[q.type] || q.type}</span>` : ""}</p>
+    <h2 class="q">${fmt(q.q)}</h2>
+    <div id="body"></div>
+    <div id="fb" aria-live="polite"></div>
+    <div class="actionbar sticky" id="actions"></div>
+  </section>`;
+  tick();
+  $("#quit").onclick = () => askQuit(false);
+  if (exam) $("#strip").onclick = e => { const b = e.target.closest("[data-go]"); if (b) go(+b.dataset.go); };
+
+  const body = $("#body");
+  if (it.order) {
+    body.className = "opts";
+    body.innerHTML = it.order.map((o, i) =>
+      `<button class="opt" data-i="${i}" aria-pressed="${it.sel.has(i)}"><span class="k">${LETTERS[i]}</span><span class="t">${fmt(q.options[o])}</span></button>`).join("");
+    body.onclick = e => {
+      const b = e.target.closest(".opt");
+      if (!b || it.done) return;
+      const i = +b.dataset.i;
+      if (q.type === "single") it.sel = new Set([i]);
+      else it.sel.has(i) ? it.sel.delete(i) : it.sel.add(i);
+      $$(".opt", body).forEach(o => o.setAttribute("aria-pressed", it.sel.has(+o.dataset.i)));
+      if (exam) return refreshStrip();
+      if (q.type === "single") return check();
+      $("#primary").disabled = !it.sel.size;
+    };
+  } else if (q.type === "calc") {
+    body.innerHTML = `<input class="field" type="text" id="val" inputmode="decimal" autocomplete="off" placeholder="Wpisz wynik liczbowy" value="${esc(it.given)}">`;
+    $("#val").oninput = e => { it.given = e.target.value; if (exam) refreshStrip(); };
+  } else {
+    body.innerHTML = `<textarea class="field" id="val" rows="3" placeholder="Odpowiedz własnymi słowami, w jednym lub dwóch zdaniach">${esc(it.given)}</textarea>`;
+    $("#val").oninput = e => { it.given = e.target.value; };
+  }
+  renderActions();
+}
+
+function renderActions() {
+  const it = run.items[run.i], q = it.q, exam = run.mode === "egzamin", last = run.i === run.items.length - 1, a = $("#actions");
+  if (exam && q.type !== "open") {
+    a.innerHTML = `<button class="btn ghost" id="prev" ${run.i ? "" : "disabled"}>Poprzednie</button>
+      <button class="btn primary" id="primary">${last ? "Zakończ" : "Następne"}</button>`;
+    $("#prev").onclick = () => go(run.i - 1);
+    $("#primary").onclick = () => last ? askQuit(true) : go(run.i + 1);
+    return;
+  }
+  if (it.done) {
+    a.innerHTML = `<button class="btn primary" id="primary">${last ? "Zobacz wynik" : "Następne pytanie"}</button>`;
+    $("#primary").onclick = next;
+    return;
+  }
+  if (q.type === "single") { a.innerHTML = ""; return; }
+  if (q.type === "multi" || q.type === "calc") {
+    a.innerHTML = `<button class="btn primary" id="primary" ${q.type === "multi" && !it.sel.size ? "disabled" : ""}>Sprawdź</button>`;
+    $("#primary").onclick = check;
+    return;
+  }
+  a.innerHTML = `<button class="btn primary" id="primary">Pokaż wzorcową odpowiedź</button>`;
+  $("#primary").onclick = () => {
+    $("#fb").innerHTML = `<div class="fb info"><p class="fb-head"><span class="mark">i</span>Wzorcowa odpowiedź</p><p class="fb-text">${fmt(q.answer)}</p>${q.explain ? `<p class="fb-text">${fmt(q.explain)}</p>` : ""}${srcLine(q, run.s)}</div>`;
+    a.innerHTML = `<button class="btn ghost" id="no">Nie znam</button><button class="btn primary" id="primary">Znam</button>`;
+    $("#primary").onclick = () => grade(true);
+    $("#no").onclick = () => grade(false);
+  };
+}
+
+function evalItem(it) {
+  const q = it.q;
+  if (it.order) return it.sel.size === it.correct.size && [...it.sel].every(i => it.correct.has(i));
+  if (q.type === "calc") {
+    const v = parseFloat(it.given.replace(",", "."));
+    return !isNaN(v) && Math.abs(v - Number(q.answer)) <= (q.tolerance ?? 0) + 1e-9;
+  }
+  return it.ok;
+}
+function check() { const it = run.items[run.i]; if (!it.done) grade(evalItem(it)); }
+
+function grade(ok) {
+  const it = run.items[run.i], q = it.q;
+  if (it.done) return;
+  it.done = true; it.ok = ok;
+  if (run.mode === "egzamin") { // tylko pytania otwarte; ocena wszystkich na końcu
+    refreshStrip();
+    return run.i === run.items.length - 1 ? askQuit(true) : go(run.i + 1);
+  }
+  markResult(run.s, q, ok);
+  if (it.order) $$(".opt").forEach(b => {
+    const i = +b.dataset.i;
+    b.disabled = true;
+    if (it.correct.has(i)) b.classList.add("ok");
+    else if (it.sel.has(i)) b.classList.add("bad");
+  });
+  if (q.type !== "open")
+    $("#fb").innerHTML = `<div class="fb ${ok ? "ok" : "bad"}"><p class="fb-head"><span class="mark" aria-hidden="true">${ok ? "✓" : "✕"}</span>${ok ? "Dobrze" : "Niepoprawnie"}</p>
+      ${!ok && q.type === "calc" ? `<p class="fb-text">Poprawny wynik: <b>${esc(q.answer)}</b></p>` : ""}
+      ${q.explain ? `<p class="fb-text">${fmt(q.explain)}</p>` : ""}${srcLine(q, run.s)}</div>`;
+  refreshStrip(run.i);
+  renderActions();
+  $("#primary")?.focus({ preventScroll: true });
+  if (innerWidth < 600) $("#fb").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+
+function go(i) { if (i < 0 || i >= run.items.length) return; run.i = i; showQ(false); }
+function next() { run.i++; if (run.i < run.items.length) { showQ(true); scrollTo({ top: 0 }); } else finish(); }
+
+function askQuit(fromLast) {
+  const exam = run.mode === "egzamin", left = run.items.filter(it => !answered(it)).length;
+  if (fromLast && !left) return finish();
+  const msg = exam
+    ? (left ? `Bez odpowiedzi: ${pl(left, "pytanie", "pytania", "pytań")}. Liczą się jako błędne.` : "Wszystkie pytania mają odpowiedź.")
+    : "Wynik obejmie tylko pytania z odpowiedzią.";
+  $("#confirm").innerHTML = `<div class="confirm" role="alertdialog" aria-labelledby="c-t"><p><b id="c-t">Zakończyć teraz?</b> ${msg}</p>
+    <div class="row"><button class="btn ghost" id="cNo">Wróć do pytań</button><button class="btn primary" id="cYes">Zakończ i pokaż wynik</button></div></div>`;
+  $("#cYes").onclick = () => finish(fromLast ? undefined : "early");
+  $("#cNo").onclick = () => { $("#confirm").innerHTML = ""; };
+  $("#cYes").focus();
+  $("#confirm").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+
+/* ---------- Wynik ---------- */
+function srcLine(q, s) {
+  const link = isLocal && q.note ? `<a href="obsidian://open?vault=${encodeURIComponent(VAULT)}&file=${encodeURIComponent(s.dir + "/Wy/" + q.note)}">konspekt</a>` : "";
+  return q.src || link ? `<p class="src">${q.src ? `<span>Źródło: ${esc(q.src)}</span>` : ""}${link ? `<span>${link}</span>` : ""}</p>` : "";
+}
+function answerText(q) {
+  if (q.type === "single" || q.type === "multi") return q.correct.map(i => q.options[i]).join("\n");
+  return String(q.answer);
+}
+function givenText(it) {
+  if (it.order) return it.sel.size ? [...it.sel].sort().map(i => it.q.options[it.order[i]]).join("\n") : "";
+  return it.q.type === "open" ? "" : it.given.trim();
+}
+
+let last = null; // ostatni test: do „Powtórz błędne” i „Nowy test”
+function finish(reason) {
+  if (!run) return;
+  stopTimer();
+  const { s, items, mode, t0 } = run, exam = mode === "egzamin";
+  if (exam) items.forEach(it => {
+    if (!it.done) { it.ok = answered(it) && evalItem(it); it.done = true; }
+    markResult(s, it.q, it.ok);
+  });
+  const counted = exam ? items : items.filter(it => it.done);
+  const good = counted.filter(it => it.ok).length;
+  const pct = counted.length ? Math.round(good / counted.length * 100) : 0;
+  const bad = items.map((it, i) => ({ it, i })).filter(x => counted.includes(x.it) && !x.it.ok);
+  const took = Date.now() - t0;
+  last = { s, mode, badConcepts: new Set(bad.map(x => conceptOf(x.it.q))) };
+  run = null;
+  document.body.classList.remove("running");
+  renderNav();
+
+  const verdict = !exam ? "" : s.prog == null ? `<p class="verdict">Próg zaliczenia nieznany</p>`
+    : `<p class="verdict ${pct >= s.prog ? "pass" : "fail"}">${pct >= s.prog ? "Zaliczone" : "Niezaliczone"}, próg ${s.prog}%</p>`;
+  const note = reason === "time" ? ", koniec czasu" : reason === "early" ? ", zakończono wcześniej" : "";
+  app.innerHTML = `<section class="sheet enter">
+    <p class="qmeta" style="margin-top:0"><span>${MODES[mode].name}</span><span>${esc(s.name)}</span></p>
+    <div class="score">
+      <span class="pct" id="pct">${pct}%</span>
+      <div class="score-txt"><p class="big-line">${good} z ${counted.length} poprawnie</p>${verdict}<p class="hint">Czas ${mmss(took)}${note}</p></div>
+    </div>
+    <div class="grid" aria-label="Odpowiedzi w kolejności pytań">${items.map((it, i) => {
+      const st = !counted.includes(it) ? "skip" : it.ok ? "ok" : "bad";
+      return st === "bad"
+        ? `<button class="sq bad" data-r="${i}" style="--d:${i}" aria-label="Pytanie ${i + 1}, błąd, przejdź do omówienia">${i + 1}</button>`
+        : `<span class="sq ${st}" style="--d:${i}">${i + 1}</span>`;
+    }).join("")}</div>
+    <div class="actionbar">
+      ${bad.length ? `<button class="btn primary" id="retry">Powtórz błędne (${bad.length})</button>` : ""}
+      <button class="btn ${bad.length ? "ghost" : "primary"}" id="again">Nowy test</button>
+      <button class="btn ghost" id="back">Zmień ustawienia</button>
+    </div>
+    ${bad.length ? `<h2 class="sec">Do powtórki</h2><ul class="review">${bad.map(({ it, i }) => {
+      const g = givenText(it);
+      return `<li id="r${i}"><p class="rq"><span class="rn">${i + 1}.</span><span>${fmt(it.q.q)}</span></p>
+        ${it.q.type === "open" ? "" : g
+          ? `<p class="ans bad" title="Twoja odpowiedź"><span class="mark" aria-label="Twoja odpowiedź">✕</span><span>${fmt(g)}</span></p>`
+          : `<p class="ans none"><span class="mark" aria-hidden="true">–</span><span>Bez odpowiedzi</span></p>`}
+        <p class="ans ok" title="Poprawna odpowiedź"><span class="mark" aria-label="Poprawna odpowiedź">✓</span><span>${fmt(answerText(it.q))}</span></p>
+        ${it.q.explain ? `<p class="rx">${fmt(it.q.explain)}</p>` : ""}${srcLine(it.q, s)}</li>`;
+    }).join("")}</ul>` : `<p class="lead">Wszystkie odpowiedzi poprawne.</p>`}
+  </section>`;
+  countUp($("#pct"), pct);
+  scrollTo({ top: 0 });
+  $$("[data-r]", app).forEach(b => b.onclick = () => {
+    const li = $("#r" + b.dataset.r);
+    li.scrollIntoView({ behavior: "smooth", block: "start" });
+    li.classList.remove("flash"); void li.offsetWidth; li.classList.add("flash");
+  });
+  if ($("#retry")) $("#retry").onclick = () => { state.mode = "bledy"; start(last.s, last.badConcepts.size, last.badConcepts); };
+  $("#again").onclick = () => { setup(false); start(subjOf(state.subj), state.count); };
+  $("#back").onclick = () => { setup(); scrollTo({ top: 0 }); };
+}
+
+// Wynik „dobiega” od 0 do pct
+function countUp(el, pct) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || !pct) return;
+  const t0 = performance.now(), dur = 700;
+  const step = t => {
+    const k = Math.min(1, (t - t0) / dur);
+    el.textContent = Math.round(pct * (1 - Math.pow(1 - k, 3))) + "%";
+    if (k < 1) requestAnimationFrame(step);
+  };
+  el.textContent = "0%";
+  requestAnimationFrame(step);
+}
+
+/* ---------- Klawiatura ---------- */
+document.addEventListener("keydown", e => {
+  if (!run || e.metaKey || e.altKey) return;
+  const typing = /^(TEXTAREA|INPUT)$/.test(e.target.tagName);
+  if (!typing && !e.ctrlKey) {
+    let idx = /^[1-9]$/.test(e.key) ? +e.key - 1 : e.key.length === 1 ? LETTERS.indexOf(e.key.toLowerCase()) : -1;
+    if (idx >= 0) {
+      const b = app.querySelector(`.opt[data-i="${idx}"]`);
+      if (b && !b.disabled) { e.preventDefault(); b.click(); }
+      return;
+    }
+    if (run.mode === "egzamin" && e.key === "ArrowRight") return go(run.i + 1);
+    if (run.mode === "egzamin" && e.key === "ArrowLeft") return go(run.i - 1);
+  }
+  if (e.key === "Enter") {
+    if (e.target.tagName === "TEXTAREA" && !e.ctrlKey) return;
+    const b = $("#cYes") || $("#primary");
+    if (b && !b.disabled && document.activeElement !== b) { e.preventDefault(); b.click(); }
+  }
+});
+
+setup();
+</script>
+</body>
+</html>
