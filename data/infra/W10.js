@@ -122,6 +122,6 @@
 
   { id: "W10-25", w: "W10", c: "silent-failure", type: "single",
     q: "System zwraca HTTP 200 OK, ale model przetwarza zamienione kolumny z SQL. Jak nazywa się taka awaria?",
-    options: ["Schema Mismatch w Feature Store", "Cicha awaria (Silent Failure)", "Zatrucie modelu (Model Poisoning)", "Drift infrastrukturalny"],
+    options: ["Awaria kaskadowa (Cascading Failure)", "Cicha awaria (Silent Failure)", "Zatrucie modelu (Model Poisoning)", "Drift infrastrukturalny"],
     correct: [1], explain: "Silent Failure nie rzuca wyjątków. Daje błędne biznesowo decyzje.", src: "W10, slajd 311", note: "W10-cd4ml" },
 ]});

@@ -32,7 +32,7 @@
 
   { id: "W09-07", w: "W09", c: "prompt-injection", type: "single",
     q: "Złośliwa instrukcja ukryta w dokumencie pobranym przez system RAG zmienia zachowanie LLM. Jak nazywa się ten atak?",
-    options: ["Pośredni Prompt Injection", "Data Poisoning", "Bezpośredni Jailbreaking", "Membership Inference"],
+    options: ["Pośredni Prompt Injection", "Inwersja modelu", "Bezpośredni Jailbreaking", "Membership Inference"],
     correct: [0], explain: "Slajd wymienia pośredni Prompt Injection, np. przez systemy RAG.", src: "W09, slajd 329", note: "W09-bezpieczenstwo" },
 
   { id: "W09-08", w: "W09", c: "envelope", type: "single",
@@ -107,6 +107,6 @@
 
   { id: "W09-22", w: "W09", c: "audit", type: "single",
     q: "Na czym polega kryptograficzny Data Lineage według wykładu?",
-    options: ["Na szyfrowaniu danych treningowych kluczami CMK", "Na powiązaniu commita Git, hasha DVC i ID modelu MLflow", "Na wysyłaniu telemetrii ML do Microsoft Sentinel", "Na podpisywaniu wag modelu narzędziem Cosign"],
+    options: ["Na szyfrowaniu danych treningowych kluczami CMK", "Na powiązaniu commita Git, hasha DVC i ID modelu MLflow", "Na wysyłaniu telemetrii ML do Microsoft Sentinel", "Na kompresji zbiorów danych przed zapisem w S3"],
     correct: [1], explain: "Data Lineage to pełna identyfikowalność: Git, DVC, MLflow.", src: "W09, slajd 339", note: "W09-bezpieczenstwo" },
 ]});

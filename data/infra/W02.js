@@ -107,7 +107,7 @@
 
   { id: "W02-22", w: "W02", c: "multi-stage", type: "single",
     q: "Co trafia do etapu Runner w wielofazowym budowaniu obrazu dla DL4J?",
-    options: ["Pełne JDK z Maven i cache zależności", "Tylko artefakt uber-jar w czystym JRE", "Kod źródłowy, pom.xml i testy jednostkowe", "Wszystkie zależności z Maven Central"],
+    options: ["Pełne JDK z Maven i cache zależności", "Tylko artefakt uber-jar w czystym JRE", "Kod źródłowy, pom.xml i testy jednostkowe", "Katalog target/ z plikami .class"],
     correct: [1], explain: "Builder ma JDK i Maven. Runner dostaje tylko uber-jar, np. na obrazie distroless.", src: "W02, slajd 72–73", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-23", w: "W02", c: "distroless", type: "single",
