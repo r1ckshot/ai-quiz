@@ -34,35 +34,28 @@ button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 code { background: var(--soft); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-size: 90%; }
 
-/* Układ: telefon — przedmioty u góry, komputer — kolumna po lewej */
-.layout { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+/* Układ: jedna kolumna, przedmioty u góry na każdej szerokości */
+.layout { max-width: 880px; margin: 0 auto; padding: 0 16px; }
 #nav { position: sticky; top: 0; z-index: 5; background: var(--paper); margin: 0 -16px; padding: 12px 16px 10px; }
+.navtop { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
 .brand { font: 800 20px/1 var(--display); letter-spacing: -.01em; }
-.brand-sub { display: none; }
+.brand-sub { color: var(--muted); font-size: 14px; }
 .subjects { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-top: 10px; padding-bottom: 2px; }
 .subjects::-webkit-scrollbar { display: none; }
 .subj { flex: none; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 7px 14px; color: inherit; text-decoration: none;
-        border: 1px solid var(--line); background: var(--sheet); border-radius: 999px; cursor: pointer; }
+        border: 1px solid var(--line); background: var(--sheet); border-radius: 999px; }
 .subj .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; }
-.subj .full { display: none; }
 .subj .n { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
 .subj[aria-current="page"] { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, var(--sheet)); font-weight: 700; }
 .subj.empty { color: var(--muted); }
 .subj.empty .dot { opacity: .45; }
+@media (hover: hover) { .subj:hover { border-color: var(--c); } }
 body.running #nav .subjects { display: none; }
 main { min-width: 0; padding-bottom: 8px; }
-@media (min-width: 900px) {
-  .layout { display: grid; grid-template-columns: 250px minmax(0, 760px); gap: 40px; justify-content: center; padding-top: 28px; }
-  #nav { top: 28px; align-self: start; margin: 0; padding: 0; background: none; }
-  .brand-sub { display: block; color: var(--muted); font-size: 15px; line-height: 1.4; margin: 6px 0 18px; }
-  .subjects { flex-direction: column; overflow: visible; margin-top: 0; gap: 2px; }
-  .subj { width: 100%; text-align: left; border: 0; background: none; border-radius: 10px; padding: 9px 12px; }
-  .subj .nm { flex: 1; }
-  .subj .full { display: inline; }
-  .subj .short { display: none; }
-  .subj:hover { background: var(--soft); }
-  .subj[aria-current="page"] { background: var(--sheet); box-shadow: inset 3px 0 0 var(--c); }
-  body.running #nav .subjects { display: flex; opacity: .45; pointer-events: none; }
+@media (min-width: 700px) {
+  #nav { padding-top: 24px; padding-bottom: 14px; }
+  .subjects { flex-wrap: wrap; overflow: visible; }
+  .subj { padding: 7px 12px; }
 }
 
 /* Arkusz */
@@ -73,9 +66,9 @@ main { min-width: 0; padding-bottom: 8px; }
 .lead { color: var(--muted); margin: 8px 0 0; }
 .block { margin-top: 28px; }
 .lbl { font: 600 15px/1.2 var(--display); color: var(--muted); margin: 0 0 10px; }
-.lbl-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.lbl-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.lbl-row .lbl { margin: 0; }
 .hint { color: var(--muted); font-size: 15px; margin: 8px 0 0; }
-.links { display: flex; gap: 8px; }
 .row { display: flex; flex-wrap: wrap; gap: 10px; }
 
 /* Tryby */
@@ -87,10 +80,10 @@ main { min-width: 0; padding-bottom: 8px; }
 .mode span { color: var(--muted); font-size: 14px; line-height: 1.35; }
 .mode[aria-checked="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--sheet)); }
 .mode:disabled { opacity: .45; cursor: default; }
-.badge { font: 600 12px/1 var(--text); background: var(--bad); color: #fff; border-radius: 999px; padding: 3px 7px; }
+.mode .badge { font: 600 12px/1 var(--text); background: var(--bad); color: #fff; border-radius: 999px; padding: 4px 7px; }
 
 /* Wykłady: wybór i postęp w jednym kafelku */
-.lects { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.lects { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px; }
 @media (max-width: 420px) { .lects { grid-template-columns: 1fr 1fr; } }
 .lect { display: grid; grid-template-columns: auto 1fr; grid-template-areas: "code num" "topic topic" "bar bar"; gap: 2px 8px;
         align-items: baseline; text-align: left; padding: 8px 10px; cursor: pointer;
@@ -360,13 +353,11 @@ function groups(s, only) {
 
 /* ---------- Nawigacja ---------- */
 function renderNav() {
-  nav.innerHTML = `<div class="brand">ai-quiz</div>
-    <p class="brand-sub">Informatyka, specjalność AI<br>semestr 2</p>
+  nav.innerHTML = `<div class="navtop"><span class="brand">ai-quiz</span><span class="brand-sub">Informatyka AI, semestr 2</span></div>
     <div class="subjects">${SUBJECTS.map(s => {
       const n = (bank[s.key] || []).length;
-      return `<a class="subj${n ? "" : " empty"}" href="#${s.key}" ${s.key === state.subj ? 'aria-current="page"' : ""} ${run ? 'tabindex="-1"' : ""} style="--c:${s.color}">
-        <span class="dot"></span><span class="nm"><span class="full">${esc(s.name)}</span><span class="short">${esc(s.short)}</span></span>
-        <span class="n">${n || "wkrótce"}</span></a>`;
+      return `<a class="subj${n ? "" : " empty"}" href="#${s.key}" ${s.key === state.subj ? 'aria-current="page"' : ""} ${run ? 'tabindex="-1"' : ""} style="--c:${s.color}" title="${esc(s.name)}${n ? "" : ", pytania wkrótce"}">
+        <span class="dot"></span>${esc(s.short)}${n ? `<span class="n">${n}</span>` : ""}</a>`;
     }).join("")}</div>`;
   const cur = $(".subj[aria-current='page']", nav);
   if (cur && innerWidth < 900) cur.scrollIntoView({ block: "nearest", inline: "center" });
@@ -424,7 +415,9 @@ function setup(animate = true) {
 
     <div class="block">
       <div class="lbl-row"><h2 class="lbl">Wykłady</h2>
-        <span class="links"><button class="btn small ghost" data-sel="all">Wszystkie</button><button class="btn small ghost" data-sel="none">Żadne</button></span></div>
+        ${state.lectures.length === ws.length
+          ? `<button class="btn small ghost" data-sel="none">Odznacz wszystkie</button>`
+          : `<button class="btn small ghost" data-sel="all">Zaznacz wszystkie</button>`}</div>
       <div class="lects">${ws.map(w => {
         const st = lectureStats(s, w);
         return `<button class="lect" data-w="${w}" aria-pressed="${state.lectures.includes(w)}" title="${esc(topicOf(s.key, w))}">
