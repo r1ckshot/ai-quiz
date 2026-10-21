@@ -146,7 +146,11 @@ button.dot { width: 18px; height: 18px; cursor: pointer; }
 .dot.pop { animation: pop .35s ease-out; }
 .runmeta { display: flex; align-items: center; gap: 16px; color: var(--muted); font-size: 15px; font-variant-numeric: tabular-nums; }
 .runmeta .pos { color: var(--ink); font-weight: 700; }
-#quit { margin-left: auto; }
+.runacts { display: flex; gap: 8px; margin-left: auto; }
+.runmeta .pos, .runacts .btn { white-space: nowrap; }
+@media (max-width: 599px) { .runmeta { gap: 10px; } .runacts { gap: 6px; } .runacts .btn { padding: 6px 10px; } }
+#why.ok { border-color: var(--ok); color: var(--ok); }
+#why.bad { border-color: var(--bad); color: var(--bad); }
 .timer.low { color: var(--bad); font-weight: 700; }
 .qmeta { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: 14px; margin: 18px 0 6px; }
 .qmeta span:first-child { color: var(--accent); font-weight: 700; }
@@ -183,8 +187,16 @@ button.dot { width: 18px; height: 18px; cursor: pointer; }
 .fb.info .mark { background: var(--accent); }
 .src { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: 14px; margin: 8px 0 0; }
 .src a { color: var(--accent); }
-.confirm { margin-top: 14px; padding: 14px 16px; border-radius: 12px; background: var(--soft); border: 1.5px solid var(--accent); animation: fade .2s ease-out; }
-.confirm p { margin: 0 0 10px; }
+.dlg { border: 0; padding: 0; border-radius: 16px; background: var(--sheet); color: var(--ink); width: min(560px, calc(100vw - 32px));
+       max-height: calc(100dvh - 48px); box-shadow: 0 20px 60px rgba(0, 0, 0, .35); }
+.dlg::backdrop { background: rgba(10, 15, 20, .55); }
+.dlg[open] { animation: fade .2s ease-out; }
+.dlg-in { padding: 22px 22px 18px; }
+.dlg-h { font: 700 20px/1.25 var(--display); margin: 0 0 8px; }
+.dlg-in > p { margin: 0; }
+.dlg .fb { margin: 0; padding: 0; border: 0; }
+.dlg .row { justify-content: flex-end; margin-top: 20px; }
+@media (max-width: 599px) { .dlg .row .btn { flex: 1; } }
 
 /* Wynik */
 .score { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 24px; margin: 4px 0; }
@@ -225,6 +237,8 @@ body.running .foot { display: none; }
 @keyframes fill  { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: none; } }
 @keyframes flash { from { background: color-mix(in srgb, var(--accent) 16%, transparent); } to { background: transparent; } }
 .enter { animation: fade .28s ease-out; }
+@keyframes appear { from { opacity: 0; transform: scale(.7); } 70% { opacity: 1; transform: scale(1.08); } to { transform: none; } }
+#why:not([hidden]) { animation: appear .35s ease-out; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
@@ -549,9 +563,9 @@ function showQ(animate) {
       <div class="strip" id="strip" aria-label="Postęp testu">${stripHTML()}</div>
       <div class="runmeta"><span class="pos">${run.i + 1} / ${run.items.length}</span>
         <span class="timer" id="timer" aria-label="${run.deadline ? "Pozostały czas" : "Czas"}"></span>
-        <button class="btn small ghost" id="quit">Zakończ</button></div>
+        <span class="runacts"><button class="btn small ghost" id="why" hidden>Wyjaśnienie</button>
+        <button class="btn small ghost" id="quit">Zakończ</button></span></div>
     </div>
-    <div id="confirm"></div>
     <p class="qmeta"><span>${esc(q.w)}</span>${q.type !== "single" ? `<span>${TYPE[q.type] || q.type}</span>` : ""}</p>
     <h2 class="q">${fmt(q.q)}</h2>
     <div id="body"></div>
@@ -561,6 +575,7 @@ function showQ(animate) {
   fitWidth();
   tick();
   $("#quit").onclick = () => askQuit(false);
+  $("#why").onclick = showWhy;
   if (exam) $("#strip").onclick = e => { const b = e.target.closest("[data-go]"); if (b) go(+b.dataset.go); };
 
   const body = $("#body");
@@ -645,13 +660,35 @@ function grade(ok) {
     else if (it.sel.has(i)) b.classList.add("bad");
   });
   if (q.type !== "open")
-    $("#fb").innerHTML = `<div class="fb ${ok ? "ok" : "bad"}"><p class="fb-head"><span class="mark" aria-hidden="true">${ok ? "✓" : "✕"}</span>${ok ? "Dobrze" : "Niepoprawnie"}</p>
+    it.fb = `<div class="fb ${ok ? "ok" : "bad"}"><p class="fb-head"><span class="mark" aria-hidden="true">${ok ? "✓" : "✕"}</span>${ok ? "Dobrze" : "Niepoprawnie"}</p>
       ${!ok && q.type === "calc" ? `<p class="fb-text">Poprawny wynik: <b>${esc(q.answer)}</b></p>` : ""}
       ${q.explain ? `<p class="fb-text">${fmt(q.explain)}</p>` : ""}${srcLine(q, run.s)}</div>`;
   refreshStrip(run.i);
   renderActions();
+  if (it.fb) { const w = $("#why"); w.hidden = false; w.classList.add(ok ? "ok" : "bad"); } // kolor przycisku = wynik
   $("#primary")?.focus({ preventScroll: true });
-  if (innerWidth < 600) $("#fb").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+
+// Jedno okno modalne na wyjaśnienie i potwierdzenie końca
+function modal(html) {
+  let d = $("#dlg");
+  if (!d) {
+    d = document.createElement("dialog"); d.id = "dlg"; d.className = "dlg"; document.body.append(d);
+    d.addEventListener("click", e => { if (e.target === d) d.close(); }); // klik w tło zamyka
+    d.addEventListener("close", () => { d.innerHTML = ""; }); // stare przyciski nie łapią Entera
+  }
+  d.innerHTML = `<div class="dlg-in">${html}</div>`;
+  d.showModal();
+  return d;
+}
+function showWhy() {
+  const it = run.items[run.i], last = run.i === run.items.length - 1;
+  if (!it.fb) return;
+  const d = modal(`${it.fb}<div class="row"><button class="btn ghost" id="dClose">Zamknij</button>
+    <button class="btn primary" id="dNext">${last ? "Zobacz wynik" : "Dalej"}</button></div>`);
+  $("#dClose").onclick = () => d.close();
+  $("#dNext").onclick = () => { d.close(); next(); };
+  $("#dNext").focus();
 }
 
 function go(i) { if (i < 0 || i >= run.items.length) return; run.i = i; showQ(false); }
@@ -663,12 +700,11 @@ function askQuit(fromLast) {
   const msg = exam
     ? (left ? `Bez odpowiedzi: ${pl(left, "pytanie", "pytania", "pytań")}. Liczą się jako błędne.` : "Wszystkie pytania mają odpowiedź.")
     : "Wynik obejmie tylko pytania z odpowiedzią.";
-  $("#confirm").innerHTML = `<div class="confirm" role="alertdialog" aria-labelledby="c-t"><p><b id="c-t">Zakończyć teraz?</b> ${msg}</p>
-    <div class="row"><button class="btn ghost" id="cNo">Wróć do pytań</button><button class="btn primary" id="cYes">Zakończ i pokaż wynik</button></div></div>`;
-  $("#cYes").onclick = () => finish(fromLast ? undefined : "early");
-  $("#cNo").onclick = () => { $("#confirm").innerHTML = ""; };
+  const d = modal(`<h3 class="dlg-h">Zakończyć teraz?</h3><p>${msg}</p>
+    <div class="row"><button class="btn ghost" id="cNo">Wróć do pytań</button><button class="btn primary" id="cYes">Zakończ i pokaż wynik</button></div>`);
+  $("#cYes").onclick = () => { d.close(); finish(fromLast ? undefined : "early"); };
+  $("#cNo").onclick = () => d.close();
   $("#cYes").focus();
-  $("#confirm").scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
 /* ---------- Wynik ---------- */
@@ -761,7 +797,7 @@ function countUp(el, pct) {
 
 /* ---------- Klawiatura ---------- */
 document.addEventListener("keydown", e => {
-  if (!run || e.metaKey || e.altKey) return;
+  if (!run || e.metaKey || e.altKey || $("#dlg")?.open) return; // w oknie działa Enter/Esc przeglądarki
   const typing = /^(TEXTAREA|INPUT)$/.test(e.target.tagName);
   if (!typing && !e.ctrlKey) {
     let idx = /^[1-9]$/.test(e.key) ? +e.key - 1 : e.key.length === 1 ? LETTERS.indexOf(e.key.toLowerCase()) : -1;
@@ -775,7 +811,7 @@ document.addEventListener("keydown", e => {
   }
   if (e.key === "Enter") {
     if (e.target.tagName === "TEXTAREA" && !e.ctrlKey) return;
-    const b = $("#cYes") || $("#primary");
+    const b = $("#primary");
     if (b && !b.disabled && document.activeElement !== b) { e.preventDefault(); b.click(); }
   }
 });
