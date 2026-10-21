@@ -210,13 +210,25 @@ button.dot { width: 18px; height: 18px; cursor: pointer; }
 .sq { display: grid; place-items: center; aspect-ratio: 1; padding: 0; border: 0; border-radius: 8px; font: 700 14px/1 var(--display);
       animation: fill .3s ease-out backwards; animation-delay: calc(var(--d) * 22ms); }
 .sq.ok { background: var(--okbg); color: var(--ok); }
-.sq.bad { background: var(--bad); color: #fff; cursor: pointer; }
+.sq.bad { background: var(--bad); color: #fff; }
+button.sq { cursor: pointer; }
 .sq.skip { background: var(--soft); color: var(--muted); }
 .sec { font: 800 22px var(--display); margin: 34px 0 4px; }
-.review { list-style: none; margin: 0; padding: 0; }
-.review li { padding: 16px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 90px; }
-.review li:last-child { border-bottom: 0; }
-.rq { display: flex; gap: 10px; font-weight: 600; margin: 0 0 10px; }
+.review { margin: 0; }
+.rv { border-bottom: 1px solid var(--line); scroll-margin-top: 90px; }
+.rv:last-child { border-bottom: 0; }
+.rv summary { display: flex; align-items: flex-start; gap: 10px; padding: 14px 0; cursor: pointer; list-style: none; font-weight: 600; }
+.rv summary::-webkit-details-marker { display: none; }
+.rv summary .t { flex: 1; }
+.rv summary .mark { margin-top: 2px; }
+.rv summary::after { content: ""; flex: none; width: 8px; height: 8px; margin: 8px 4px 0 2px; border: solid var(--muted); border-width: 0 2px 2px 0;
+                     transform: rotate(45deg); transition: transform .3s ease, margin-top .3s ease; }
+.rv.on summary::after { transform: rotate(-135deg); margin-top: 12px; }
+@media (hover: hover) { .rv summary:hover .t { color: var(--accent); } }
+.rv.is-ok summary { font-weight: 500; color: var(--muted); } /* poprawne bledsze, błędy wyróżnione */
+.rv.is-ok summary .mark { background: var(--okbg); color: var(--ok); }
+.rv-body { padding: 0 0 16px; overflow: hidden; }
+.rv-body .ans:first-child { margin-top: 0; }
 .rn { flex: none; min-width: 26px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .ans { display: flex; align-items: flex-start; gap: 10px; margin: 6px 0 0 36px; }
 .ans .mark { margin-top: 1px; }
@@ -224,7 +236,7 @@ button.dot { width: 18px; height: 18px; cursor: pointer; }
 .ans.none span:last-child { color: var(--muted); }
 .ans.none .mark { background: var(--line); color: var(--muted); }
 .rx, .review .src { margin: 10px 0 0 36px; }
-.review li.flash { animation: flash 1.4s ease-out; }
+.rv.flash { animation: flash 1.4s ease-out; }
 
 .foot { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 18px 4px calc(24px + env(safe-area-inset-bottom)); }
 .foot p { margin: 0 0 4px; }
@@ -751,35 +763,59 @@ function finish(reason) {
     </div>
     <div class="grid" aria-label="Odpowiedzi w kolejności pytań">${items.map((it, i) => {
       const st = !counted.includes(it) ? "skip" : it.ok ? "ok" : "bad";
-      return st === "bad"
-        ? `<button class="sq bad" data-r="${i}" style="--d:${i}" aria-label="Pytanie ${i + 1}, błąd, przejdź do omówienia">${i + 1}</button>`
-        : `<span class="sq ${st}" style="--d:${i}">${i + 1}</span>`;
+      return st === "skip"
+        ? `<span class="sq skip" style="--d:${i}">${i + 1}</span>`
+        : `<button class="sq ${st}" data-r="${i}" style="--d:${i}" aria-label="Pytanie ${i + 1}, ${st === "ok" ? "dobrze" : "błąd"}, pokaż omówienie">${i + 1}</button>`;
     }).join("")}</div>
     <div class="actionbar">
       ${bad.length ? `<button class="btn primary" id="retry">Powtórz błędne (${bad.length})</button>` : ""}
       <button class="btn ${bad.length ? "ghost" : "primary"}" id="again">Nowy test</button>
       <button class="btn ghost" id="back">Zmień ustawienia</button>
     </div>
-    ${bad.length ? `<h2 class="sec">Do powtórki</h2><ul class="review">${bad.map(({ it, i }) => {
-      const g = givenText(it);
-      return `<li id="r${i}"><p class="rq"><span class="rn">${i + 1}.</span><span>${fmt(it.q.q)}</span></p>
-        ${it.q.type === "open" ? "" : g
-          ? `<p class="ans bad" title="Twoja odpowiedź"><span class="mark" aria-label="Twoja odpowiedź">✕</span><span>${fmt(g)}</span></p>`
-          : `<p class="ans none"><span class="mark" aria-hidden="true">–</span><span>Bez odpowiedzi</span></p>`}
-        <p class="ans ok" title="Poprawna odpowiedź"><span class="mark" aria-label="Poprawna odpowiedź">✓</span><span>${fmt(answerText(it.q))}</span></p>
-        ${it.q.explain ? `<p class="rx">${fmt(it.q.explain)}</p>` : ""}${srcLine(it.q, s)}</li>`;
-    }).join("")}</ul>` : `<p class="lead">Wszystkie odpowiedzi poprawne.</p>`}
+    ${bad.length ? "" : `<p class="lead">Wszystkie odpowiedzi poprawne.</p>`}
+    ${counted.length ? `<h2 class="sec">Omówienie</h2><p class="hint" style="margin:0 0 6px">Kliknij pytanie, aby zobaczyć odpowiedzi i wyjaśnienie.</p>
+    <div class="review">${items.map((it, i) => {
+      if (!counted.includes(it)) return "";
+      const g = givenText(it), q = it.q;
+      const yours = q.type === "open" ? "" : !g
+        ? `<p class="ans none"><span class="mark" aria-hidden="true">–</span><span>Bez odpowiedzi</span></p>`
+        : it.ok ? "" : `<p class="ans bad" title="Twoja odpowiedź"><span class="mark" aria-label="Twoja odpowiedź">✕</span><span>${fmt(g)}</span></p>`;
+      return `<details class="rv${it.ok ? " is-ok" : ""}" id="r${i}"><summary><span class="rn">${i + 1}.</span><span class="t">${fmt(q.q)}</span>
+          <span class="${it.ok ? "ok" : "bad"}"><span class="mark" aria-label="${it.ok ? "dobrze" : "błąd"}">${it.ok ? "✓" : "✕"}</span></span></summary>
+        <div class="rv-body">${yours}
+        <p class="ans ok" title="Poprawna odpowiedź"><span class="mark" aria-label="Poprawna odpowiedź">✓</span><span>${fmt(answerText(q))}</span></p>
+        ${q.explain ? `<p class="rx">${fmt(q.explain)}</p>` : ""}${srcLine(q, s)}</div></details>`;
+    }).join("")}</div>` : ""}
   </section>`;
   countUp($("#pct"), pct);
   scrollTo({ top: 0 });
+  $$(".rv summary", app).forEach(sm => sm.onclick = e => { e.preventDefault(); toggleRv(sm.parentElement, !sm.parentElement.open); });
   $$("[data-r]", app).forEach(b => b.onclick = () => {
     const li = $("#r" + b.dataset.r);
+    toggleRv(li, true);
     li.scrollIntoView({ behavior: "smooth", block: "start" });
     li.classList.remove("flash"); void li.offsetWidth; li.classList.add("flash");
   });
   if ($("#retry")) $("#retry").onclick = () => { state.mode = "bledy"; start(last.s, last.badConcepts.size, last.badConcepts); };
   $("#again").onclick = () => { setup(false); start(subjOf(state.subj), state.count); };
   $("#back").onclick = () => { setup(); scrollTo({ top: 0 }); };
+}
+
+// Płynne rozwijanie i zwijanie omówienia (wysokość + przezroczystość)
+function toggleRv(d, open) {
+  const body = $(".rv-body", d);
+  body._a?.cancel();
+  d.classList.toggle("on", open); // strzałka obraca się od razu, nie po animacji
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { d.open = open; return; }
+  if (open) {
+    d.open = true;
+    body._a = body.animate([{ height: 0, opacity: 0 }, { height: body.scrollHeight + "px", opacity: 1 }],
+      { duration: 320, easing: "cubic-bezier(.2, .7, .3, 1)" });
+  } else if (d.open) {
+    body._a = body.animate([{ height: body.offsetHeight + "px", opacity: 1 }, { height: 0, opacity: 0 }],
+      { duration: 260, easing: "cubic-bezier(.4, 0, .6, 1)" });
+    body._a.onfinish = () => { d.open = false; };
+  }
 }
 
 // Wynik „dobiega” od 0 do pct
