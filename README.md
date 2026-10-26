@@ -16,7 +16,12 @@ Postęp zapisuje się tylko w przeglądarce (localStorage).
 ## Jak uruchomić
 
 Otworzyć `index.html` w przeglądarce. Strona działa bez serwera i bez instalacji.
-Na telefonie można ją dodać do ekranu głównego.
+
+## Na telefonie
+
+Stronę z GitHub Pages można zainstalować jak aplikację: przycisk „Zainstaluj” na ekranie głównym strony.
+Na iPhonie: Udostępnij → Do ekranu początkowego.
+Po pierwszym otwarciu z internetem działa też offline (`sw.js`).
 
 ## Pytania
 

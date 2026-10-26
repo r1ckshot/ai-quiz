@@ -21,7 +21,7 @@ try { const t = JSON.parse(localStorage.getItem("quiz.theme"));
 <!-- Bez internetu czcionki się nie wczytają i strona użyje systemowych -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap">
 <style>
 /* Motyw jasny (domyślny) */
 :root {
@@ -181,6 +181,17 @@ code { background: var(--soft); border: 1px solid var(--line); border-radius: 5p
 .bar { height: 6px; margin-top: 7px; background: color-mix(in srgb, var(--accent) 14%, var(--soft)); border-radius: 99px; overflow: hidden; }
 .bar i { display: block; height: 100%; background: var(--accent); border-radius: inherit; animation: grow .9s var(--ease) backwards .25s; }
 .foot { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 20px 4px 0; }
+
+/* Instalacja na ekranie głównym */
+.install { display: flex; align-items: center; gap: 12px; margin-top: 8px; padding: 10px 8px 10px 12px; animation: lift .45s var(--ease) backwards .25s; }
+.install img { display: block; flex: none; width: 44px; height: 44px; border-radius: 11px; }
+.install-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.install-txt b { font: 700 16px/1.25 var(--display); }
+.install-txt span { color: var(--muted); font-size: 14px; line-height: 1.35; }
+.install .ib { width: 34px; height: 34px; border: 0; background: none; }
+.steps { margin: 12px 0 0; padding-left: 22px; }
+.steps li { margin: 10px 0; padding-left: 4px; }
+.steps .ico { display: inline-block; vertical-align: -4px; color: var(--accent); }
 
 /* Tryby */
 .modes { display: flex; flex-direction: column; gap: 8px; }
@@ -450,6 +461,8 @@ const ICONS = {
   flame: '<path d="M12 2c.8 3.6 4.8 5.6 4.8 10.6A4.8 4.8 0 0 1 12 17.4a4.8 4.8 0 0 1-4.8-4.8c0-1.9.9-3.3 1.9-4.3.1 1.8.9 2.9 1.9 2.9 0-2.8-.6-5.6 1-9.2z"/><path d="M8 20h8"/>',
   sun:   '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
   moon:  '<path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.6 6.6 0 0 0 9.7 9.7z"/>',
+  share: '<path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/>',
+  plus:  '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/>',
 };
 const ico = (n, sz = 20) => `<svg class="ico" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
 
@@ -613,11 +626,60 @@ function home() {
       <div class="tile panel ok" style="--d:1"><b>${ok}</b><span>opanowane</span></div>
       <div class="tile panel bad" style="--d:2"><b>${wrongN}</b><span>do powtórki</span></div>
     </div>
+    <div id="install"></div>
     <div class="block"><h2 class="lbl">Przedmioty</h2><div class="cards">${cards}</div></div>
     <p class="foot">Pytania powstały na podstawie slajdów z wykładów i mogą zawierać błędy. Postęp zapisuje się tylko w tej przeglądarce.</p>
   </section>`;
+  refreshInstall();
   drawRings();
   watchDock();
+}
+
+/* ---------- Instalacja na ekranie głównym ---------- */
+// Android i komputer: własne okno przeglądarki (beforeinstallprompt). iPhone go nie ma, więc pokazujemy instrukcję.
+let installEvt = null;
+const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const canInstall = () => !standalone() && !LS.get("quiz.noinstall", false) && (installEvt || isIOS);
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; refreshInstall(); });
+addEventListener("appinstalled", () => { installEvt = null; refreshInstall(); });
+function refreshInstall() {
+  const box = $("#install");
+  if (!box) return;
+  box.innerHTML = canInstall() ? `<div class="install panel">
+    <img src="icon-192.png" alt="">
+    <span class="install-txt"><b>Zainstaluj aplikację</b><span>Ikona na ekranie głównym, działa też bez internetu.</span></span>
+    <button class="btn small primary" id="instGo">Zainstaluj</button>
+    <button class="ib" id="instNo" aria-label="Nie pokazuj więcej">${ico("close", 18)}</button></div>` : "";
+  if (!box.innerHTML) return;
+  $("#instGo").onclick = install;
+  $("#instNo").onclick = () => { LS.set("quiz.noinstall", true); refreshInstall(); };
+}
+async function install() {
+  if (installEvt) {
+    installEvt.prompt();
+    await installEvt.userChoice;
+    installEvt = null; // okno można pokazać tylko raz
+    return refreshInstall();
+  }
+  const d = modal(`<h3 class="dlg-h">Dodaj do ekranu głównego</h3>
+    <ol class="steps">
+      <li>Stuknij <b>Udostępnij</b> ${ico("share", 20)} na pasku Safari. W nowszym Safari jest w menu <b>⋯</b>.</li>
+      <li>Wybierz <b>Do ekranu początkowego</b> ${ico("plus", 20)}.</li>
+      <li>Stuknij <b>Dodaj</b>. Ikona ai-quiz pojawi się na ekranie.</li>
+    </ol>
+    <div class="row"><button class="btn primary" id="iosOk">Rozumiem</button></div>`);
+  $("#iosOk").onclick = () => d.close();
+}
+
+// Bez internetu: service worker zapisuje pliki strony (nie działa przy otwarciu z dysku, file://)
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  const first = !navigator.serviceWorker.controller;
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+  // Pierwsza wizyta: strona wczytała się, zanim service worker ruszył, więc jej pliki pobieramy jeszcze raz, już przez niego
+  if (first) navigator.serviceWorker.addEventListener("controllerchange", () => {
+    [location.href.split("#")[0], ...performance.getEntriesByType("resource").map(r => r.name)].forEach(u => fetch(u).catch(() => {}));
+  }, { once: true });
 }
 
 /* ---------- Ustawienia testu ---------- */
