@@ -195,13 +195,20 @@ html[data-vt="theme"] #hd, html[data-vt="theme"] .dock { view-transition-name: n
 .bar i { display: block; height: 100%; background: var(--accent); border-radius: inherit; animation: grow .9s var(--ease) backwards .25s; }
 .foot { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 20px 4px 0; }
 
-/* Instalacja na ekranie głównym */
-.install { display: flex; align-items: center; gap: 12px; margin-top: 8px; padding: 10px 8px 10px 12px; animation: lift .45s var(--ease) backwards .25s; }
-.install img { display: block; flex: none; width: 44px; height: 44px; border-radius: 11px; }
-.install-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.install-txt b { font: 700 16px/1.25 var(--display); }
-.install-txt span { color: var(--muted); font-size: 14px; line-height: 1.35; }
-.install .ib { width: 34px; height: 34px; border: 0; background: none; }
+/* Powiadomienie u góry: wysuwa się nad nagłówek i samo chowa */
+#toast { position: fixed; z-index: 40; inset: 0 0 auto; padding: calc(env(safe-area-inset-top) + var(--hd-gap)) 16px 0; pointer-events: none;
+         transform: translateY(calc(-100% - 12px)); transition: transform .32s cubic-bezier(.4,0,1,1); }
+#toast.show { transform: none; transition: transform .6s cubic-bezier(.34,1.36,.64,1); }
+.toast-in { pointer-events: auto; max-width: calc(var(--w) - 32px); margin: 0 auto; display: flex; align-items: center; gap: 12px; padding: 10px 8px 10px 12px; border-radius: 21px; touch-action: pan-x; }
+@media (min-width: 700px) { #toast { padding-inline: 24px; } .toast-in { max-width: 520px; } }
+.toast-in img, .toast-ico { display: grid; place-items: center; flex: none; align-self: flex-start; width: 44px; height: 44px; border-radius: 11px; }
+.toast-ico { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.toast-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.toast-txt b { font: 700 16px/1.25 var(--display); }
+.toast-txt span { color: var(--muted); font-size: 14px; line-height: 1.35; }
+.toast-txt span b { font: inherit; color: var(--ink); font-weight: 600; }
+.toast-in .ib { width: 34px; height: 34px; border: 0; background: none; align-self: flex-start; }
+@media (prefers-reduced-motion: reduce) { #toast, #toast.show { transition: none; } }
 .steps { margin: 12px 0 0; padding-left: 22px; }
 .steps li { margin: 10px 0; padding-left: 4px; }
 .steps .ico { display: inline-block; vertical-align: -4px; color: var(--accent); }
@@ -495,6 +502,7 @@ const ICONS = {
   moon:  '<path d="M20.5 13.2A8.5 8.5 0 1 1 10.8 3.5a6.6 6.6 0 0 0 9.7 9.7z"/>',
   share: '<path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/>',
   plus:  '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/>',
+  spark: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
 };
 const ico = (n, sz = 20) => `<svg class="ico" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
 
@@ -681,13 +689,61 @@ function home() {
       <div class="tile panel ok" style="--d:1"><b>${ok}</b><span>opanowane</span></div>
       <div class="tile panel bad" style="--d:2"><b>${wrongN}</b><span>do powtórki</span></div>
     </div>
-    <div id="install"></div>
     <div class="block"><h2 class="lbl">Przedmioty</h2><div class="cards">${cards}</div></div>
     <p class="foot">Pytania powstały na podstawie slajdów z wykładów i mogą zawierać błędy. Postęp zapisuje się tylko w tej przeglądarce.</p>
   </section>`;
-  refreshInstall();
   drawRings();
   watchDock();
+}
+
+/* ---------- Powiadomienie u góry ---------- */
+// Jedno naraz, kolejne czekają. Chowa się samo, po dotknięciu krzyżyka albo przesunięciu w górę.
+const toastEl = Object.assign(document.createElement("div"), { id: "toast", role: "status" });
+document.body.append(toastEl);
+const toasts = [];
+let toastNow = null, toastTimer = 0;
+function toast(t) { toasts.push(t); if (!toastNow) nextToast(); }
+function nextToast() {
+  toastNow = toasts.shift() || null;
+  if (!toastNow) return;
+  toastEl.innerHTML = `<div class="toast-in panel">${toastNow.html}
+    <button class="ib" id="toastX" aria-label="${toastNow.xLabel || "Zamknij"}">${ico("close", 18)}</button></div>`;
+  toastNow.wire?.();
+  $("#toastX").onclick = () => { toastNow.onX?.(); hideToast(); };
+  let y0 = null; // przesunięcie palcem w górę chowa powiadomienie
+  toastEl.ontouchstart = e => y0 = e.touches[0].clientY;
+  toastEl.ontouchmove = e => { if (y0 !== null && e.touches[0].clientY - y0 < -24) { y0 = null; hideToast(); } };
+  toastEl.onpointerenter = () => clearTimeout(toastTimer);
+  toastEl.onpointerleave = () => { clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 2500); };
+  toastEl.offsetHeight; // start animacji od pozycji schowanej
+  toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, toastNow.ms);
+}
+function hideToast() {
+  if (!toastNow) return;
+  clearTimeout(toastTimer);
+  toastNow = null;
+  toastEl.classList.remove("show");
+  setTimeout(nextToast, calm() ? 0 : 380);
+}
+
+/* ---------- Nowe pytania od ostatniej wizyty ---------- */
+// Liczba pytań na wykład zapamiętana w przeglądarce. Pierwsza wizyta tylko zapisuje stan, bez komunikatu.
+const counts = () => Object.fromEntries(SUBJECTS.map(s => [s.key,
+  (bank[s.key] || []).reduce((m, q) => (m[q.w] = (m[q.w] || 0) + 1, m), {})]));
+function showNews() {
+  const seen = LS.get("quiz.seen", null), now = counts();
+  LS.set("quiz.seen", now);
+  if (!seen) return;
+  const news = SUBJECTS.map(s => {
+    const was = seen[s.key] || {};
+    const ws = Object.keys(now[s.key]).filter(w => now[s.key][w] > (was[w] || 0)).sort((a, b) => a.localeCompare(b));
+    const n = ws.reduce((t, w) => t + now[s.key][w] - (was[w] || 0), 0);
+    return n ? `<span><b>${esc(s.short)}</b> +${n} (${ws.length > 3 ? `${ws[0]}–${ws.at(-1)}` : ws.join(", ")})</span>` : "";
+  }).filter(Boolean);
+  if (news.length) toast({ ms: 7000, html: `<span class="toast-ico">${ico("spark", 24)}</span>
+    <span class="toast-txt"><b>Nowe pytania</b>${news.join("")}</span>` });
 }
 
 /* ---------- Instalacja na ekranie głównym ---------- */
@@ -696,26 +752,24 @@ let installEvt = null;
 const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const canInstall = () => !standalone() && !LS.get("quiz.noinstall", false) && (installEvt || isIOS);
-addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; refreshInstall(); });
-addEventListener("appinstalled", () => { installEvt = null; refreshInstall(); });
-function refreshInstall() {
-  const box = $("#install");
-  if (!box) return;
-  box.innerHTML = canInstall() ? `<div class="install panel">
-    <img src="icon-192.png" alt="">
-    <span class="install-txt"><b>Zainstaluj aplikację</b><span>Ikona na ekranie głównym, działa też bez internetu.</span></span>
-    <button class="btn small primary" id="instGo">Zainstaluj</button>
-    <button class="ib" id="instNo" aria-label="Nie pokazuj więcej">${ico("close", 18)}</button></div>` : "";
-  if (!box.innerHTML) return;
-  $("#instGo").onclick = install;
-  $("#instNo").onclick = () => { LS.set("quiz.noinstall", true); refreshInstall(); };
+let installShown = false; // raz na otwarcie; krzyżyk wyłącza na stałe
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (booted) offerInstall(); });
+addEventListener("appinstalled", () => { installEvt = null; });
+function offerInstall() {
+  if (installShown || !canInstall()) return;
+  installShown = true;
+  toast({ ms: 12000, xLabel: "Nie pokazuj więcej", onX: () => LS.set("quiz.noinstall", true),
+    html: `<img src="icon-192.png" alt="">
+    <span class="toast-txt"><b>Zainstaluj aplikację</b><span>Ikona na ekranie głównym, działa też bez internetu.</span></span>
+    <button class="btn small primary" id="instGo">Zainstaluj</button>`,
+    wire: () => $("#instGo").onclick = () => { hideToast(); install(); } });
 }
 async function install() {
   if (installEvt) {
     installEvt.prompt();
     await installEvt.userChoice;
     installEvt = null; // okno można pokazać tylko raz
-    return refreshInstall();
+    return;
   }
   const d = modal(`<h3 class="dlg-h">Dodaj do ekranu głównego</h3>
     <ol class="steps">
@@ -1277,6 +1331,8 @@ document.addEventListener("keydown", e => {
 // Pierwsze wczytanie bez przejścia: ekran wjeżdża animacją .enter
 SUBJECTS.some(s => s.key === location.hash.slice(1)) ? setup() : home();
 requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add("ready"))); // od teraz kolor przedmiotu zmienia się płynnie
+let booted = false;
+setTimeout(() => { booted = true; showNews(); offerInstall(); }, 800); // powiadomienia dopiero po wejściu strony
 </script>
 </body>
 </html>
