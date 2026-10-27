@@ -35,6 +35,11 @@
     options: ["Enkodery w stosie współdzielą jeden zestaw wag", "Oryginał miał 6 enkoderów i 12 dekoderów", "Są identyczne, ale każdy ma własne wagi", "Każdy enkoder ma inną budowę warstw"],
     correct: [2], explain: "Wszystkie enkodery i dekodery są identyczne budową, ale mają własne wagi; oryginał: 6 + 6.", src: "W08, slajdy 199, 201", note: "W08-transformer" },
 
+  { id: "W08-30", w: "W08", c: "stos", type: "single",
+    q: "Ile enkoderów i ile dekoderów zakładała oryginalna implementacja transformera?",
+    options: ["12 enkoderów i 12 dekoderów", "6 enkoderów i 12 dekoderów", "6 enkoderów i 6 dekoderów", "8 enkoderów i 8 dekoderów"],
+    correct: [2], explain: "Oryginalna implementacja zakładała stos 6 enkoderów oraz 6 dekoderów.", src: "W08, slajd 199", note: "W08-transformer" },
+
   { id: "W08-08", w: "W08", c: "trening-inferencja", type: "single",
     q: "Co dostaje dekoder w pierwszym kroku inferencji zamiast sekwencji wyjściowej?",
     options: ["Wektor kontekstu z tokenem końca", "Pustą sekwencję z tokenem początku", "Sekwencję celu z tokenami padding", "Ostatnie słowo sekwencji wejściowej"],
@@ -49,6 +54,11 @@
     q: "Dlaczego transformer potrzebuje kodowania pozycji, a sieć RNN nie?",
     options: ["RNN ma maskę, która ukrywa przyszłe tokeny", "RNN używa RoPE wbudowanego w każdą komórkę", "Transformer nie ma żadnych warstw embeddingu", "RNN przetwarza token po tokenie i zna pozycję"],
     correct: [3], explain: "RNN czyta słowo po słowie, więc zna pozycję; transformer przetwarza sekwencję w całości.", src: "W08, slajdy 198, 207", note: "W08-transformer" },
+
+  { id: "W08-26", w: "W08", c: "kodowanie-pozycji", type: "single",
+    q: "W jaki sposób oryginalna praca o Transformerze wprowadziła informację o pozycji tokenu?",
+    options: ["Obracając wektory Query i Key o kąt zależny od wymiaru", "Ukrywając przyszłe tokeny maską przed funkcją softmax", "Dodając do embeddingu wektor zależny od pozycji", "Przetwarzając tokeny po kolei, jak sieć rekurencyjna"],
+    correct: [2], explain: "Praca zaproponowała dodanie wektora zależnego od pozycji do embeddingu tokena przed pierwszą warstwą (wzór sinus i cosinus).", src: "W08, slajd 207", note: "W08-transformer" },
 
   { id: "W08-11", w: "W08", c: "sinusoidalne", type: "single",
     q: "Jak zachowują się wymiary niskiego rzędu w kodowaniu sinusoidalnym?",
@@ -74,6 +84,11 @@
     q: "Do czego służy technika YaRN?",
     options: ["Do maskowania przyszłych tokenów", "Do wydłużenia kontekstu ponad trening", "Do łączenia wyników wielu głów", "Do skalowania wyników iloczynu Q i K"],
     correct: [1], explain: "YaRN (Yet another RoPE extensioN) pozwala wydłużyć kontekst ponad to, na czym model był trenowany.", src: "W08, slajd 210", note: "W08-transformer" },
+
+  { id: "W08-29", w: "W08", c: "yarn", type: "single",
+    q: "Co oznacza skrót YaRN?",
+    options: ["Yet another Recurrent Network", "Yet another Residual Normalization", "Yet another Rotary Neuron", "Yet another RoPE extensioN"],
+    correct: [3], explain: "YaRN to Yet another RoPE extensioN, technika wydłużająca kontekst ponad trening.", src: "W08, slajd 210", note: "W08-transformer" },
 
   { id: "W08-16", w: "W08", c: "qkv", type: "single",
     q: "Która macierz wag uczy się kodować informacje do przekazania dalej?",
@@ -120,8 +135,18 @@
     options: ["Zbyt krótkiego kontekstu modelu", "Zanikających gradientów", "Braku informacji o pozycji", "Przewidywania przyszłych tokenów"],
     correct: [1], explain: "Połączenia resztkowe pomagają uniknąć zanikających gradientów i pozwalają trenować bardzo głębokie modele.", src: "W08, slajd 221", note: "W08-transformer" },
 
+  { id: "W08-27", w: "W08", c: "residual", type: "single",
+    q: "Jak nazywa się mechanizm, w którym warstwa dodaje swoje wejście do wyjścia i normalizuje wynik?",
+    options: ["Warstwa cross attention", "Maskowanie przyczynowe", "Połączenie resztkowe", "Konkatenacja wyników głów"],
+    correct: [2], explain: "Residual connection pozwala warstwie nie zastępować poprzedniej reprezentacji, lecz ją skorygować.", src: "W08, slajd 221", note: "W08-transformer" },
+
   { id: "W08-25", w: "W08", c: "ffn", type: "single",
     q: "Czym jest sieć FFN w transformerze?",
     options: ["Perceptronem dla każdego tokenu osobno", "Warstwą uwagi między enkoderem a dekoderem", "Macierzą łączącą wyniki wszystkich głów", "Rekurencyjną siecią czytającą sekwencję"],
     correct: [0], explain: "FFN to niewielki wielowarstwowy perceptron stosowany oddzielnie dla każdego tokenu, z ReLU lub GELU.", src: "W08, slajd 222", note: "W08-transformer" },
+
+  { id: "W08-28", w: "W08", c: "ffn", type: "single",
+    q: "Które zdanie o sieciach FFN w transformerze NIE jest zgodne ze slajdem?",
+    options: ["Są niewielkim wielowarstwowym perceptronem", "Stosuje się je oddzielnie dla każdego tokenu", "Używają funkcji aktywacji ReLU lub GELU", "Zastępują jednostkę uwagi w bloku transformera"],
+    correct: [3], explain: "Transformer to nie tylko jednostka uwagi, ale są tam również sieci FFN, więc ich nie zastępują.", src: "W08, slajd 222", note: "W08-transformer" },
 ]});

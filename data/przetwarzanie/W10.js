@@ -10,10 +10,30 @@
     options: ["Cutoff date", "Halucynacje", "Efekt projekcji", "Presence penalty"],
     correct: [1], explain: "Faktyczna nieprawda, nieistniejące źródła i błędna interpretacja to halucynacje.", src: "W10, slajd 253", note: "W10-rag" },
 
+  { id: "W10-26", w: "W10", c: "halucynacje", type: "single",
+    q: "Co według wykładu trzeba robić, gdy model ma odpowiadać dokładnie na pytania, aby błędne informacje były mało prawdopodobne?",
+    options: ["Zwiększać liczbę wymiarów embeddingu", "Wydłużać fragmenty tekstu w indeksie", "Sterować generowaniem tokenów", "Dodawać więcej metadanych do dokumentów"],
+    correct: [2], explain: "Slajd 253: dokładne odpowiedzi wymagają sterowania generowaniem tokenów, czyli samplingu.", src: "W10, slajd 253", note: "W10-rag" },
+
+  { id: "W10-27", w: "W10", c: "halucynacje", type: "multi",
+    q: "Które z poniższych slajd podaje jako przykłady błędnych informacji generowanych przez model?",
+    options: ["Faktyczna nieprawda", "Nieistniejące źródła", "Zbyt wolne generowanie tokenów", "Błędna interpretacja"],
+    correct: [0, 1, 3], explain: "Slajd 253 wymienia faktyczną nieprawdę, nieistniejące źródła i błędną interpretację.", src: "W10, slajd 253", note: "W10-rag" },
+
   { id: "W10-03", w: "W10", c: "sampling-def", type: "single",
     q: "Czym jest sampling w generowaniu tekstu przez LLM?",
     options: ["Podziałem dokumentu na fragmenty do wyszukiwania", "Sterowaniem wyborem następnego tokenu spośród kandydatów", "Zamianą korpusu tekstu na wektory embeddingów", "Dostrajaniem modelu na danych własnościowych"],
     correct: [1], explain: "Model zwraca rozkład nad słownikiem tokenów, a parametry samplingu decydują o wyborze konkretnego tokenu.", src: "W10, slajd 254", note: "W10-rag" },
+
+  { id: "W10-28", w: "W10", c: "sampling-def", type: "single",
+    q: "Co model zwraca w każdym kroku generowania, zanim zadziałają parametry wyboru tokenu?",
+    options: ["Jeden gotowy token do dopisania", "Rozkład prawdopodobieństwa tokenów", "Wektor embeddingu całego zapytania", "Listę podobnych dokumentów z korpusu"],
+    correct: [1], explain: "Slajd 254: model zwraca rozkład prawdopodobieństwa nad słownikiem tokenów, a parametry decydują o wyborze.", src: "W10, slajd 254", note: "W10-rag" },
+
+  { id: "W10-29", w: "W10", c: "sampling-def", type: "multi",
+    q: "Które z poniższych są parametrami sterującymi wyborem następnego tokenu według slajdu?",
+    options: ["Temperatura", "Min-p", "Chunking", "Indeks BM25"],
+    correct: [0, 1], explain: "Slajd 254 wymienia: temperaturę, top-k, top-p, min-p oraz repetition i presence penalty.", src: "W10, slajd 254", note: "W10-rag" },
 
   { id: "W10-04", w: "W10", c: "temperatura", type: "single",
     q: "Co się dzieje z rozkładem prawdopodobieństwa przy wysokiej temperaturze?",
@@ -55,15 +75,40 @@
     answer: 0.04, tolerance: 0.001,
     explain: "Min-p liczy próg względem najlepszego tokenu: 0,4 × 0,1 = 0,04.", src: "W10, slajd 259", note: "W10-rag" },
 
+  { id: "W10-30", w: "W10", c: "min-p", type: "calc",
+    q: "Najlepszy token ma p = 0,6, a min_p = 0,1. Jaki jest próg, powyżej którego tokeny zostaną zachowane?",
+    answer: 0.06, tolerance: 0.001,
+    explain: "Próg liczy się względem najlepszego tokenu: 0,6 × 0,1 = 0,06.", src: "W10, slajd 259", note: "W10-rag" },
+
+  { id: "W10-31", w: "W10", c: "min-p", type: "single",
+    q: "Który parametr odrzuca tokeny o prawdopodobieństwie zbyt małym w porównaniu do najlepszego tokenu?",
+    options: ["Top-k", "Top-p", "Min-p", "Repetition penalty"],
+    correct: [2], explain: "Min-p porównuje prawdopodobieństwo każdego tokenu z najlepszym tokenem.", src: "W10, slajd 259", note: "W10-rag" },
+
   { id: "W10-12", w: "W10", c: "penalty", type: "single",
     q: "Który parametr nakłada stałą karę za pojawienie się tokenu, niezależnie od liczby jego wystąpień?",
     options: ["Repetition penalty", "Presence penalty", "Nucleus sampling", "Temperatura"],
     correct: [1], explain: "Presence penalty to stała kara; repetition penalty zmniejsza logity już wygenerowanych tokenów.", src: "W10, slajd 261", note: "W10-rag" },
 
+  { id: "W10-32", w: "W10", c: "penalty", type: "single",
+    q: "Który parametr po wygenerowaniu pewnych tokenów zmniejsza ich logity?",
+    options: ["Nucleus sampling", "Presence penalty", "Repetition penalty", "Min-p sampling"],
+    correct: [2], explain: "Slajd 260: repetition penalty obniża logity już użytych tokenów, więc model rzadziej je powtarza.", src: "W10, slajd 260", note: "W10-rag" },
+
   { id: "W10-13", w: "W10", c: "rag-problemy", type: "multi",
     q: "Jakie problemy baz wiedzy modeli LLM uzasadniają podejście RAG?",
     options: ["Wiedza kończy się na cutoff date", "Brak danych własnościowych firmy", "Zbyt mała liczba parametrów samplingu", "Brak wiedzy o najświeższych wydarzeniach"],
     correct: [0, 1, 3], explain: "Slajd 264: model może być nieaktualny (cutoff date) i nie znać danych własnościowych.", src: "W10, slajd 264", note: "W10-rag" },
+
+  { id: "W10-33", w: "W10", c: "rag-problemy", type: "single",
+    q: "Który z poniższych problemów NIE jest wskazany na slajdzie jako problem baz wiedzy modeli?",
+    options: ["Nieaktualność danych uczących", "Brak wiedzy o danych własnościowych", "Zbyt wolne działanie indeksu BM25", "Brak wiedzy o świeżych wydarzeniach"],
+    correct: [2], explain: "Slajd 264 mówi o nieaktualności (cutoff date) i braku danych własnościowych, nie o szybkości indeksu.", src: "W10, slajd 264", note: "W10-rag" },
+
+  { id: "W10-34", w: "W10", c: "rag-problemy", type: "single",
+    q: "Chatbot nie zna wydarzeń z zeszłego tygodnia. Co jest przyczyną według wykładu?",
+    options: ["Zbyt niska temperatura modelu", "Cutoff date w danych uczących", "Zbyt mały parametr top-k", "Brak metadanych we fragmentach"],
+    correct: [1], explain: "Model był uczony na danych do pewnego momentu, więc nie wie nic o świeższych wydarzeniach.", src: "W10, slajd 264", note: "W10-rag" },
 
   { id: "W10-14", w: "W10", c: "rag-def", type: "open",
     q: "Czym jest RAG?",
@@ -90,6 +135,16 @@
     options: ["Do filtrowania wyników i budowy odwołań", "Do obliczania wag w softmaxie z temperaturą", "Do zastąpienia indeksu wektorowego", "Do podziału dokumentu na akapity"],
     correct: [0], explain: "Metadane (autor, data, źródło, tagi…) pozwalają filtrować wyniki wyszukiwania i budować do nich odwołania.", src: "W10, slajd 270", note: "W10-rag" },
 
+  { id: "W10-35", w: "W10", c: "metadane", type: "multi",
+    q: "Które z poniższych slajd podaje jako przykłady metadanych fragmentu tekstu?",
+    options: ["Identyfikator dokumentu", "Numer strony", "Wartość IDF słowa", "Tagi"],
+    correct: [0, 1, 3], explain: "Slajd 270: identyfikator, tytuł, autor, daty, źródło, numer strony, język, tagi.", src: "W10, slajd 270", note: "W10-rag" },
+
+  { id: "W10-36", w: "W10", c: "metadane", type: "single",
+    q: "System RAG ma pokazać użytkownikowi, z której strony dokumentu pochodzi odpowiedź. Co powinien mieć każdy fragment?",
+    options: ["Wyższą temperaturę generowania", "Metadane ze źródłem i numerem strony", "Embedding o mniejszej liczbie wymiarów", "Nakładanie się z sąsiednim fragmentem"],
+    correct: [1], explain: "Metadane pozwalają budować odwołania do wyników wyszukiwania.", src: "W10, slajd 270", note: "W10-rag" },
+
   { id: "W10-19", w: "W10", c: "bm25", type: "single",
     q: "Które zdanie o BM25 NIE jest zgodne z wykładem?",
     options: ["To klasyczny algorytm rankingowy", "Analizuje znaczenie słów w zapytaniu", "Bazuje na TF i IDF", "Opiera się na statystyce"],
@@ -110,6 +165,16 @@
     answer: "Równolegle szuka się embeddingami dokumentów podobnych semantycznie i BM25 dokumentów z dokładnie tymi samymi słowami.",
     src: "W10, slajd 276", note: "W10-rag" },
 
+  { id: "W10-37", w: "W10", c: "hybryda", type: "single",
+    q: "Które dwa mechanizmy wyszukiwania działają równolegle w podejściu hybrydowym?",
+    options: ["Top-k i top-p", "Embeddingi i BM25", "OCR i stemming", "MCP i OpenAPI"],
+    correct: [1], explain: "Slajd 276: embeddingi znajdują dokumenty podobne semantycznie, BM25 te z tymi samymi słowami.", src: "W10, slajd 276", note: "W10-rag" },
+
+  { id: "W10-38", w: "W10", c: "hybryda", type: "single",
+    q: "W systemie hybrydowym trzeba znaleźć dokument zawierający dokładnie ten sam kod produktu co zapytanie. Który komponent to robi?",
+    options: ["Podobieństwo cosinusowe embeddingów", "BM25", "Presence penalty", "Chunking semantyczny"],
+    correct: [1], explain: "BM25 odnajduje dokumenty zawierające dokładnie te same słowa.", src: "W10, slajd 276", note: "W10-rag" },
+
   { id: "W10-23", w: "W10", c: "mcp", type: "single",
     q: "Na czym wewnętrznie opiera się Model Context Protocol (MCP)?",
     options: ["Na OpenAPI", "Na JSON-RPC", "Na indeksie BM25", "Na OCR"],
@@ -124,4 +189,9 @@
     q: "Na czym polega problem niewiedzy modeli LLM w systemach RAG?",
     answer: "Model musi być bardzo dobrze dostrojony, by odpowiadać „nie wiem” i cytować bazę wiedzy, inaczej halucynuje nawet z RAG.",
     src: "W10, slajd 279", note: "W10-rag" },
+
+  { id: "W10-39", w: "W10", c: "niewiedza", type: "single",
+    q: "Co jest potrzebne, aby system RAG potrafił odpowiadać „nie wiem” i cytować bazę wiedzy?",
+    options: ["Wyższa temperatura generowania", "Bardzo dobre dostrojenie modelu LLM", "Większy top-k w wyszukiwaniu", "Częstsza zmiana modelu embeddingowego"],
+    correct: [1], explain: "Slajd 279: bez dobrego dostrojenia model potrafi halucynować nawet na podstawie RAG.", src: "W10, slajd 279", note: "W10-rag" },
 ]});

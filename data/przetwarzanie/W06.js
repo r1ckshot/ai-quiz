@@ -25,6 +25,11 @@
     options: ["TF-IDF", "Wygładzanie Laplace’a", "Bag of Words", "Embeddingi"],
     correct: [0, 2, 3], explain: "Ekstrakcja cech: Bag of Words, TF-IDF, n-gramy, embeddingi. Wygładzanie Laplace’a dotyczy szacowania prawdopodobieństw.", src: "W06, slajd 135", note: "W06-klasyfikacja-sentyment" },
 
+  { id: "W06-26", w: "W06", c: "ekstrakcja-cech", type: "single",
+    q: "Które z wymienionych NIE jest techniką ekstrakcji cech według slajdu?",
+    options: ["n-gramy", "TF-IDF", "Lasy losowe", "Bag of Words"],
+    correct: [2], explain: "Slajd 135: do ekstrakcji cech służą Bag of Words, TF-IDF, n-gramy i embeddingi. Lasy losowe to klasyfikator.", src: "W06, slajd 135", note: "W06-klasyfikacja-sentyment" },
+
   { id: "W06-06", w: "W06", c: "nb-def", type: "single",
     q: "Klasyfikator probabilistyczny, który dla dokumentu d przypisuje klasę c, to:",
     options: ["Regresja logistyczna", "Naiwny Bayes", "Metoda k-NN", "Model BERT"],
@@ -49,6 +54,16 @@
     q: "Twierdzenie Bayesa: P(H|e) = P(e|H)×P(H) / P(e). Oblicz P(H|e), jeśli P(e|H) = 0,6, P(H) = 0,2, P(e) = 0,3.",
     answer: 0.4, tolerance: 0.001,
     explain: "0,6 × 0,2 / 0,3 = 0,12 / 0,3 = 0,4.", src: "W06, slajd 137", note: "W06-klasyfikacja-sentyment" },
+
+  { id: "W06-27", w: "W06", c: "bayes-calc", type: "calc",
+    q: "Twierdzenie Bayesa: P(H|e) = P(e|H)×P(H) / P(e). Oblicz P(H|e), jeśli P(e|H) = 0,5, P(H) = 0,3, P(e) = 0,25.",
+    answer: 0.6, tolerance: 0.001,
+    explain: "0,5 × 0,3 / 0,25 = 0,15 / 0,25 = 0,6.", src: "W06, slajd 137", note: "W06-klasyfikacja-sentyment" },
+
+  { id: "W06-28", w: "W06", c: "bayes-calc", type: "calc",
+    q: "W naiwnym Bayesie dla klasy c wartość to P(c) × P(f1|c) × P(f2|c). Oblicz ją, jeśli P(c) = 0,4, P(f1|c) = 0,5, P(f2|c) = 0,2.",
+    answer: 0.04, tolerance: 0.001,
+    explain: "0,4 × 0,5 × 0,2 = 0,04.", src: "W06, slajd 142", note: "W06-klasyfikacja-sentyment" },
 
   { id: "W06-11", w: "W06", c: "pd-stale", type: "single",
     q: "Dlaczego w regule klasyfikacji można pominąć mianownik P(d)?",
@@ -105,15 +120,45 @@
     answer: "To zadanie klasyfikacji dokumentu: analiza treści w celu wyodrębnienia tonu emocjonalnego, np. czy recenzja jest pozytywna.",
     src: "W06, slajd 148", note: "W06-klasyfikacja-sentyment" },
 
+  { id: "W06-29", w: "W06", c: "sentyment-def", type: "single",
+    q: "Które zadanie polega na analizie treści w celu wyodrębnienia tonu emocjonalnego?",
+    options: ["Moderacja treści", "Etykietowanie tematyczne", "Wykrywanie spamu", "Analiza sentymentu"],
+    correct: [3], explain: "Slajd 148: wyodrębnienie tonu emocjonalnego to analiza sentymentu.", src: "W06, slajd 148", note: "W06-klasyfikacja-sentyment" },
+
+  { id: "W06-30", w: "W06", c: "sentyment-def", type: "single",
+    q: "Do jakiego rodzaju zadań slajd zalicza analizę sentymentu?",
+    options: ["Estymacja prawdopodobieństw", "Ekstrakcja cech", "Klasyfikacja dokumentu", "Segmentacja tekstu"],
+    correct: [2], explain: "Slajd 148: analiza sentymentu to jedno z zadań klasyfikacji dokumentu.", src: "W06, slajd 148", note: "W06-klasyfikacja-sentyment" },
+
   { id: "W06-22", w: "W06", c: "skale", type: "multi",
     q: "Które skale analizy sentymentu wymienia slajd?",
     options: ["Binarna (pozytywny/negatywny)", "Ciągła", "Wykrywanie emocji (złość, smutek)", "Tematyczna (typ zgłoszenia)"],
     correct: [0, 1, 2], explain: "Skale: binarna, wielopozycyjna, ciągła, wykrywanie emocji. Typ zgłoszenia to etykietowanie tematyczne.", src: "W06, slajd 149", note: "W06-klasyfikacja-sentyment" },
 
+  { id: "W06-31", w: "W06", c: "skale", type: "single",
+    q: "Której skali analizy sentymentu slajd NIE wymienia?",
+    options: ["Binarna", "Wielopozycyjna", "Hierarchiczna", "Ciągła"],
+    correct: [2], explain: "Slajd 149: skale to binarna, wielopozycyjna, ciągła oraz wykrywanie emocji.", src: "W06, slajd 149", note: "W06-klasyfikacja-sentyment" },
+
+  { id: "W06-32", w: "W06", c: "skale", type: "single",
+    q: "Wypowiedź ma zostać oznaczona jako złość, smutek lub zaskoczenie. Którą opcję slajd przewiduje dla takiego zadania?",
+    options: ["Skala binarna", "Skala ciągła", "Wykrywanie emocji", "Skala wielopozycyjna"],
+    correct: [2], explain: "Slajd 149: złość, smutek i zaskoczenie to przykłady wykrywania emocji.", src: "W06, slajd 149", note: "W06-klasyfikacja-sentyment" },
+
   { id: "W06-23", w: "W06", c: "metody-sentymentu", type: "single",
     q: "Do której grupy metod analizy sentymentu slajd zalicza model BERT?",
     options: ["Metody oparte o reguły", "Metody oparte o typowy ML", "Metody oparte o transformery", "Metody oparte o MLE"],
     correct: [2], explain: "Slajd 150: reguły, typowy ML (np. naiwny Bayes), transformery (np. BERT).", src: "W06, slajd 150", note: "W06-klasyfikacja-sentyment" },
+
+  { id: "W06-33", w: "W06", c: "metody-sentymentu", type: "single",
+    q: "Do której grupy metod analizy sentymentu slajd zalicza naiwny Bayes?",
+    options: ["Metody oparte o reguły", "Metody oparte o transformery", "Metody oparte o typowy ML", "Metody oparte o embeddingi"],
+    correct: [2], explain: "Slajd 150: metody oparte o typowy ML, np. naiwny Bayes.", src: "W06, slajd 150", note: "W06-klasyfikacja-sentyment" },
+
+  { id: "W06-34", w: "W06", c: "metody-sentymentu", type: "single",
+    q: "Które metody według slajdu zawsze można zastosować, podobnie jak w innych zadaniach klasyfikacji tekstu?",
+    options: ["Oparte o reguły", "Oparte o typowy ML", "Oparte o transformery", "Oparte o duże modele"],
+    correct: [0], explain: "Slajd 150: zawsze można zastosować metody oparte o reguły.", src: "W06, slajd 150", note: "W06-klasyfikacja-sentyment" },
 
   { id: "W06-24", w: "W06", c: "textblob", type: "single",
     q: "Na czym według slajdu opiera się analiza sentymentu w bibliotece TextBlob?",

@@ -15,6 +15,11 @@
     options: ["Składnia", "Semantyka", "Fleksja", "Fonetyka"],
     correct: [2], explain: "Fleksja zajmuje się odmianą wyrazów; składnia łączeniem słów, semantyka znaczeniem.", src: "W02, slajd 20", note: "W02-lingwistyka" },
 
+  { id: "W02-26", w: "W02", c: "fleksja", type: "multi",
+    q: "Które zjawiska według slajdu obejmuje fleksja w języku polskim?",
+    options: ["Deklinację wyrazów", "Koniugację wyrazów", "Odmianę przez aspekty", "Łączenie słów w zdania"],
+    correct: [0, 1, 2], explain: "Polskie wyrazy deklinują się, koniugują i odmieniają przez liczby, czasy, rodzaje i aspekty. Łączenie słów to składnia.", src: "W02, slajd 20", note: "W02-lingwistyka" },
+
   { id: "W02-04", w: "W02", c: "skladnia-semantyka", type: "single",
     q: "Zdania „Stolicą Francji jest Paryż.” i „Francja ma stolicę w Paryżu.” mają inną budowę, ale to samo znaczenie. Która dziedzina bada to znaczenie?",
     options: ["Składnia", "Semantyka", "Morfologia", "Fonetyka"],
@@ -30,15 +35,35 @@
     options: ["Ontologie i bazy wiedzy", "Systemy oparte o reguły", "Odległość Levenshteina", "Embeddingi"],
     correct: [0, 1, 3], explain: "Slajd 27: reguły, ontologie i bazy wiedzy, embeddingi. Levenshtein to miara lingwistyczna.", src: "W02, slajd 27", note: "W02-lingwistyka" },
 
+  { id: "W02-27", w: "W02", c: "reprezentacja-znaczenia", type: "single",
+    q: "Który element NIE jest na slajdzie sposobem reprezentacji znaczenia w NLP?",
+    options: ["Embeddingi", "Drzewa składniowe", "Ontologie i bazy wiedzy", "Systemy oparte o reguły"],
+    correct: [1], explain: "Slajd 27 wymienia reguły, ontologie i bazy wiedzy oraz embeddingi. Drzewa składniowe opisują budowę zdania.", src: "W02, slajd 27", note: "W02-lingwistyka" },
+
   { id: "W02-07", w: "W02", c: "gloska-fonem", type: "single",
     q: "Najmniejszy element wypowiedzi dźwiękowej, będący realizacją fonemu, to:",
     options: ["Morfem", "Sylaba", "Token", "Głoska"],
     correct: [3], explain: "Głoska realizuje fonem; fonem to jednostka struktury fonologicznej mowy.", src: "W02, slajd 28", note: "W02-lingwistyka" },
 
+  { id: "W02-28", w: "W02", c: "gloska-fonem", type: "single",
+    q: "Jaka jest według slajdu relacja między głoską a fonemem?",
+    options: ["Fonem realizuje głoskę", "Głoska to odmiana morfemu", "Głoska realizuje fonem", "Fonem to dział fonetyki"],
+    correct: [2], explain: "Głoska jest realizacją fonemu, nie odwrotnie. Fonem to jednostka struktury fonologicznej mowy.", src: "W02, slajd 28", note: "W02-lingwistyka" },
+
+  { id: "W02-29", w: "W02", c: "gloska-fonem", type: "single",
+    q: "Dział lingwistyki zajmujący się badaniem dźwięków ludzkiej mowy to:",
+    options: ["Fleksja", "Semantyka", "Fonetyka", "Składnia"],
+    correct: [2], explain: "Fonetyka bada dźwięki ludzkiej mowy; fleksja to odmiana wyrazów, semantyka znaczenie.", src: "W02, slajd 28", note: "W02-lingwistyka" },
+
   { id: "W02-08", w: "W02", c: "regex-def", type: "single",
     q: "Czym według slajdu są wyrażenia regularne?",
     options: ["Formalną definicją wzorca opisującego tekst do wyszukania", "Zbiorem reguł usuwających końcówki fleksyjne", "Metodą łączenia par znaków w nowe tokeny", "Miarą podobieństwa pomiędzy dwoma napisami"],
     correct: [0], explain: "Regex to formalna definicja wzorca; służy głównie do podstawowego preprocessingu danych.", src: "W02, slajd 33", note: "W02-lingwistyka" },
+
+  { id: "W02-30", w: "W02", c: "regex-def", type: "single",
+    q: "Które zdanie o wyrażeniach regularnych NIE jest zgodne ze slajdem?",
+    options: ["Ustandaryzowano je w późnych latach 90.", "Są dostępne w wielu językach programowania", "Łączą najczęstsze pary znaków w tokeny", "Służą głównie do preprocessingu danych"],
+    correct: [2], explain: "Łączenie najczęstszych par w tokeny to BPE. Regex to formalna definicja wzorca do wyszukania tekstu.", src: "W02, slajd 33", note: "W02-lingwistyka" },
 
   { id: "W02-09", w: "W02", c: "regex-skladnia", type: "single",
     q: "Który symbol regex oznacza według slajdu granicę słowa?",
@@ -54,6 +79,16 @@
     q: "Która funkcja modułu re zwraca obiekt Match, jeśli w ciągu istnieje dopasowanie?",
     options: ["findall", "split", "sub", "search"],
     correct: [3], explain: "search zwraca Match; findall zwraca listę dopasowań, split listę części, sub zamienia dopasowania.", src: "W02, slajd 37", note: "W02-lingwistyka" },
+
+  { id: "W02-31", w: "W02", c: "re-funkcje", type: "single",
+    q: "Co według slajdu robi funkcja sub z modułu re?",
+    options: ["Zwraca listę wszystkich dopasowań", "Zamienia dopasowania na podany ciąg", "Dzieli łańcuch względem dopasowania", "Zwraca obiekt Match dla dopasowania"],
+    correct: [1], explain: "sub zastępuje jedno lub wiele dopasowań ciągiem. Listę dopasowań zwraca findall, podział robi split.", src: "W02, slajd 37", note: "W02-lingwistyka" },
+
+  { id: "W02-32", w: "W02", c: "re-funkcje", type: "single",
+    q: "W kodzie ze slajdu z tekstu powstaje lista słów, a wzorzec r\"\\s+\" (białe znaki) wyznacza granice między nimi. Której funkcji re użyto?",
+    options: ["findall", "search", "split", "sub"],
+    correct: [2], explain: "re.split(r\"\\s+\", text) tnie tekst w miejscach białych znaków. findall zwróciłby listę samych białych znaków.", src: "W02, slajd 38", note: "W02-lingwistyka" },
 
   { id: "W02-12", w: "W02", c: "tokenizacja", type: "open",
     q: "Czym jest tokenizacja?",
@@ -80,15 +115,40 @@
     answer: 6, tolerance: 0,
     explain: "p i s a ł </w> to 6 tokenów: 5 liter i znacznik końca słowa.", src: "W02, slajd 45", note: "W02-lingwistyka" },
 
+  { id: "W02-33", w: "W02", c: "bpe-przyklad", type: "calc",
+    q: "W przykładzie BPE drugie słowo, „pisała”, rozbija się na znaki i dostaje na końcu znacznik </w>. Ile tokenów ma na starcie?",
+    answer: 7, tolerance: 0,
+    explain: "p i s a ł a </w> to 7 tokenów: 6 liter i znacznik końca słowa.", src: "W02, slajd 45", note: "W02-lingwistyka" },
+
+  { id: "W02-34", w: "W02", c: "bpe-przyklad", type: "calc",
+    q: "W przykładzie BPE para „is” zostaje złączona w nowy token. Ile tokenów łącznie mają po tym kroku oba słowa, „pisał” i „pisała” (ze znacznikiem </w>)?",
+    answer: 11, tolerance: 0,
+    explain: "p is a ł </w> to 5 tokenów, a p is a ł a </w> to 6 tokenów: 5 + 6 = 11.", src: "W02, slajd 45", note: "W02-lingwistyka" },
+
   { id: "W02-17", w: "W02", c: "slownik-bpe", type: "multi",
     q: "Co według slajdu cechuje większy słownik BPE?",
     options: ["Mniej tokenów na zdanie", "Lepszy dla rzadszych słów i wielojęzyczności", "Odpowiedni dla małych korpusów domenowych", "Większe wymagania pamięciowe i obliczeniowe"],
     correct: [0, 1, 3], explain: "Małe i domenowe korpusy to zaleta mniejszego słownika. Wielkość słownika to hiperparametr.", src: "W02, slajd 48", note: "W02-lingwistyka" },
 
+  { id: "W02-35", w: "W02", c: "slownik-bpe", type: "multi",
+    q: "Co według slajdu cechuje mniejszy słownik BPE?",
+    options: ["Więcej tokenów na zdanie", "Lepszy dla niuansów lingwistycznych", "Tokeny mogą nie mieścić się w kontekście", "Większe wymagania pamięciowe"],
+    correct: [0, 2], explain: "Mniejszy słownik daje więcej tokenów na zdanie, więc mogą nie zmieścić się w kontekście. Niuanse i większe wymagania to cechy większego słownika.", src: "W02, slajd 48", note: "W02-lingwistyka" },
+
+  { id: "W02-36", w: "W02", c: "slownik-bpe", type: "single",
+    q: "Tokenizer BPE ma być wytrenowany na wąskim, specjalistycznym zbiorze tekstów z jednej domeny. Jaki słownik slajd uznaje za odpowiedni?",
+    options: ["Większy słownik", "Mniejszy słownik", "Słownik pojedynczych znaków", "Słownik wszystkich słów języka"],
+    correct: [1], explain: "Mniejszy słownik jest odpowiedni dla małych lub domenowych korpusów. Większy jest lepszy dla rzadkich słów i wielojęzyczności.", src: "W02, slajd 48", note: "W02-lingwistyka" },
+
   { id: "W02-18", w: "W02", c: "pretokenizacja", type: "single",
     q: "Do czego GPT-2 używa wyrażeń regularnych?",
     options: ["Do usuwania końcówek fleksyjnych", "Do pre-tokenizacji przed podziałem na tokeny", "Do obliczania odległości edycyjnej", "Do oznaczania części mowy"],
     correct: [1], explain: "Pre-tokenizator GPT-2 dzieli tekst regexem na skróty, słowa, liczby, interpunkcję i białe znaki.", src: "W02, slajd 50", note: "W02-lingwistyka" },
+
+  { id: "W02-37", w: "W02", c: "pretokenizacja", type: "multi",
+    q: "Jakie fragmenty tekstu wydziela regex z pre-tokenizatora GPT-2 pokazany na slajdzie?",
+    options: ["Skróty typu 's, 't, 'm", "Sekwencje liter Unicode", "Sekwencje cyfr", "Pary najczęstszych znaków"],
+    correct: [0, 1, 2], explain: "Wzorzec ma części na skróty, litery \\p{L}, cyfry \\p{N}, interpunkcję i białe znaki. Łączenie częstych par to BPE.", src: "W02, slajd 50", note: "W02-lingwistyka" },
 
   { id: "W02-19", w: "W02", c: "stemming-lematyzacja", type: "single",
     q: "Proces przekształcania odmienionych form wyrazu do formy podstawowej, uwzględniający znaczenie i reguły gramatyczne, to:",
@@ -104,6 +164,16 @@
     q: "Stemmer zostawił formy „pisał” i „pisała” jako dwa różne rdzenie. Jak nazywa się ta wada?",
     options: ["Overstemming", "Understemming", "Lematyzacja", "Miara morfologiczna"],
     correct: [1], explain: "Understemming to niepołączenie wszystkich form wyrazu; overstemming to zbyt mocne skrócenie.", src: "W02, slajd 56", note: "W02-lingwistyka" },
+
+  { id: "W02-38", w: "W02", c: "overstemming", type: "single",
+    q: "Co według slajdu oznacza overstemming?",
+    options: ["Niepołączenie wszystkich form tego samego wyrazu", "Zbyt mocne skrócenie wyrazu przez stemmer", "Wynik stemmingu niebędący poprawnym słowem", "Usunięcie ze słowa końcówki fleksyjnej"],
+    correct: [1], explain: "Overstemming to zbyt mocne skrócenie wyrazu. Niepołączenie form to understemming.", src: "W02, slajd 56", note: "W02-lingwistyka" },
+
+  { id: "W02-39", w: "W02", c: "overstemming", type: "single",
+    q: "Która cecha NIE jest według slajdu wadą algorytmu Portera?",
+    options: ["Wynik nie zawsze jest poprawnym słowem", "Słabiej działa w językach o bogatej fleksji", "Opiera się na sekwencyjnym zestawie reguł", "Musi być dostosowany do konkretnego języka"],
+    correct: [2], explain: "Sekwencyjny zestaw reguł to opis działania algorytmu ze slajdu 54. Pozostałe cechy to wady ze slajdu 56.", src: "W02, slajdy 54–56", note: "W02-lingwistyka" },
 
   { id: "W02-22", w: "W02", c: "pos-tagging", type: "multi",
     q: "Które podejścia do oznaczania części mowy wymienia slajd?",

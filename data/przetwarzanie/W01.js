@@ -35,6 +35,16 @@
     options: ["Podsumowanie treści", "Rozpoznawanie i synteza mowy", "Budowa ontologii domeny", "Tłumaczenia maszynowe"],
     correct: [0, 1, 3], explain: "Zastosowania: analiza sentymentu, analiza zawartości, wyszukiwanie informacji, tłumaczenia, podsumowanie, mowa. Ontologie pojawiają się tylko w historii (lata 70.).", src: "W01, slajd 7", note: "W01-wprowadzenie" },
 
+  { id: "W01-25", w: "W01", c: "zastosowania", type: "single",
+    q: "Którego z poniższych slajd NIE wymienia wśród typowych zastosowań NLP?",
+    options: ["Wyszukiwanie informacji w tekstach", "Rozpoznawanie i synteza mowy", "Analiza fraz maszynami stanów", "Tłumaczenia maszynowe"],
+    correct: [2], explain: "Maszyny stanów do analizy fraz to historia NLP z lat 70. (slajd 15), a nie zastosowanie ze slajdu 7.", src: "W01, slajd 7", note: "W01-wprowadzenie" },
+
+  { id: "W01-26", w: "W01", c: "zastosowania", type: "open",
+    q: "Wymień trzy typowe zastosowania NLP.",
+    answer: "Np. analiza sentymentu, tłumaczenia maszynowe i podsumowanie treści; slajd podaje też analizę zawartości, wyszukiwanie informacji oraz rozpoznawanie i syntezę mowy.",
+    src: "W01, slajd 7", note: "W01-wprowadzenie" },
+
   { id: "W01-08", w: "W01", c: "analiza-zawartosci", type: "single",
     q: "Znajdowanie nazw własnych i adresów oraz klasyfikacja i etykietowanie zawartości to:",
     options: ["Analiza zawartości", "Analiza sentymentu", "Podsumowanie treści", "Synteza mowy"],
@@ -60,10 +70,25 @@
     options: ["Wnioskowanie informacji z próbek wiedzy", "Ograniczenie systemu do języka angielskiego", "Przechowywanie wszystkich informacji w komputerze", "Zastąpienie wiedzy prostymi podstawieniami"],
     correct: [0, 2], explain: "Slajd 9: albo przechowujemy całą wiedzę w komputerze, albo wnioskujemy ją z próbek.", src: "W01, slajd 9", note: "W01-wprowadzenie" },
 
+  { id: "W01-27", w: "W01", c: "wiedza", type: "single",
+    q: "Czego według slajdu potrzeba, aby dobrze przetwarzać język?",
+    options: ["Zestawu 6 reguł gramatycznych i 250 pojęć", "Wiedzy o świecie albo o domenie problemu", "Ontologii do strukturyzowania danych", "Statystyki zamiast reguł pisanych ręcznie"],
+    correct: [1], explain: "Slajd 9: należy mieć wiedzę o świecie albo przynajmniej o domenie problemu.", src: "W01, slajd 9", note: "W01-wprowadzenie" },
+
+  { id: "W01-28", w: "W01", c: "wiedza", type: "single",
+    q: "System nie ma zapisanych wszystkich faktów, lecz uogólnia na podstawie przykładów. Które rozwiązanie problemu wiedzy ze slajdu to opisuje?",
+    options: ["Przechowywanie wszystkich informacji w komputerze", "Wnioskowanie informacji z próbek wiedzy", "Analiza fraz za pomocą maszyn stanów", "Symulacja rozmowy przez podstawienia"],
+    correct: [1], explain: "Zamiast przechowywać całą wiedzę w komputerze, system wnioskuje ją z próbek wiedzy.", src: "W01, slajd 9", note: "W01-wprowadzenie" },
+
   { id: "W01-13", w: "W01", c: "a-the", type: "multi",
     q: "Od czego według slajdu zależy wybór przedimka a lub the w języku angielskim?",
     options: ["Od liczby (pojedyncza, mnoga)", "Od czasu gramatycznego czasownika", "Od typu rzeczownika (policzalny, niepoliczalny)", "Od tego, czy to nazwa własna"],
     correct: [0, 2, 3], explain: "Slajd wymienia: typ rzeczownika, odniesienia (nowa informacja), liczbę, nazwę własną. Czasu czasownika nie ma.", src: "W01, slajd 10", note: "W01-wprowadzenie" },
+
+  { id: "W01-29", w: "W01", c: "a-the", type: "single",
+    q: "Jaki wniosek wyciąga slajd z przykładu przedimków a i the?",
+    options: ["Wystarczy do tego słownik pojęć leksykalnych", "Trudno to zakodować w zestawie reguł", "Wystarczy pattern matching z podstawieniami", "O wyborze decyduje tylko liczba rzeczownika"],
+    correct: [1], explain: "Przedimki zależą od wielu czynników, więc trudno je zakodować w regułach; slajd pyta, czy da się „nauczyć” komputer.", src: "W01, slajd 10", note: "W01-wprowadzenie" },
 
   { id: "W01-14", w: "W01", c: "turing-chomsky", type: "single",
     q: "Kto zaproponował koncepcję „universal grammar” (1957)?",
@@ -100,6 +125,11 @@
     answer: "Efekt projekcji: użytkownicy przypisywali programowi komputerowemu ludzkie cechy, np. empatię.",
     src: "W01, slajd 14", note: "W01-wprowadzenie" },
 
+  { id: "W01-30", w: "W01", c: "projekcja", type: "single",
+    q: "Przypisywanie programom komputerowym ludzkich cech, takich jak empatia, to według slajdu:",
+    options: ["Iluzja zrozumienia", "Efekt projekcji", "Test Turinga", "Terapia PCT"],
+    correct: [1], explain: "Slajd 14: pojawia się efekt projekcji ludzkich cech na programy. Iluzję zrozumienia ELIZA daje użytkownikom, to inne zdanie slajdu.", src: "W01, slajd 14", note: "W01-wprowadzenie" },
+
   { id: "W01-21", w: "W01", c: "epoki", type: "single",
     q: "W którym okresie NLP zwróciło się w stronę statystyki, aby obejść problem złożonych reguł pisanych ręcznie?",
     options: ["W latach 70.", "W latach 80.", "W latach 90.", "Po roku 2014"],
@@ -115,8 +145,23 @@
     options: ["2014 — artykuł o architekturze transformer", "2017 — pojawia się mechanizm uwagi", "2022 — artykuł „Attention Is All You Need”", "2017 — artykuł o architekturze transformer"],
     correct: [3], explain: "Mechanizm uwagi: 2014. „Attention Is All You Need” (transformer): 2017. ChatGPT: 2022.", src: "W01, slajd 16", note: "W01-wprowadzenie" },
 
+  { id: "W01-31", w: "W01", c: "uwaga-transformer", type: "single",
+    q: "W którym roku według slajdu pojawia się mechanizm uwagi?",
+    options: ["1990", "2014", "2017", "2022"],
+    correct: [1], explain: "Mechanizm uwagi: 2014. Artykuł o transformerze: 2017.", src: "W01, slajd 16", note: "W01-wprowadzenie" },
+
+  { id: "W01-32", w: "W01", c: "uwaga-transformer", type: "single",
+    q: "Czego według slajdu dotyczy artykuł „Attention Is All You Need” z 2017 roku?",
+    options: ["Sieci rekurencyjnych z embeddingami", "Architektury transformer", "Chatbota opartego o duży model", "Statystyki zamiast reguł ręcznych"],
+    correct: [1], explain: "Artykuł opisuje architekturę transformer. Sieci rekurencyjne z embeddingami to rok 1990, chatbot ChatGPT to 2022.", src: "W01, slajd 16", note: "W01-wprowadzenie" },
+
   { id: "W01-24", w: "W01", c: "chronologia", type: "single",
     q: "Która kolejność wydarzeń jest chronologiczna?",
     options: ["ELIZA → Georgetown-IBM → mechanizm uwagi → ChatGPT", "Georgetown-IBM → ELIZA → mechanizm uwagi → ChatGPT", "Georgetown-IBM → mechanizm uwagi → ELIZA → ChatGPT", "ELIZA → mechanizm uwagi → Georgetown-IBM → ChatGPT"],
     correct: [1], explain: "Georgetown-IBM 1954, ELIZA 1964, mechanizm uwagi 2014, ChatGPT 2022.", src: "W01, slajdy 13–16", note: "W01-wprowadzenie" },
+
+  { id: "W01-33", w: "W01", c: "chronologia", type: "single",
+    q: "Która kolejność wydarzeń z historii NLP jest zgodna ze slajdami?",
+    options: ["Georgetown-IBM → patent na maszynę tłumaczącą → universal grammar → ELIZA", "Patent na maszynę tłumaczącą → universal grammar → Georgetown-IBM → ELIZA", "Patent na maszynę tłumaczącą → Georgetown-IBM → universal grammar → ELIZA", "Patent na maszynę tłumaczącą → Georgetown-IBM → ELIZA → universal grammar"],
+    correct: [2], explain: "Patent na maszynę tłumaczącą: lata 30. Georgetown-IBM: 1954. Universal grammar: 1957. ELIZA: 1964.", src: "W01, slajdy 12–14", note: "W01-wprowadzenie" },
 ]});

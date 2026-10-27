@@ -5,6 +5,12 @@
     options: ["Uczą się metodą gradientu prostego, która wymaga funkcji ciągłych", "Bo tylko liczby da się zapisać w macierzy współwystępowania", "Bo tekst musi być najpierw przetłumaczony na język angielski", "Bo prawo Zipfa nie działa dla słów zapisanych tekstem"],
     correct: [0], explain: "Slajd 70: modele ML uczą się metodą gradientu prostego, co wymaga funkcji ciągłych; na wektorach działa też iloczyn skalarny.", src: "W03, slajd 70", note: "W03-reprezentacja-wektorowa" },
 
+  { id: "W03-26", w: "W03", c: "wektory-cel", type: "multi",
+    q: "Które powody stosowania reprezentacji wektorowej tekstu podają slajdy?",
+    options: ["Pozwala stosować dodawanie, mnożenie i iloczyn skalarny", "Pozwala mierzyć podobieństwo tekstów", "Zastępuje potrzebę tworzenia korpusu dokumentów", "Gwarantuje zachowanie kolejności słów w tekście i w wektorze"],
+    correct: [0, 1], explain: "Slajd 70: na wektorach działają typowe operacje i można mierzyć podobieństwo. Korpus nadal jest potrzebny, a kolejność słów nie jest zachowana.",
+    src: "W03, slajd 70", note: "W03-reprezentacja-wektorowa" },
+
   { id: "W03-02", w: "W03", c: "korpus", type: "single",
     q: "Jak w NLP nazywa się kolekcja dokumentów tekstowych?",
     options: ["Słownik", "Korpus", "Macierz TDM", "Przestrzeń osadzania"],
@@ -30,10 +36,22 @@
     options: ["One-hot encoding", "Vector Space Model", "Macierz współwystępowania", "Funkcja rankingowa BM25"],
     correct: [1], explain: "VSM: odległość między wektorami odpowiada najczęściej podobieństwu dokumentów.", src: "W03, slajd 75", note: "W03-reprezentacja-wektorowa" },
 
+  { id: "W03-27", w: "W03", c: "vsm", type: "single",
+    q: "Co w Vector Space Model odzwierciedla zazwyczaj odległość pomiędzy wektorami dokumentów?",
+    options: ["Podobieństwo pomiędzy dokumentami", "Różnicę w liczbie zdań dokumentów", "Kolejność słów w dokumentach", "Rozmiar słownika korpusu"],
+    correct: [0], explain: "Slajd 75: odległość wektorowa ma znaczenie i odpowiada najczęściej podobieństwu pomiędzy dokumentami.",
+    src: "W03, slajd 75", note: "W03-reprezentacja-wektorowa" },
+
   { id: "W03-07", w: "W03", c: "tdm", type: "single",
     q: "Co według slajdu oznaczają wiersze i kolumny macierzy TDM?",
     options: ["Wiersze to dokumenty, kolumny to słowa", "Wiersze to słowa, kolumny to dokumenty", "Wiersze i kolumny to słowa ze słownika", "Wiersze to słowa, kolumny to wymiary embeddingu"],
     correct: [1], explain: "Term Document Matrix: wiersze to słowa, kolumny to dokumenty w korpusie, wartości to wagi.", src: "W03, slajd 76", note: "W03-reprezentacja-wektorowa" },
+
+  { id: "W03-28", w: "W03", c: "tdm", type: "single",
+    q: "Korpus ma 4 dokumenty, a słownik 10 słów. Jakie wymiary (wiersze × kolumny) ma macierz TDM?",
+    options: ["10 × 4", "4 × 10", "10 × 10", "4 × 4"],
+    correct: [0], explain: "Slajd 76: wiersze to słowa, kolumny to dokumenty, więc 10 wierszy i 4 kolumny (jak 6 × 3 w przykładzie).",
+    src: "W03, slajd 76", note: "W03-reprezentacja-wektorowa" },
 
   { id: "W03-08", w: "W03", c: "idf", type: "single",
     q: "Do czego służy IDF (Inverse Document Frequency)?",
@@ -75,6 +93,12 @@
     options: ["GloVe", "BM25", "CBOW", "PCA"],
     correct: [1], explain: "Slajd 82: zapytanie wektoryzuje się do przestrzeni TF-IDF; stąd wywodzi się m.in. BM25.", src: "W03, slajd 82", note: "W03-reprezentacja-wektorowa" },
 
+  { id: "W03-29", w: "W03", c: "wyszukiwanie", type: "single",
+    q: "Jak według slajdu wyszukuje się dokumenty dla zapytania, gdy dana jest macierz TF-IDF?",
+    options: ["Zapytanie porównuje się z każdym dokumentem osobno za pomocą odległości edycyjnej", "Zapytanie dołącza się do korpusu jako nowy dokument i przelicza wszystkie wagi IDF", "Zapytanie wektoryzuje się do tej samej przestrzeni i porównuje ze wszystkimi dokumentami", "Zapytanie zamienia się na wektor one-hot i porównuje z kolejnością słów w dokumentach"],
+    correct: [2], explain: "Slajd 82: zapytanie jest wektoryzowane do tej samej przestrzeni, a podobieństwo do wszystkich dokumentów liczy się naraz.",
+    src: "W03, slajd 82", note: "W03-reprezentacja-wektorowa" },
+
   { id: "W03-16", w: "W03", c: "zipf", type: "single",
     q: "Jaki wniosek dla wektorów BoW wynika z prawa Zipfa?",
     options: ["Są zazwyczaj gęste i niskowymiarowe", "Są zazwyczaj rzadkie (sparse)", "Zachowują podobieństwo znaczeniowe", "Mają długość równą liczbie dokumentów"],
@@ -90,15 +114,45 @@
     options: ["Jest ogromna (V × V)", "Ignoruje słowa rzadkie", "Jest bardzo rzadka", "Wymaga sieci LSTM"],
     correct: [0, 2], explain: "Slajd 87: macierz jest ogromna i bardzo rzadka; rozwiązanie to aproksymacja siecią neuronową.", src: "W03, slajd 87", note: "W03-reprezentacja-wektorowa" },
 
+  { id: "W03-30", w: "W03", c: "wspolwystepowanie", type: "single",
+    q: "Jak nazywa się macierz, której wartości mówią, ile razy słowa pojawiły się w tym samym kontekście, np. w jednym dokumencie?",
+    options: ["Macierz TDM", "Macierz współwystępowania", "Macierz podobieństwa cosinusowego", "Macierz TF-IDF"],
+    correct: [1], explain: "Slajd 86: macierz współwystępowania liczy wystąpienia słów razem w tym samym kontekście.",
+    src: "W03, slajd 86", note: "W03-reprezentacja-wektorowa" },
+
+  { id: "W03-31", w: "W03", c: "wspolwystepowanie", type: "single",
+    q: "Co według slajdu można zrobić zamiast przechowywać ogromną, rzadką macierz V × V?",
+    options: ["Zbudować sieć neuronową, która ją aproksymuje", "Użyć prostej aproksymacji analitycznej", "Usunąć ze słownika wszystkie słowa rzadkie", "Zastąpić ją macierzą TDM z wagami binarnymi"],
+    correct: [0], explain: "Slajd 87: prostej aproksymacji nie ma, ale można zbudować sieć neuronową, która będzie to robić.",
+    src: "W03, slajd 87", note: "W03-reprezentacja-wektorowa" },
+
   { id: "W03-19", w: "W03", c: "skip-gram", type: "single",
     q: "Co według slajdu oznacza skip-gram o rozmiarze 5?",
     options: ["5 słów przed słowem brakującym", "2 słowa przed i 2 słowa po słowie brakującym", "5 brakujących słów w jednej sekwencji", "4 słowa przed i 1 słowo po słowie brakującym"],
     correct: [1], explain: "Skip-gram to sekwencja bez środkowego słowa; rozmiar 5 = 2 + brakujące + 2.", src: "W03, slajd 88", note: "W03-reprezentacja-wektorowa" },
 
+  { id: "W03-32", w: "W03", c: "skip-gram", type: "single",
+    q: "Jak nazywa się sekwencja słów, w której środkowe słowo jest nieobecne, np. „Ala __ koty”?",
+    options: ["CBOW", "Skip-gram", "Term Document Matrix", "Vector Space Model"],
+    correct: [1], explain: "Slajd 88: skip-gramy to sekwencje słów z nieobecnym środkowym słowem; algorytm ma przewidywać brakujące słowa.",
+    src: "W03, slajd 88", note: "W03-reprezentacja-wektorowa" },
+
   { id: "W03-20", w: "W03", c: "cbow", type: "single",
     q: "Co slajd mówi o CBOW w porównaniu z CSGM?",
     options: ["Jest wolniejszy, ale lepszy dla rzadkich słów", "Jest szybszy, ale gorszy dla rzadkich słów", "Obsługuje słowa spoza słownika", "Opiera się na sieci LSTM"],
     correct: [1], explain: "Slajd 89: CBOW (Continuous Bag of Words) jest szybszy, ale gorszy dla rzadziej występujących słów.", src: "W03, slajd 89", note: "W03-reprezentacja-wektorowa" },
+
+  { id: "W03-33", w: "W03", c: "cbow", type: "single",
+    q: "Jak rozwija się skrót CBOW?",
+    options: ["Continuous Bag of Words", "Contextual Bag of Words", "Continuous Binary Word model", "Convolutional Bag of Words"],
+    correct: [0], explain: "Slajd 89: CBOW to Continuous Bag of Words, a CSGM to Continuous Skip-Gram Model.",
+    src: "W03, slajd 89", note: "W03-reprezentacja-wektorowa" },
+
+  { id: "W03-34", w: "W03", c: "cbow", type: "single",
+    q: "Które zdanie o CBOW NIE jest zgodne ze slajdem?",
+    options: ["Skrót oznacza Continuous Bag of Words", "Jest szybszy od modelu CSGM", "Jest lepszy od CSGM dla rzadziej występujących słów", "Jest gorszy od CSGM dla rzadziej występujących słów"],
+    correct: [2], explain: "Slajd 89: CBOW jest szybszy, ale gorszy dla rzadziej występujących słów.",
+    src: "W03, slajd 89", note: "W03-reprezentacja-wektorowa" },
 
   { id: "W03-21", w: "W03", c: "embedding", type: "single",
     q: "Czym są embeddingi w sieci word2vec po zakończeniu treningu?",
@@ -115,13 +169,43 @@
     options: ["Zachowują podobieństwo znaczeniowe", "Każdy wymiar odpowiada jednemu konceptowi", "Można wykonywać na nich operacje matematyczne", "Mają długość równą rozmiarowi słownika"],
     correct: [0, 2], explain: "Slajdy 94 i 97: podobieństwo znaczeniowe oraz operacje typu król − mężczyzna + kobieta ≈ królowa.", src: "W03, slajdy 94, 97", note: "W03-reprezentacja-wektorowa" },
 
+  { id: "W03-35", w: "W03", c: "embedding-cechy", type: "single",
+    q: "Embeddingi słów „kot” i „pies” (pokrewnych) powstały przy odpowiednio dużych wektorach i zbiorach uczących. Jakiego podobieństwa cosinusowego ich wektorów należy oczekiwać?",
+    options: ["Bliskiego zeru", "Równego -1", "Dużego", "Zależnego od długości wektorów"],
+    correct: [2], explain: "Slajd 94: dla pokrewnych rzeczy podobieństwo cosinusowe wektorów embeddingów będzie duże. Cosinus zależy tylko od kąta.",
+    src: "W03, slajd 94", note: "W03-reprezentacja-wektorowa" },
+
+  { id: "W03-36", w: "W03", c: "embedding-cechy", type: "single",
+    q: "Jaki wektor jest w przybliżeniu wynikiem działania król – mężczyzna + kobieta wykonanego na embeddingach?",
+    options: ["Embedding słowa „książę”", "Embedding słowa „kobieta”", "Embedding słowa „mężczyzna”", "Embedding słowa „królowa”"],
+    correct: [3], explain: "Slajd 97: na wektorach można wykonywać operacje matematyczne, a wynik to ≈ królowa.",
+    src: "W03, slajd 97", note: "W03-reprezentacja-wektorowa" },
+
   { id: "W03-24", w: "W03", c: "latent-space", type: "single",
     q: "Które zdanie o przestrzeni ukrytej (latent space) NIE jest zgodne ze slajdem?",
     options: ["Nazywana jest też przestrzenią osadzania", "Istnieje osobny wymiar dla konceptu „kot”", "To abstrakcyjna, wielowymiarowa reprezentacja", "Model nie jest uczony konceptów"],
     correct: [1], explain: "Slajd 96: nie ma pojedynczego wymiaru dla konceptu „kot”; wymiary nie muszą odpowiadać konceptom.", src: "W03, slajd 96", note: "W03-reprezentacja-wektorowa" },
 
+  { id: "W03-37", w: "W03", c: "latent-space", type: "single",
+    q: "Jak inaczej nazywana jest przestrzeń ukryta (latent space)?",
+    options: ["Przestrzeń wejściowa", "Przestrzeń osadzania", "Przestrzeń słownika", "Przestrzeń korpusu"],
+    correct: [1], explain: "Slajd 96: latent space to też przestrzeń osadzania (embedding space).",
+    src: "W03, slajd 96", note: "W03-reprezentacja-wektorowa" },
+
   { id: "W03-25", w: "W03", c: "kolejne-podejscia", type: "single",
     q: "Który model generuje embeddingi zależne od kontekstu użycia słowa i opiera się o sieć LSTM?",
     options: ["GloVe", "FastText", "ELMo", "BERT"],
     correct: [2], explain: "ELMo: kontekst + LSTM. FastText: sekwencje znaków. BERT: transformer. GloVe: nienadzorowany, szybszy od word2vec.", src: "W03, slajdy 98–99", note: "W03-reprezentacja-wektorowa" },
+
+  { id: "W03-38", w: "W03", c: "kolejne-podejscia", type: "single",
+    q: "Który model nie pracuje z pojedynczymi słowami, ale z sekwencjami znaków?",
+    options: ["ELMo", "RoBERTa", "word2vec", "FastText"],
+    correct: [3], explain: "Slajd 99: FastText pracuje na sekwencjach znaków i ma drzewiastą strukturę wyjść.",
+    src: "W03, slajd 99", note: "W03-reprezentacja-wektorowa" },
+
+  { id: "W03-39", w: "W03", c: "kolejne-podejscia", type: "single",
+    q: "Który model transformerowy generuje embeddingi analizując zdanie od lewej do prawej i odwrotnie?",
+    options: ["BERT", "ELMo", "FastText", "GloVe"],
+    correct: [0], explain: "Slajd 99: BERT to model transformerowy analizujący zdanie w obu kierunkach. ELMo opiera się o LSTM.",
+    src: "W03, slajd 99", note: "W03-reprezentacja-wektorowa" },
 ]});

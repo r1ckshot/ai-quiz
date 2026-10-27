@@ -15,6 +15,16 @@
     options: ["FFT → podział na ramki → wyliczenie cech", "Podział na ramki → FFT → wyliczenie cech", "Wyliczenie cech → FFT → podział na ramki", "Podział na ramki → wyliczenie cech → FFT"],
     correct: [1], explain: "Dźwięk dzieli się na ramki, potem wykonuje się FFT, a potem wylicza cechy.", src: "W12, slajd 300", note: "W12-mowa" },
 
+  { id: "W12-26", w: "W12", c: "repr-dzwieku", type: "single",
+    q: "Który krok następuje bezpośrednio po podziale dźwięku na ramki?",
+    options: ["Wyliczenie cech", "Transformata Fouriera (FFT)", "Usunięcie ciszy (VAD)", "Synteza fali przez vocoder"],
+    correct: [1], explain: "Po podziale na ramki wykonuje się FFT, dopiero potem wylicza się cechy.", src: "W12, slajd 300", note: "W12-mowa" },
+
+  { id: "W12-27", w: "W12", c: "repr-dzwieku", type: "open",
+    q: "Wymień kolejne etapy przetwarzania dźwięku na wektory cech.",
+    answer: "Podział dźwięku na ramki, transformata Fouriera (FFT), wyliczenie cech.",
+    src: "W12, slajd 300", note: "W12-mowa" },
+
   { id: "W12-04", w: "W12", c: "mel", type: "single",
     q: "Dlaczego stosuje się przekształcenie częstotliwości na skalę mel?",
     options: ["Bo FFT nie działa na surowym sygnale", "Bo ludzie nie słyszą jednakowo w każdej częstotliwości", "Bo spektrogram wymaga wektora 39-wymiarowego", "Bo usuwa ciszę i dźwięki tła z nagrania"],
@@ -29,6 +39,11 @@
     q: "Oblicz wartość w skali mel dla f = 700 Hz, korzystając ze wzoru mel(f) = 1127 ln(1 + f/700). Podaj wynik z dokładnością do 1.",
     answer: 781.2, tolerance: 1,
     explain: "mel(700) = 1127 ln(1 + 1) = 1127 × 0,6931 ≈ 781,2.", src: "W12, slajd 301", note: "W12-mowa" },
+
+  { id: "W12-28", w: "W12", c: "mel-calc", type: "calc",
+    q: "Oblicz wartość w skali mel dla f = 1400 Hz, korzystając ze wzoru mel(f) = 1127 ln(1 + f/700). Podaj wynik z dokładnością do 1.",
+    answer: 1238.1, tolerance: 1,
+    explain: "mel(1400) = 1127 ln(1 + 2) = 1127 × 1,0986 ≈ 1238,1.", src: "W12, slajd 301", note: "W12-mowa" },
 
   { id: "W12-07", w: "W12", c: "mfcc", type: "single",
     q: "Typowa reprezentacja fali dźwiękowej, uwzględniająca istotne fragmenty dla wyliczenia jednostek fonetycznych, to:",
@@ -45,15 +60,35 @@
     options: ["Ukryte modele Markowa", "Modele Gaussowskie", "Vocoder HiFi-GAN", "Transformer Whisper"],
     correct: [0, 1], explain: "Historycznie: HMM i GMM. Whisper to współczesny system STT, HiFi-GAN to vocoder.", src: "W12, slajd 303", note: "W12-mowa" },
 
+  { id: "W12-29", w: "W12", c: "model-akustyczny-stt", type: "single",
+    q: "Czego uczy się model akustyczny w systemie STT?",
+    options: ["Zależności między cechami audio a fonemami", "Zależności między fonemami a interpunkcją", "Wysokości głosu i czasu jego trwania", "Zależności między mówcami a słowami kluczowymi"],
+    correct: [0], explain: "W STT model akustyczny uczy się zależności między cechami audio a fonemami.", src: "W12, slajd 303", note: "W12-mowa" },
+
   { id: "W12-10", w: "W12", c: "wav2vec", type: "single",
     q: "Który opis systemu Wav2vec jest zgodny ze slajdem?",
     options: ["Sieci konwolucyjne i transformatory, Meta, 2020", "Ukryte modele Markowa i GMM, Meta, 2020", "Transformer enkoder-dekoder, OpenAI, 2023", "Sieci konwolucyjne i transformatory, Google, 2016"],
     correct: [0], explain: "Wav2vec to system oparty na CNN oraz transformatorach, opracowany przez Meta w 2020.", src: "W12, slajd 303", note: "W12-mowa" },
 
+  { id: "W12-30", w: "W12", c: "wav2vec", type: "open",
+    q: "Czym jest Wav2vec i kto go opracował?",
+    answer: "To oryginalny system STT oparty na sieciach konwolucyjnych i transformatorach, opracowany przez firmę Meta w 2020.",
+    src: "W12, slajd 303", note: "W12-mowa" },
+
   { id: "W12-11", w: "W12", c: "common-voice", type: "single",
     q: "Co jest potrzebne do treningu systemu STT i jaki korpus podaje slajd?",
     options: ["Same nagrania bez opisu; korpus Common Voice", "Pary nagranie i transkrypcja; korpus Common Voice", "Same transkrypcje tekstowe; korpus Common Crawl", "Pary tekst i spektrogram; korpus Common Crawl"],
     correct: [1], explain: "Trening STT wymaga par nagranie oraz transkrypcja; popularny korpus to Common Voice (Mozilla).", src: "W12, slajd 304", note: "W12-mowa" },
+
+  { id: "W12-31", w: "W12", c: "common-voice", type: "single",
+    q: "Czym jest Common Voice?",
+    options: ["Korpus nagrań z transkrypcjami w ponad 290 językach", "System STT oparty na CNN i transformatorach firmy Meta", "Vocoder generujący dźwięk w oparciu o poprzednie próbki", "System TTS klonujący głos z próbki kilku sekund"],
+    correct: [0], explain: "Common Voice to korpus do treningu STT: pary nagranie i transkrypcja, ponad 290 języków.", src: "W12, slajd 304", note: "W12-mowa" },
+
+  { id: "W12-32", w: "W12", c: "common-voice", type: "single",
+    q: "Ile godzin nagrań w języku polskim zawiera korpus Common Voice według slajdu?",
+    options: ["190", "290", "3800", "39"],
+    correct: [0], explain: "Slajd 304: ponad 3800 godzin po angielsku i 190 godzin po polsku.", src: "W12, slajd 304", note: "W12-mowa" },
 
   { id: "W12-12", w: "W12", c: "whisper", type: "single",
     q: "Na jakiej architekturze oparty jest Whisper?",
@@ -90,10 +125,20 @@
     answer: "To wykrywanie słowa kluczowego, np. „siri”, po którym dopiero rozpoczyna się właściwa transkrypcja.",
     src: "W12, slajd 307", note: "W12-mowa" },
 
+  { id: "W12-33", w: "W12", c: "wake-word", type: "single",
+    q: "Asystent najpierw nasłuchuje słowa „siri”, a dopiero potem rozpoczyna transkrypcję. Jak nazywa się to wzbogacenie STT?",
+    options: ["Wake-word", "Voice Activity Detection", "Diarization", "Word Error Rate"],
+    correct: [0], explain: "Wykrywanie słów kluczowych (wake-word) poprzedza właściwy proces transkrypcji.", src: "W12, slajd 307", note: "W12-mowa" },
+
   { id: "W12-19", w: "W12", c: "synteza", type: "multi",
     q: "Co według slajdu trzeba wywnioskować z tekstu w procesie syntezy mowy?",
     options: ["Fonemy", "Akcent", "Mówców", "Pauzy"],
     correct: [0, 1, 3], explain: "Z tekstu wnioskuje się fonemy, akcent, interpunkcję i pauzy; rozpoznawanie mówców dotyczy STT.", src: "W12, slajd 308", note: "W12-mowa" },
+
+  { id: "W12-34", w: "W12", c: "synteza", type: "single",
+    q: "Czego uczy się model akustyczny w syntezie mowy?",
+    options: ["Wysokości głosu i czasu jego trwania", "Zależności między cechami audio a fonemami", "Podziału nagrania na mówców w rozmowie", "Usuwania ciszy i dźwięków tła z nagrania"],
+    correct: [0], explain: "W syntezie model akustyczny uczy się wysokości głosu, czasu trwania i innych elementów wymowy.", src: "W12, slajd 308", note: "W12-mowa" },
 
   { id: "W12-20", w: "W12", c: "vocoder", type: "single",
     q: "Jaką rolę pełni vocoder w syntezie mowy?",
@@ -110,6 +155,11 @@
     options: ["XTTSv2", "Kokoro", "Whisper", "ElevenLabs"],
     correct: [2], explain: "Przykłady TTS: XTTSv2, Kokoro, Bark, ElevenLabs. Whisper to system STT.", src: "W12, slajdy 305, 310", note: "W12-mowa" },
 
+  { id: "W12-35", w: "W12", c: "tts-przyklady", type: "open",
+    q: "Podaj przykłady systemów TTS wymienionych na slajdzie.",
+    answer: "XTTSv2, Kokoro, Bark, ElevenLabs.",
+    src: "W12, slajd 310", note: "W12-mowa" },
+
   { id: "W12-23", w: "W12", c: "end-to-end", type: "single",
     q: "Co odróżnia system end-to-end od potoku STT-LLM-TTS?",
     options: ["Warstwą pośrednią nie jest tekst", "Zawsze składa się z jednego modelu", "Nie korzysta z dużych modeli językowych", "Używa tekstu jako warstwy pośredniej"],
@@ -124,4 +174,14 @@
     q: "Które cechy według slajdu zawiera wektor cech głosu w klonowaniu głosu?",
     options: ["Barwa", "Rytm", "Fonemy treści", "Sposób artykulacji"],
     correct: [0, 1, 3], explain: "Wektor głosu: barwa, wysokość, sposób artykulacji, rytm; jest niezależny od wektora fonemów treści.", src: "W12, slajd 312", note: "W12-mowa" },
+
+  { id: "W12-36", w: "W12", c: "klonowanie", type: "single",
+    q: "Z jak długiej próbki systemy klonowania głosu uczą się brzmienia głosu i akcentu?",
+    options: ["Kilka-kilkanaście sekund", "Kilka-kilkanaście minut", "Kilkaset godzin nagrań", "Pełny korpus Common Voice"],
+    correct: [0], explain: "Slajd 312: wystarczy krótka próbka, kilka-kilkanaście sekund.", src: "W12, slajd 312", note: "W12-mowa" },
+
+  { id: "W12-37", w: "W12", c: "klonowanie", type: "open",
+    q: "Jak działa klonowanie głosu na podstawie spektrogramu?",
+    answer: "Z krótkiej próbki tworzy się wektor cech głosu (barwa, wysokość, artykulacja, rytm), niezależny od wektora fonemów, i generuje audio tym głosem.",
+    src: "W12, slajd 312", note: "W12-mowa" },
 ]});

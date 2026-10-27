@@ -40,10 +40,20 @@
     options: ["Dezinformacje", "Instrukcje działań niebezpiecznych", "Obraźliwe wypowiedzi i przemoc", "Wycieki treści chronionych prawem"],
     correct: [0, 1, 2], explain: "Wycieki treści objętych prawem autorskim to problem własności intelektualnej, nie treści szkodliwych.", src: "W13, slajd 318", note: "W13-etyka" },
 
+  { id: "W13-25", w: "W13", c: "tresci-szkodliwe", type: "single",
+    q: "Co NIE należy według slajdu do generowania treści szkodliwych?",
+    options: ["Obraźliwe wypowiedzi i przemoc", "Zmyślone cytowania i źródła", "Instrukcje działań niebezpiecznych", "Niebezpieczne narzędzia z zakresu cyberbezpieczeństwa"],
+    correct: [1], explain: "Zmyślone cytowania i źródła to halucynacje (slajd 314), a nie treści szkodliwe.", src: "W13, slajd 318", note: "W13-etyka" },
+
   { id: "W13-09", w: "W13", c: "prywatnosc", type: "multi",
     q: "Co należy uwzględnić przy korzystaniu z modelu przez zdalne API ze względu na prywatność?",
     options: ["Anonimizację danych", "Zgodność z przepisami prawa", "Czy model uczy się na tych danych", "Zmniejszenie śladu węglowego"],
     correct: [0, 1, 2], explain: "Slajd 319: anonimizacja i zgodność z prawem, zwłaszcza gdy model może korzystać z danych do dalszego uczenia.", src: "W13, slajd 319", note: "W13-etyka" },
+
+  { id: "W13-26", w: "W13", c: "prywatnosc", type: "single",
+    q: "Firma wysyła dane klientów do zdalnego API modelu, który może się na nich dalej uczyć. Co powinna uwzględnić?",
+    options: ["Filtrowanie wyjścia modelu", "Dostrajanie modelu i RLHF", "Anonimizację i zgodność z prawem", "Testy bezpieczeństwa i monitoring"],
+    correct: [2], explain: "Przy zdalnym API trzeba uwzględnić anonimizację i zgodność z przepisami prawa (slajd 319).", src: "W13, slajd 319", note: "W13-etyka" },
 
   { id: "W13-10", w: "W13", c: "prompt-injection", type: "single",
     q: "Wstrzykiwanie złośliwych poleceń do instrukcji działania dla modelu to:",
@@ -80,20 +90,40 @@
     options: ["Zanieczyszczanie danych", "Prompt injection", "Halucynacja", "System prompt extraction"],
     correct: [0], explain: "Data poisoning to celowe zanieczyszczanie danych treningowych lub dokumentów dla systemu RAG.", src: "W13, slajd 322", note: "W13-etyka" },
 
+  { id: "W13-27", w: "W13", c: "data-poisoning", type: "single",
+    q: "Co oznacza pojęcie data poisoning?",
+    options: ["Przypadkowe usuwanie rekordów z korpusu", "Celowe zanieczyszczanie danych treningowych lub RAG", "Wstrzykiwanie złośliwych poleceń do instrukcji", "Zmyślanie danych przez model przy generowaniu"],
+    correct: [1], explain: "Data poisoning to celowe zanieczyszczanie danych treningowych lub dokumentów dla systemu RAG.", src: "W13, slajd 322", note: "W13-etyka" },
+
   { id: "W13-17", w: "W13", c: "deepfake", type: "single",
     q: "Z jakim mechanizmem połączenie deepfake według slajdu prowadzi do oszustw (phishing)?",
     options: ["Z RAG", "Z TTS", "Z RLHF", "Z tokenizacją"],
     correct: [1], explain: "Deepfake w połączeniu z syntezą mowy (TTS) służy do oszustw typu phishing.", src: "W13, slajd 323", note: "W13-etyka" },
+
+  { id: "W13-28", w: "W13", c: "deepfake", type: "single",
+    q: "Automatyczne tworzenie nieprawdziwych komentarzy oraz zautomatyzowane farmy treści to zagrożenie nazwane:",
+    options: ["Halucynacja", "Zanieczyszczanie danych", "Jailbreak", "Deepfake"],
+    correct: [3], explain: "Slajd 323 (Deepfake): automatyczne tworzenie nieprawdziwych treści czy komentarzy i farmy treści.", src: "W13, slajd 323", note: "W13-etyka" },
 
   { id: "W13-18", w: "W13", c: "wlasnosc", type: "single",
     q: "Które zagadnienie NIE należy według slajdu do problemów własności intelektualnej?",
     options: ["Trening na materiałach objętych prawem autorskim", "Treści przypominające konkretnego autora", "Wycieki informacji objętych prawem autorskim", "Informacje osobowe w zbiorze treningowym"],
     correct: [3], explain: "Informacje osobowe w danych treningowych to problem prywatności (slajd 319).", src: "W13, slajd 324", note: "W13-etyka" },
 
+  { id: "W13-29", w: "W13", c: "wlasnosc", type: "single",
+    q: "Model generuje opowiadania przypominające twórczość konkretnego pisarza. Jaki to problem?",
+    options: ["Własność intelektualna", "Zanieczyszczanie danych", "Nadużycie automatyzacji", "Koszt środowiskowy"],
+    correct: [0], explain: "Generowanie treści przypominających konkretnego autora to problem własności intelektualnej.", src: "W13, slajd 324", note: "W13-etyka" },
+
   { id: "W13-19", w: "W13", c: "transparentnosc", type: "multi",
     q: "Na czym według slajdu polega problem transparentności i wyjaśnialności LLM?",
     options: ["Brak wyjaśnienia, skąd dana odpowiedź", "Brak audytu", "Czasem ukrywanie rozumowania", "Zbyt mała liczba parametrów modelu"],
     correct: [0, 1, 2], explain: "Systemy LLM to często czarne skrzynki: bez wyjaśnień, interpretowalności i audytu.", src: "W13, slajd 325", note: "W13-etyka" },
+
+  { id: "W13-30", w: "W13", c: "transparentnosc", type: "single",
+    q: "Nikt nie wie, dlaczego model podał daną odpowiedź, i nie przeprowadza się audytu systemu. Jaki to problem?",
+    options: ["Nadużycie automatyzacji", "Zanieczyszczanie danych", "Brak transparentności", "Koszt środowiskowy"],
+    correct: [2], explain: "To czarna skrzynka: brak wyjaśnienia odpowiedzi i audytu to problem transparentności i wyjaśnialności.", src: "W13, slajd 325", note: "W13-etyka" },
 
   { id: "W13-20", w: "W13", c: "hitl", type: "single",
     q: "Firma podejmuje decyzje kredytowe wyłącznie na podstawie odpowiedzi LLM. Jaki to problem?",
@@ -109,6 +139,11 @@
     q: "Który skutek slajd przypisuje kosztowi środowiskowemu modeli?",
     options: ["Zastępowanie pracowników", "Wpływ na ceny komponentów i prądu", "Odpowiedzialność za decyzje", "Wpływ na różne zawody"],
     correct: [1], explain: "Zużycie energii i rozbudowane systemy obliczeniowe wpływają na ceny komponentów i prądu; reszta to wpływ społeczny.", src: "W13, slajdy 327–328", note: "W13-etyka" },
+
+  { id: "W13-31", w: "W13", c: "spoleczne-srodowisko", type: "single",
+    q: "Który skutek slajd zalicza do wpływu społecznego systemów tego typu?",
+    options: ["Duże zużycie energii przy treningu", "Wzrost cen komponentów i prądu", "Wycieki treści chronionych prawem", "Odpowiedzialność za decyzje systemów"],
+    correct: [3], explain: "Wpływ społeczny to wpływ na zawody, zastąpienie pracowników i odpowiedzialność za decyzje; energia i ceny to koszt środowiskowy.", src: "W13, slajd 327", note: "W13-etyka" },
 
   { id: "W13-23", w: "W13", c: "ograniczanie-ryzyka", type: "multi",
     q: "Które metody ograniczania ryzyka wymienia slajd?",

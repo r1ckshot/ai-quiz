@@ -5,15 +5,30 @@
     options: ["Sieci RNN i LSTM → modele statystyczne → reguły gramatyki", "Reguły gramatyki → sieci RNN i LSTM → modele statystyczne", "Reguły gramatyki → modele statystyczne → sieci RNN i LSTM", "Modele statystyczne → reguły gramatyki → sieci RNN i LSTM"],
     correct: [2], explain: "Najpierw reguły kodujące gramatykę (i nowe języki), w XX w. modele statystyczne, na początku XXI w. sieci neuronowe.", src: "W07, slajd 175", note: "W07-tlumaczenie-maszynowe" },
 
+  { id: "W07-26", w: "W07", c: "mt-historia", type: "single",
+    q: "Które podejście do tłumaczenia maszynowego slajd wiąże z początkiem XXI wieku?",
+    options: ["Reguły kodujące gramatykę", "Modele statystyczne", "Nowe języki, np. esperanto", "Sieci neuronowe (RNN, LSTM)"],
+    correct: [3], explain: "Modele statystyczne to XX wiek; na początku XXI wieku zwrócono się ku sieciom neuronowym, RNN i LSTM.", src: "W07, slajd 175", note: "W07-tlumaczenie-maszynowe" },
+
   { id: "W07-02", w: "W07", c: "mt-cele", type: "multi",
     q: "Które z poniższych slajd wymienia jako cele tłumaczenia maszynowego?",
     options: ["Dostęp do informacji", "Pozbycie się przepaści cyfrowej", "Ujednolicenie kolejności słów", "Tłumaczenia wspomagane komputerowo (CAT)"],
     correct: [0, 1, 3], explain: "Cele: dostęp do informacji, likwidacja digital divide, CAT jako element lokalizacji aplikacji.", src: "W07, slajd 176", note: "W07-tlumaczenie-maszynowe" },
 
+  { id: "W07-27", w: "W07", c: "mt-cele", type: "single",
+    q: "Co oznacza CAT, wymienione na slajdzie jako element lokalizacji aplikacji?",
+    options: ["Kodowanie reguł gramatyki", "Tokenizację opartą na BPE", "Tłumaczenia wspomagane komputerowo", "Uczenie na korpusie równoległym"],
+    correct: [2], explain: "CAT to computer-aided translation, czyli tłumaczenia wspomagane komputerowo.", src: "W07, slajd 176", note: "W07-tlumaczenie-maszynowe" },
+
   { id: "W07-03", w: "W07", c: "jezyki-roznice", type: "single",
     q: "Jaką kolejność słów slajd przypisuje językowi polskiemu i japońskiemu?",
     options: ["Polski SOV, japoński SVO", "Polski SVO, japoński SOV", "Oba języki SVO", "Polski VSO, japoński SOV"],
     correct: [1], explain: "Slajd 176: SVO w języku polskim, SOV w japońskim.", src: "W07, slajd 176", note: "W07-tlumaczenie-maszynowe" },
+
+  { id: "W07-28", w: "W07", c: "jezyki-roznice", type: "multi",
+    q: "Czym według slajdu różnią się języki świata (jest ich około 7000)?",
+    options: ["Kolejnością słów", "Typem morfologii", "Słownictwem", "Długością zdań"],
+    correct: [0, 1, 2], explain: "Slajd wymienia kolejność słów, typ morfologii i słownictwo.", src: "W07, slajd 176", note: "W07-tlumaczenie-maszynowe" },
 
   { id: "W07-04", w: "W07", c: "encdec-kiedy", type: "single",
     q: "Kiedy według slajdu stosuje się modele typu enkoder-dekoder?",
@@ -29,6 +44,11 @@
     q: "Jaką wadę BPE w tłumaczeniu maszynowym wskazuje slajd?",
     options: ["Nie radzi sobie z alfabetami innymi niż łaciński", "Wymaga korpusu równoległego do uczenia", "Dzieli tekst wyłącznie na całe słowa", "Czasami tworzy dużo tokenów bez znaczenia"],
     correct: [3], explain: "BPE czasami tworzy dużą liczbę tokenów pozbawionych znaczenia, dlatego często używa się unigram lub SentencePiece.", src: "W07, slajd 178", note: "W07-tlumaczenie-maszynowe" },
+
+  { id: "W07-29", w: "W07", c: "tokenizacja-mt", type: "single",
+    q: "Dlaczego w tłumaczeniu maszynowym tokenizacja oparta na podziale na słowa może nie być odpowiednia?",
+    options: ["Bo słowa są zbyt krótkie dla enkodera", "Bo w językach znaczenie ma morfologia", "Bo korpusy równoległe nie zawierają słów", "Bo języki różnią się kolejnością słów"],
+    correct: [1], explain: "Skoro morfologia ma znaczenie, podział na słowa może nie być odpowiedni; stosuje się BPE, unigram lub SentencePiece.", src: "W07, slajd 178", note: "W07-tlumaczenie-maszynowe" },
 
   { id: "W07-07", w: "W07", c: "bitekst", type: "single",
     q: "Tekst występujący równolegle w dwóch językach, na którym uczy się modele tłumaczenia, to:",
@@ -75,10 +95,20 @@
     options: ["Może być siecią RNN, LSTM, konwolucyjną lub transformerem", "Typowo ma wiele warstw, używa się wartości z najwyższej", "Tworzy kontekstualną reprezentację sekwencji wejściowej", "Używa się wartości z jego najniższej, pierwszej warstwy"],
     correct: [3], explain: "Slajd 184: używa się wartości z najwyższej warstwy enkodera, nie najniższej.", src: "W07, slajd 184", note: "W07-tlumaczenie-maszynowe" },
 
+  { id: "W07-30", w: "W07", c: "enkoder", type: "single",
+    q: "Jaki jest cel enkodera według slajdu?",
+    options: ["Wygenerowanie sekwencji wyjściowej token po tokenie", "Podział tekstu na tokeny algorytmem BPE lub unigram", "Obliczenie wag uwagi za pomocą funkcji softmax", "Stworzenie kontekstualnej reprezentacji wejścia"],
+    correct: [3], explain: "Celem enkodera jest kontekstualna reprezentacja sekwencji wejściowej; sekwencję wyjściową tworzy dekoder.", src: "W07, slajd 184", note: "W07-tlumaczenie-maszynowe" },
+
   { id: "W07-16", w: "W07", c: "dekoder", type: "single",
     q: "Jak w najprostszej wersji dekoder wykorzystuje kontekst?",
     options: ["Jako wartość początkową stanu ukrytego", "Jako ostatni token sekwencji wyjściowej", "Jako wagi warstwy softmax", "Jako embedding pierwszego słowa wejścia"],
     correct: [0], explain: "Najprościej kontekst jest wartością początkową stanu ukrytego; żeby nie zanikał, może być parametrem każdego nowego stanu.", src: "W07, slajd 185", note: "W07-tlumaczenie-maszynowe" },
+
+  { id: "W07-31", w: "W07", c: "dekoder", type: "open",
+    q: "Jak dekoder może wykorzystać kontekst, żeby jego wpływ nie zanikał?",
+    answer: "Kontekst może być parametrem do obliczenia każdego nowego stanu ukrytego, a nie tylko wartością początkową stanu.",
+    src: "W07, slajd 185", note: "W07-tlumaczenie-maszynowe" },
 
   { id: "W07-17", w: "W07", c: "waskie-gardlo", type: "single",
     q: "Na czym polega wąskie gardło w architekturze enkoder-dekoder?",
@@ -122,4 +152,8 @@
     q: "Które zdanie o wektorze kontekstu z mechanizmem uwagi NIE jest zgodne ze slajdami?",
     options: ["Jest liczony jako średnia ważona stanów enkodera", "Uwzględnia stan dekodera sprzed bieżącego tokena", "Jest aktualizowany przy każdym kroku dekodowania", "Jest równy ostatniemu stanowi ukrytemu enkodera"],
     correct: [3], explain: "Z uwagą kontekst uwzględnia wszystkie stany enkodera (średnia ważona), a nie tylko ostatni.", src: "W07, slajdy 189, 193", note: "W07-tlumaczenie-maszynowe" },
+
+  { id: "W07-32", w: "W07", c: "uwaga-kontekst", type: "calc",
+    q: "Enkoder ma dwa jednowymiarowe stany ukryte: he_1 = 2 i he_2 = 6. Wagi uwagi wynoszą α_1 = 0,25 i α_2 = 0,75. Oblicz wektor kontekstu c_i jako średnią ważoną.",
+    answer: 5, tolerance: 0.01, explain: "0,25 × 2 + 0,75 × 6 = 0,5 + 4,5 = 5.", src: "W07, slajdy 189, 192", note: "W07-tlumaczenie-maszynowe" },
 ]});

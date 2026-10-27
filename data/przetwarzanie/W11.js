@@ -10,6 +10,11 @@
     options: ["Użytkownik ocenia na ślepo dwie odpowiedzi", "Silniejszy model ocenia odpowiedzi słabszego", "Model rozwiązuje przygotowane zadania z poprawnymi odpowiedziami", "Mierzy się zaskoczenie modelu kolejnym tokenem"],
     correct: [2], explain: "Benchmark to zestaw wcześniej przygotowanych zadań z poprawnymi odpowiedziami; to prawdopodobnie najczęstsza metoda.", src: "W11, slajd 282", note: "W11-ocena-modeli" },
 
+  { id: "W11-26", w: "W11", c: "benchmark-def", type: "single",
+    q: "Model uruchamia się na zestawie wcześniej przygotowanych zadań z poprawnymi odpowiedziami. Jak nazywa się ta metoda oceny LLM?",
+    options: ["System typu arena", "Benchmark", "Ocena przez ludzi", "LLM-as-a-judge"],
+    correct: [1], explain: "Benchmark to zestaw zadań z poprawnymi odpowiedziami. Arena i ocena przez ludzi opierają się na wyborze użytkowników lub ekspertów.", src: "W11, slajd 282", note: "W11-ocena-modeli" },
+
   { id: "W11-03", w: "W11", c: "benchmarki-tabela", type: "single",
     q: "Który benchmark według slajdu mierzy generowanie kodu Python?",
     options: ["GSM8K", "HumanEval", "HellaSwag", "TruthfulQA"],
@@ -60,6 +65,11 @@
     answer: 4, tolerance: 0.01,
     explain: "Średnia logarytmów: (ln 0,5 + ln 0,125)/2 = ln(0,0625)/2 = ln 0,25; PPL = e^(−ln 0,25) = 4.", src: "W11, slajd 286", note: "W11-ocena-modeli" },
 
+  { id: "W11-27", w: "W11", c: "perplexity-calc", type: "calc",
+    q: "Model przypisał dwóm kolejnym tokenom prawdopodobieństwa p(x1) = 0,1 i p(x2) = 0,4. Oblicz PPL = e^(−(1/N)·Σ log p(xi)), log naturalny.",
+    answer: 5, tolerance: 0.05,
+    explain: "Średnia logarytmów: (ln 0,1 + ln 0,4)/2 = ln(0,04)/2 = ln 0,2; PPL = e^(−ln 0,2) = 5.", src: "W11, slajd 286", note: "W11-ocena-modeli" },
+
   { id: "W11-13", w: "W11", c: "kld", type: "single",
     q: "Co mierzy KLD (Kullback–Leibler Divergence)?",
     options: ["Jak bardzo model jest zaskoczony tekstem", "Jak bardzo różnią się dwa rozkłady prawdopodobieństwa", "Jak szybko model generuje kolejne tokeny", "Jak wiele tajnych pytań model rozwiązał"],
@@ -75,20 +85,40 @@
     answer: 0.144, tolerance: 0.01,
     explain: "0,5·ln(0,5/0,25) + 0,5·ln(0,5/0,75) = 0,347 − 0,203 ≈ 0,144.", src: "W11, slajd 287", note: "W11-ocena-modeli" },
 
+  { id: "W11-28", w: "W11", c: "kld-calc", type: "calc",
+    q: "Rozkład referencyjny P = (0,9; 0,1), rozkład modelu Q = (0,5; 0,5). Oblicz D_KL(P||Q) = Σ P(x)·log(P(x)/Q(x)), log naturalny.",
+    answer: 0.368, tolerance: 0.01,
+    explain: "0,9·ln(0,9/0,5) + 0,1·ln(0,1/0,5) = 0,529 − 0,161 ≈ 0,368.", src: "W11, slajd 287", note: "W11-ocena-modeli" },
+
   { id: "W11-16", w: "W11", c: "halucynacje", type: "multi",
     q: "Co według slajdu sprawdza się przy ocenie halucynacji?",
     options: ["Czy model wymyśla cytowania", "Czy model zachowuje wymagany format", "Czy model podaje nieistniejące przepisy prawa", "Czy model przyznaje się do niewiedzy, gdy powinien"],
     correct: [0, 2, 3], explain: "Zachowanie formatu to ocena zgodności z instrukcjami, nie ocena halucynacji.", src: "W11, slajd 288", note: "W11-ocena-modeli" },
+
+  { id: "W11-29", w: "W11", c: "halucynacje", type: "single",
+    q: "Model zapytany o nieznany mu fakt pewnie podaje zmyślone źródło zamiast przyznać się do niewiedzy. Który rodzaj oceny to wykryje?",
+    options: ["Ocena wydajności", "Ocena zgodności z instrukcjami", "Ocena halucynacji", "Perplexity"],
+    correct: [2], explain: "Ocena halucynacji sprawdza zmyślanie faktów, nieistniejące źródła i przyznawanie się do niewiedzy, np. na bazie TruthfulQA.", src: "W11, slajd 288", note: "W11-ocena-modeli" },
 
   { id: "W11-17", w: "W11", c: "instrukcje", type: "single",
     q: "Model poprawnie odpowiada, ale zamiast tabeli zwraca akapit i dodaje zbędne uwagi. Który rodzaj oceny to wykryje?",
     options: ["Ocena zgodności z instrukcjami", "Ocena halucynacji modelu", "Ocena zużycia energii (green AI)", "Perplexity"],
     correct: [0], explain: "Zgodność z instrukcjami: wymagany format, brak zbędnych informacji, ograniczenia, polecenia wieloetapowe.", src: "W11, slajd 289", note: "W11-ocena-modeli" },
 
+  { id: "W11-30", w: "W11", c: "instrukcje", type: "single",
+    q: "Które zdanie NIE opisuje oceny zgodności z instrukcjami?",
+    options: ["Sprawdza, czy model zachowuje wymagany format", "Sprawdza, czy model nie dodaje zbędnych informacji", "Sprawdza, czy model poprawnie wykonuje polecenia wieloetapowe", "Sprawdza, czy model przyznaje się do niewiedzy"],
+    correct: [3], explain: "Przyznawanie się do niewiedzy należy do oceny halucynacji (slajd 288). Pozostałe punkty to ocena zgodności z instrukcjami.", src: "W11, slajd 289", note: "W11-ocena-modeli" },
+
   { id: "W11-18", w: "W11", c: "ocena-ludzie", type: "multi",
     q: "Które z poniższych slajd wymienia jako typowe kryteria oceny przez ludzi?",
     options: ["Uprzejmość", "Szybkość generowania", "Bezpieczeństwo", "Naturalność"],
     correct: [0, 2, 3], explain: "Kryteria: poprawność, przydatność, naturalność, kompletność, bezpieczeństwo, uprzejmość, zgodność z instrukcją. Szybkość to ocena wydajności.", src: "W11, slajd 290", note: "W11-ocena-modeli" },
+
+  { id: "W11-31", w: "W11", c: "ocena-ludzie", type: "single",
+    q: "W jakich testach często stosuje się ocenę odpowiedzi przez ekspertów lub użytkowników?",
+    options: ["W testach A/B", "W pomiarach llama-bench", "W obliczaniu KLD", "W benchmarku GSM8K"],
+    correct: [0], explain: "Ocena przez ludzi jest często stosowana w testach A/B. Pozostałe opcje to metody automatyczne.", src: "W11, slajd 290", note: "W11-ocena-modeli" },
 
   { id: "W11-19", w: "W11", c: "arena", type: "single",
     q: "Jedno zapytanie trafia do dwóch ukrytych modeli, a użytkownik wybiera lepszą odpowiedź. Jak nazywa się taki system oceny?",
@@ -114,6 +144,11 @@
     q: "Dlaczego LLM raczej testuje się wielokryterialnie?",
     options: ["Bo każdy test ocenia inny aspekt działania LLM", "Bo pojedyncze benchmarki są zawsze tajne", "Bo perplexity mierzy tylko rozumowanie", "Bo arena nie generuje żadnych rankingów"],
     correct: [0], explain: "Każdy test ocenia inny aspekt; przykład Inkling: wyniki znormalizowane do 0–100 na wykresie radarowym.", src: "W11, slajd 293", note: "W11-ocena-modeli" },
+
+  { id: "W11-32", w: "W11", c: "wieloaspektowe", type: "single",
+    q: "Co przedstawia wykres radarowy modelu Inkling ze slajdu?",
+    options: ["Zużycie energii na token", "Wyniki na różnych benchmarkach w skali 0–100", "Ranking ELO z systemu typu arena", "Zmianę perplexity w trakcie treningu"],
+    correct: [1], explain: "To wielokryterialna analiza modelu na różnych benchmarkach, znormalizowana do skali 0–100.", src: "W11, slajd 293", note: "W11-ocena-modeli" },
 
   { id: "W11-24", w: "W11", c: "wydajnosc-energia", type: "single",
     q: "W jakiej jednostce według slajdu można wyrazić zużycie energii modelu w podejściu green AI?",

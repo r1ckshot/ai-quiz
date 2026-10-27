@@ -30,10 +30,25 @@
     options: ["Encje nakładające się na siebie", "Encje wieloznaczne", "Brak tagów POS w języku polskim", "Encje specyficzne dla domeny problemu"],
     correct: [0, 1, 3], explain: "Slajd 156: encje nakładające się, wieloznaczne, specyficzne dla domeny oraz kontekst.", src: "W05, slajd 156", note: "W05-ner" },
 
+  { id: "W05-26", w: "W05", c: "ner-problemy", type: "single",
+    q: "Które z poniższych NIE jest problemem NER wymienionym na slajdzie?",
+    options: ["Encje nakładające się na siebie", "Encje wieloznaczne", "Zbyt wolny trening modeli LSTM", "Encje specyficzne dla domeny problemu"],
+    correct: [2], explain: "Slajd 156 wymienia encje nakładające się, wieloznaczne, specyficzne dla domeny oraz kontekst. Wolnego treningu nie.", src: "W05, slajd 156", note: "W05-ner" },
+
+  { id: "W05-27", w: "W05", c: "ner-problemy", type: "open",
+    q: "Wymień problemy NER ze slajdu.",
+    answer: "Encje nakładające się, wieloznaczne, specyficzne dla domeny problemu oraz kontekst.",
+    src: "W05, slajd 156", note: "W05-ner" },
+
   { id: "W05-07", w: "W05", c: "crf-sekwencja", type: "single",
     q: "Co według slajdu wyróżnia CRF przy obliczaniu prawdopodobieństw klas?",
     options: ["Liczy je dla każdego słowa niezależnie", "Liczy je dla całej sekwencji jednocześnie", "Liczy je tylko dla słów pisanych wielką literą", "Liczy je wyłącznie za pomocą reguł"],
     correct: [1], explain: "CRF wylicza prawdopodobieństwa dla całej sekwencji x jednocześnie.", src: "W05, slajd 157", note: "W05-ner" },
+
+  { id: "W05-28", w: "W05", c: "crf-sekwencja", type: "single",
+    q: "W zapisie y = y1, y2, …, yn symbol y_i oznacza:",
+    options: ["i-te słowo zdania w sekwencji x", "klasę i-tego słowa, np. PER, LOC, O", "ocenę przejścia z klasy i−1 do i", "sumę ocen wszystkich możliwych klas"],
+    correct: [1], explain: "x_i to i-te słowo, a y_i ∈ {PER, LOC, O, …} to jego klasa.", src: "W05, slajd 157", note: "W05-ner" },
 
   { id: "W05-08", w: "W05", c: "emission", type: "single",
     q: "Ocena, jak bardzo słowo pasuje do klasy, to w CRF:",
@@ -54,6 +69,15 @@
     q: "We wzorze s(x, y) = Σ (A[y(i−1), y(i)] + P_i(y_i)) symbole A i P oznaczają:",
     options: ["A emission score, P transition score", "A transition score, P emission score", "A sumę statystyczną, P prawdopodobieństwo", "A liczbę klas, P liczbę słów"],
     correct: [1], explain: "Slajd 158: A to transition score, a P to emission score.", src: "W05, slajd 158", note: "W05-ner" },
+
+  { id: "W05-29", w: "W05", c: "score-wzor", type: "calc",
+    q: "Ocena s(x, y) to suma emission score i transition score. Dla dwóch słów emission score wynoszą 4.5 i 3.8, a jedyne uwzględnione transition score wynosi 2.1. Ile wynosi s(x, y)?",
+    answer: 10.4, tolerance: 0.01, explain: "s(x, y) = 4.5 + 3.8 + 2.1 = 10.4.", src: "W05, slajd 158", note: "W05-ner" },
+
+  { id: "W05-30", w: "W05", c: "score-wzor", type: "single",
+    q: "Który składnik wzoru na s(x, y) opisuje, jak bardzo i-te słowo pasuje do klasy y_i?",
+    options: ["A[y(i−1), y(i)]", "P_i(y_i)", "Z(x)", "e^s(x, y)"],
+    correct: [1], explain: "P to emission score. A[y(i−1), y(i)] to transition score, a Z(x) służy do normalizacji.", src: "W05, slajd 158", note: "W05-ner" },
 
   { id: "W05-12", w: "W05", c: "partition", type: "single",
     q: "Do czego w CRF służy suma statystyczna Z(x) (partition function)?",
@@ -103,6 +127,16 @@
     options: ["Nic, bo NNP to już klasa encji", "Sklasyfikować rodzaj encji nazwanej", "Usunąć je jako daną osobową", "Zamienić je na małe litery"],
     correct: [1], explain: "NNP to tylko nazwa własna; nadal trzeba ustalić, czy to osoba, miejsce czy organizacja.", src: "W05, slajd 164", note: "W05-ner" },
 
+  { id: "W05-31", w: "W05", c: "nnp", type: "single",
+    q: "Co oznacza tag NNP w POS tagging?",
+    options: ["Nazwę własną", "Liczbę mnogą", "Rzeczownik pospolity", "Przymiotnik w stopniu wyższym"],
+    correct: [0], explain: "NNP to proper noun, czyli nazwa własna.", src: "W05, slajd 164", note: "W05-ner" },
+
+  { id: "W05-32", w: "W05", c: "nnp", type: "single",
+    q: "Słowo ma tag NNP i jest napisane wielką literą. Czym według slajdu może być?",
+    options: ["Osobą, miejscem lub organizacją", "Osobą lub datą, ale nie miejscem", "Wyłącznie nazwą dokumentu", "Liczbą albo znakiem interpunkcji"],
+    correct: [0], explain: "NNP z wielką literą może być osobą, miejscem lub nazwą organizacji.", src: "W05, slajd 164", note: "W05-ner" },
+
   { id: "W05-22", w: "W05", c: "bio", type: "single",
     q: "Jak w modelu BIO sklasyfikować „John lives in New York.” (klasy PER i LOC)?",
     options: ["B-PER O O B-LOC B-LOC", "B-PER O O I-LOC I-LOC", "B-PER O O B-LOC I-LOC", "I-PER O O B-LOC I-LOC"],
@@ -119,8 +153,28 @@
     options: ["ent.text", "ent.start_char", "ent.label_", "ent.end_char"],
     correct: [2], explain: "Pętla po doc.ents wypisuje ent.text, ent.start_char, ent.end_char i ent.label_ (etykieta).", src: "W05, slajd 172", note: "W05-ner" },
 
+  { id: "W05-33", w: "W05", c: "spacy", type: "single",
+    q: "Jaką etykietę dla słowa „Waszyngtonie” zwraca przykład spaCy ze slajdu?",
+    options: ["date", "persName", "placeName", "orgName"],
+    correct: [2], explain: "Na slajdzie: Waszyngtonie 55 67 placeName.", src: "W05, slajd 172", note: "W05-ner" },
+
+  { id: "W05-34", w: "W05", c: "spacy", type: "multi",
+    q: "Które atrybuty encji wypisuje pętla po doc.ents w przykładzie ze slajdu?",
+    options: ["ent.text", "ent.label_", "ent.lemma_", "ent.pos_"],
+    correct: [0, 1], explain: "Pętla wypisuje ent.text, ent.start_char, ent.end_char i ent.label_.", src: "W05, slajd 172", note: "W05-ner" },
+
   { id: "W05-25", w: "W05", c: "zastosowania", type: "multi",
     q: "Które zastosowania NER wymienia slajd?",
     options: ["Usuwanie danych osobowych (anonimizacja)", "Wykrywanie nazw chorób w dokumentacji medycznej", "Wyszukiwanie nazw spółek w dokumentach finansowych", "Generowanie tekstu z danych ustrukturyzowanych"],
     correct: [0, 1, 2], explain: "Slajd 173: wyszukiwanie informacji, anonimizacja, nazwy chorób w dokumentacji medycznej. Generowania tekstu nie ma.", src: "W05, slajd 173", note: "W05-ner" },
+
+  { id: "W05-35", w: "W05", c: "zastosowania", type: "single",
+    q: "Wykrywanie nazw chorób w dokumentacji medycznej może według slajdu wymagać:",
+    options: ["Dostosowania (fine tuning) gotowych modeli", "Zastąpienia modelu wyrażeniami regularnymi", "Zamiany klas BIO na tagi POS", "Wyłączenia cech sąsiednich słów"],
+    correct: [0], explain: "Slajd 173: to zastosowanie może wymagać fine tuningu gotowych modeli.", src: "W05, slajd 173", note: "W05-ner" },
+
+  { id: "W05-36", w: "W05", c: "zastosowania", type: "single",
+    q: "Z jakim algorytmem obecnie często łączy się CRF w NER według slajdu?",
+    options: ["LSTM", "Odległość edycyjna", "Stemming Portera", "TF-IDF"],
+    correct: [0], explain: "Slajd 173: CRF w połączeniu z algorytmami takimi jak LSTM, albo modele Transformer.", src: "W05, slajd 173", note: "W05-ner" },
 ]});
