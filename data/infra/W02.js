@@ -45,30 +45,75 @@
     options: ["1", "2", "4", "8"],
     correct: [1], explain: "vCPU to wątek logiczny (SMT/Hyper-Threading). 4 vCPU to zwykle 2 fizyczne rdzenie.", src: "W02, slajd 58", note: "W02-modele-obliczeniowe" },
 
+  { id: "W02-26", w: "W02", c: "vcpu", type: "single",
+    q: "Czym jest vCPU w chmurze według wykładu?",
+    options: ["Jednym fizycznym rdzeniem procesora przydzielonym do VM", "Jednym wątkiem logicznym (SMT) mapowanym na VM", "Kwotą mikrosekund CPU w jednym oknie CFS", "Węzłem NUMA z lokalną pamięcią RAM hosta"],
+    correct: [1], explain: "vCPU to jeden wątek logiczny SMT/Hyper-Threading. Dlatego 4 vCPU to zwykle tylko 2 fizyczne rdzenie.", src: "W02, slajd 58", note: "W02-modele-obliczeniowe" },
+
   { id: "W02-10", w: "W02", c: "namespaces", type: "single",
     q: "Który Namespace sprawia, że proces treningowy jest widoczny wewnątrz kontenera jako PID 1?",
     options: ["NET Namespace", "MNT Namespace", "PID Namespace", "Cgroups v2"],
     correct: [2], explain: "PID Namespace izoluje numerację procesów. NET daje własną kartę sieciową, MNT własne pliki.", src: "W02, slajd 59", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-27", w: "W02", c: "namespaces", type: "single",
+    q: "Kontener z Ubuntu działa na hoście Red Hat i ma własną, odseparowaną strukturę plików. Który mechanizm to zapewnia?",
+    options: ["PID Namespace", "NET Namespace", "MNT Namespace", "Cgroups v2"],
+    correct: [2], explain: "MNT Namespace odseparowuje strukturę plików. PID izoluje numerację procesów, a NET sieć i porty.", src: "W02, slajd 59", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-28", w: "W02", c: "namespaces", type: "single",
+    q: "Czym różnią się Namespaces od Cgroups w architekturze Dockera?",
+    options: ["Namespaces izolują widok, Cgroups limitują zasoby", "Namespaces limitują zasoby, Cgroups izolują widok", "Namespaces dzielą GPU, Cgroups dzielą warstwy obrazu", "Namespaces planują CPU, Cgroups zabijają procesy OOM"],
+    correct: [0], explain: "Namespaces tworzą iluzję odosobnienia procesów w jądrze hosta. Cgroups nakładają limity, np. RAM i CPU.", src: "W02, slajd 59", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-11", w: "W02", c: "throttling", type: "single",
     q: "Wstrzymanie procesu po wyczerpaniu limitu mikrosekund w danym oknie CFS to:",
     options: ["Throttling", "Time-Slicing", "Latency Jitter", "Copy-on-Write"],
     correct: [0], explain: "CFS liczy quota w każdym period. Po wyczerpaniu kwoty proces jest dławiony (throttling).", src: "W02, slajd 60", note: "W02-modele-obliczeniowe" },
 
+  { id: "W02-29", w: "W02", c: "throttling", type: "single",
+    q: "Który domyślny algorytm jądra Linux planuje czas CPU według parametrów period i quota?",
+    options: ["OOM Killer (ostatnia linia obrony jądra)", "CFS (Completely Fair Scheduler)", "NUMA (Non-Uniform Memory Access)", "Time-Slicing (szczeliny czasowe)"],
+    correct: [1], explain: "CFS to domyślny planista czasu CPU. Po wyczerpaniu quota w danym period proces jest dławiony.", src: "W02, slajd 60", note: "W02-modele-obliczeniowe" },
+
   { id: "W02-12", w: "W02", c: "gpu-starvation", type: "single",
     q: "GPU jest bezczynne, bo czeka na dane od workerów CPU. Co wskazano jako przyczynę i jak to diagnozować?",
     options: ["Brak VRAM na karcie; kolumna Memory-Usage w nvidia-smi", "Throttling CFS workerów danych; licznik nr_throttled", "Brak partycjonowania MIG; lista UUID instancji GPU", "Wyciek pamięci Off-Heap; logi Garbage Collectora JVM"],
     correct: [1], explain: "GPU Starvation wynika z dławienia CPU przez CFS. Diagnoza: licznik nr_throttled.", src: "W02, slajd 61", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-30", w: "W02", c: "gpu-starvation", type: "single",
+    q: "Stan, w którym GPU bezczynnie czeka na dane od CPU, to:",
+    options: ["CPU Throttling", "GPU Starvation", "Latency Jitter", "Noisy Neighbor Problem"],
+    correct: [1], explain: "GPU Starvation to głodzenie akceleratora. Throttling CPU jest jego przyczyną, a nie samym stanem GPU.", src: "W02, slajd 61", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-13", w: "W02", c: "mem-limits", type: "single",
     q: "Która flaga docker run ustawia twardy limit RAM, po którym proces jest natychmiast zabijany?",
     options: ["--memory-reservation", "--memory", "--cpus", "--gpus all"],
     correct: [1], explain: "--memory to twardy limit (OOM Killer). --memory-reservation to miękki limit z ostrzeżeniem.", src: "W02, slajd 62", note: "W02-modele-obliczeniowe" },
 
+  { id: "W02-31", w: "W02", c: "mem-limits", type: "single",
+    q: "Model w szczycie zużywa 10 GB RAM. Jaki limit kontenera wynika z dobrej praktyki podanej na wykładzie?",
+    options: ["ok. 10 GB", "ok. 12 GB", "ok. 15 GB", "ok. 20 GB"],
+    correct: [1], explain: "Limit ustawia się ok. 20% powyżej zapotrzebowania w szczycie. 10 GB + 20% = 12 GB.", src: "W02, slajd 62", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-32", w: "W02", c: "mem-limits", type: "single",
+    q: "Co się dzieje, gdy kontener przekroczy limit ustawiony flagą --memory-reservation?",
+    options: ["Pojawia się ostrzeżenie, bo to miękki limit", "Proces jest natychmiast zabijany przez jądro", "Proces jest dławiony do końca okna CFS", "Kontener traci dostęp do GPU z hosta"],
+    correct: [0], explain: "--memory-reservation to miękki limit z ostrzeżeniem. Natychmiastowe zabicie dotyczy twardego --memory.", src: "W02, slajd 62", note: "W02-modele-obliczeniowe" },
+
   { id: "W02-14", w: "W02", c: "off-heap", type: "single",
     q: "Dlaczego DL4J (ND4J) alokuje tensory w pamięci Off-Heap?",
     options: ["Żeby odciążyć Garbage Collector Javy", "Żeby działać bez GPU", "Żeby pamięć była widoczna w standardowym monitoringu Javy", "Żeby uniknąć Maven"],
     correct: [0], explain: "Off-Heap omija stertę i GC. Skutek uboczny: oszukuje standardowe narzędzia monitoringu Javy.", src: "W02, slajd 49, 62–63", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-33", w: "W02", c: "off-heap", type: "single",
+    q: "Jaki skutek uboczny ma alokacja większości danych DL4J poza stertą (Heap)?",
+    options: ["Oszukuje standardowe narzędzia monitoringu Javy", "Wymusza częstsze przebiegi Garbage Collectora Javy", "Blokuje kontenerowi dostęp do sterowników GPU", "Wydłuża Cold Start przez ładowanie wag do RAM"],
+    correct: [0], explain: "Dane poza stertą odciążają GC. Jednocześnie oszukują standardowe narzędzia monitoringu Javy.", src: "W02, slajd 62", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-34", w: "W02", c: "off-heap", type: "single",
+    q: "Przez co ND4J wykonuje natywne obliczenia Off-Heap w bibliotece libnd4j (C/C++)?",
+    options: ["Mosty JNI / JavaCPP", "Połączenia gRPC z Pythonem", "nvidia-container-runtime", "Kompilację AOT w GraalVM"],
+    correct: [0], explain: "ND4J korzysta z mostów JNI/JavaCPP. DL4J unika właśnie kosztownych połączeń gRPC z Pythonem.", src: "W02, slajd 49, 63", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-15", w: "W02", c: "gpu-virt", type: "single",
     q: "Która technologia dzieli GPU sprzętowo na maks. 7 instancji z własnymi SM i Cache L2?",
@@ -85,43 +130,128 @@
     options: ["GPU (SIMT)", "TPU (ASIC)", "CPU z NUMA", "vGPU"],
     correct: [1], explain: "TPU to ASIC z Systolic Array i MXU. GPU ma rdzenie CUDA i Tensor.", src: "W02, slajd 64", note: "W02-modele-obliczeniowe" },
 
+  { id: "W02-35", w: "W02", c: "gpu-tpu", type: "single",
+    q: "Co według wykładu charakteryzuje architekturę GPU (SIMT)?",
+    options: ["Rdzenie CUDA i rdzenie Tensor do operacji 4x4", "Tablica skurczowa i MXU bez narzutu rejestrów", "Sprzętowy podział na 7 instancji z Cache L2", "Programowy hiperwizor dzielący rdzenie w czasie"],
+    correct: [0], explain: "GPU ma rdzenie CUDA do obliczeń równoległych i Tensor do operacji 4x4. Systolic Array i MXU to TPU.", src: "W02, slajd 64", note: "W02-modele-obliczeniowe" },
+
   { id: "W02-18", w: "W02", c: "container-toolkit", type: "single",
     q: "Co jest mostem między sterownikami jądra na hoście a bibliotekami CUDA w kontenerze?",
     options: ["NVIDIA Container Toolkit", "System plików OverlayFS", "Proces init tini (PID 1)", "Narzędzie Apache Maven"],
     correct: [0], explain: "Toolkit (nvidia-container-runtime, libnvidia-container) wstrzykuje GPU do kontenera.", src: "W02, slajd 67", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-36", w: "W02", c: "container-toolkit", type: "single",
+    q: "Jak NVIDIA Container Toolkit wstrzykuje GPU do izolowanego kontenera?",
+    options: ["Mapuje pliki urządzeń /dev/nvidia* do kontenera", "Kopiuje pełny sterownik jądra do warstwy obrazu", "Dzieli kartę na instancje MIG z własnym UUID", "Wyłącza Namespaces dla procesu treningowego"],
+    correct: [0], explain: "Toolkit mapuje /dev/nvidia* do przestrzeni kontenera. Sterownik jądra zostaje na hoście.", src: "W02, slajd 67", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-37", w: "W02", c: "container-toolkit", type: "single",
+    q: "Czego wymaga uruchomienie kontenera z flagą --gpus all?",
+    options: ["Sterowników NVIDIA na hoście i Container Toolkit", "Pełnego stosu CUDA 12 na hoście i obrazu devel", "Obrazu Distroless i menedżera init tini jako PID 1", "Licencji vGPU z Time-Slicing na hiperwizorze"],
+    correct: [0], explain: "Na hoście potrzebne są sterowniki NVIDIA i Toolkit. CUDA 12 w kontenerze działa nawet z podstawowym sterownikiem.", src: "W02, slajd 67–68", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-19", w: "W02", c: "pytorch-vram", type: "single",
     q: "Który mechanizm PyTorch redukuje zużycie VRAM w inferencji o ponad połowę?",
     options: ["pin_memory=True", "Caching Allocator", "torch.no_grad()", "CUDA_VISIBLE_DEVICES=0"],
     correct: [2], explain: "no_grad wyłącza gradienty. pin_memory przyspiesza transfer DMA, nie oszczędza VRAM.", src: "W02, slajd 70", note: "W02-modele-obliczeniowe" },
 
+  { id: "W02-38", w: "W02", c: "pytorch-vram", type: "single",
+    q: "Co daje flaga pin_memory=True w PyTorch?",
+    options: ["Bezpośredni transfer DMA przez PCIe", "Redukcję VRAM w inferencji o ponad połowę", "Natychmiastowy zwrot pamięci GPU do OS", "Wskazanie konkretnego urządzenia GPU"],
+    correct: [0], explain: "Pinned Memory umożliwia bezpośredni transfer DMA przez PCIe. Redukcję VRAM daje torch.no_grad().", src: "W02, slajd 70", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-39", w: "W02", c: "pytorch-vram", type: "single",
+    q: "PyTorch nie oddaje pamięci VRAM do OS natychmiast, tylko ją buforuje dla szybkości. Jak nazywa się ten mechanizm?",
+    options: ["Pinned Memory", "Caching Allocator", "Copy-on-Write (CoW)", "Layer Caching"],
+    correct: [1], explain: "Caching Allocator buforuje pamięć dla szybkości. Pinned Memory dotyczy transferu DMA przez PCIe.", src: "W02, slajd 70", note: "W02-modele-obliczeniowe" },
+
   { id: "W02-20", w: "W02", c: "layer-cache", type: "single",
     q: "Jaka kolejność instrukcji Dockerfile (Python) najlepiej wykorzystuje Layer Caching?",
     options: ["COPY ./src → COPY requirements.txt → RUN pip install", "COPY requirements.txt → RUN pip install → COPY ./src", "RUN pip install → COPY requirements.txt → COPY ./src", "COPY . → RUN pip install"],
     correct: [1], explain: "Order Matters: rzadko zmieniane zależności najpierw, często zmieniany kod na końcu.", src: "W02, slajd 74–75", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-40", w: "W02", c: "layer-cache", type: "single",
+    q: "Po czym Docker identyfikuje warstwy w mechanizmie Layer Caching?",
+    options: ["Po haszu SHA-256 każdej warstwy", "Po numerze PID procesu budującego", "Po unikalnym UUID nadanym warstwie", "Po dacie modyfikacji pliku Dockerfile"],
+    correct: [0], explain: "Każda instrukcja RUN, COPY, ADD tworzy warstwę identyfikowaną przez SHA-256. Hashowanie warstw przyspiesza budowanie.", src: "W02, slajd 71, 74", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-41", w: "W02", c: "layer-cache", type: "single",
+    q: "Po co w Dockerfile kopiuje się requirements.txt przed resztą kodu źródłowego?",
+    options: ["Żeby zmiana kodu nie unieważniała cache zależności", "Żeby obraz produkcyjny był mniejszy o ponad 2 GB", "Żeby pip install działał w obrazie bez powłoki shell", "Żeby zależności trafiły tylko do etapu Runner"],
+    correct: [0], explain: "Drobna zmiana kodu nie inwaliduje wtedy cache'u. Build skraca się z kilkunastu minut do kilku sekund.", src: "W02, slajd 74", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-21", w: "W02", c: "volumes", type: "single",
     q: "Dlaczego plików wag .pth lub .zip nie należy składować wewnątrz kontenera?",
     options: ["Kontener jest efemeryczny, a Copy-on-Write spowalnia zapis", "Docker nie obsługuje plików binarnych w warstwach", "OverlayFS szyfruje warstwy, co blokuje odczyt wag", "Obrazy Distroless w ogóle nie mają systemu plików"],
     correct: [0], explain: "Kontener znika z danymi, a CoW spowalnia zapis. Rozwiązanie: wolumeny.", src: "W02, slajd 71", note: "W02-modele-obliczeniowe" },
 
+  { id: "W02-42", w: "W02", c: "volumes", type: "single",
+    q: "Która technika powoduje narzut wydajnościowy przy zapisie dużych plików wag wewnątrz kontenera?",
+    options: ["Layer Caching (SHA-256)", "Copy-on-Write (CoW)", "Pinned Memory (DMA)", "Read-only Layer"],
+    correct: [1], explain: "Copy-on-Write spowalnia zapis dużych wag w kontenerze. Wolumeny niwelują ten narzut.", src: "W02, slajd 71", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-43", w: "W02", c: "volumes", type: "single",
+    q: "Zespół zapisuje pliki wag .pth wewnątrz kontenera i traci je po jego usunięciu. Co zalecono na wykładzie?",
+    options: ["Użycie wolumenów (Volumes)", "Wielofazowe budowanie obrazu", "Obraz Distroless bez powłoki", "Menedżer init tini jako PID 1"],
+    correct: [0], explain: "Kontener jest efemeryczny. Wolumeny zachowują trwałość danych i niwelują narzut zapisu.", src: "W02, slajd 71", note: "W02-modele-obliczeniowe" },
+
   { id: "W02-22", w: "W02", c: "multi-stage", type: "single",
     q: "Co trafia do etapu Runner w wielofazowym budowaniu obrazu dla DL4J?",
     options: ["Pełne JDK z Maven i cache zależności", "Tylko artefakt uber-jar w czystym JRE", "Kod źródłowy, pom.xml i testy jednostkowe", "Katalog target/ z plikami .class"],
     correct: [1], explain: "Builder ma JDK i Maven. Runner dostaje tylko uber-jar, np. na obrazie distroless.", src: "W02, slajd 72–73", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-44", w: "W02", c: "multi-stage", type: "single",
+    q: "Jaki jest główny cel wielofazowego budowania obrazów (Multi-stage builds)?",
+    options: ["Oddzielenie środowiska Build-time od Runtime", "Uruchomienie wielu usług jednym poleceniem", "Podział karty GPU na niezależne instancje MIG", "Planowanie czasu CPU między kontenerami"],
+    correct: [0], explain: "Separacja faz daje obraz produkcyjny z tym, co niezbędne do inferencji. Obraz i koszty chmury drastycznie maleją.", src: "W02, slajd 72", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-45", w: "W02", c: "multi-stage", type: "single",
+    q: "Co w Pythonowym przykładzie multi-stage (FastAPI, ONNX Runtime) etap Runner kopiuje z etapu builder?",
+    options: ["Katalog /root/.local z bibliotekami", "Pakiet build-essential do kompilacji", "Plik uber-jar z katalogu target/", "Cache apt z /var/lib/apt/lists"],
+    correct: [0], explain: "Builder instaluje paczki przez pip install --user. Runner kopiuje tylko /root/.local i kod z src/.", src: "W02, slajd 78–79", note: "W02-modele-obliczeniowe" },
 
   { id: "W02-23", w: "W02", c: "distroless", type: "single",
     q: "Obraz bez powłoki shell i bez menedżera pakietów, zawierający tylko aplikację i jej runtime, to:",
     options: ["Alpine", "Distroless", "ubuntu:latest", "nvidia/cuda devel"],
     correct: [1], explain: "Distroless (Google) nie ma shella. Alpine jest mały (ok. 5 MB), ale ma busybox.", src: "W02, slajd 76", note: "W02-modele-obliczeniowe" },
 
+  { id: "W02-46", w: "W02", c: "distroless", type: "single",
+    q: "Co NIE jest cechą obrazów Distroless według wykładu?",
+    options: ["Brak powłoki shell", "Brak menedżera pakietów", "Tylko aplikacja i jej runtime (np. JRE)", "Oparcie na musl libc i busybox"],
+    correct: [3], explain: "musl libc i busybox to cechy Alpine. Distroless nie ma shella ani menedżera pakietów.", src: "W02, slajd 76", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-47", w: "W02", c: "distroless", type: "single",
+    q: "Dlaczego minimalne obrazy (Alpine, Distroless) zmniejszają wektor ataku?",
+    options: ["Mniej binarek oznacza mniej luk CVE", "Szyfrują warstwy obrazu kluczami KMS", "Proces aplikacji zawsze działa jako PID 1", "Izolują sieć kontenera przez NET Namespace"],
+    correct: [0], explain: "Mniej zainstalowanych binarek to mniej luk CVE. Pełny ubuntu:latest ma tysiące zbędnych narzędzi.", src: "W02, slajd 76", note: "W02-modele-obliczeniowe" },
+
   { id: "W02-24", w: "W02", c: "pid1", type: "single",
     q: "Po co w Dockerfile ustawia się ENTRYPOINT [\"/usr/bin/tini\", \"--\"]?",
     options: ["Żeby tini jako PID 1 sprzątał zombie i przekazywał sygnały", "Żeby przyspieszyć Layer Caching przy budowaniu obrazu", "Żeby udostępnić GPU kontenerowi przez sterownik hosta", "Żeby ograniczyć zużycie RAM kontenera przez cgroups"],
     correct: [0], explain: "Python/Java słabo pełnią rolę Init. tini adoptuje osierocone procesy i propaguje sygnały.", src: "W02, slajd 80–81", note: "W02-modele-obliczeniowe" },
 
+  { id: "W02-48", w: "W02", c: "pid1", type: "single",
+    q: "Jaki problem powstaje, gdy proces Pythona lub Javy pełni w kontenerze rolę PID 1?",
+    options: ["Często ignoruje SIGTERM i nie sprząta zombie", "Traci dostęp do GPU bez NVIDIA Container Toolkit", "Unieważnia cache warstw przy każdej zmianie", "Przekracza limit RAM i ginie od OOM Killera"],
+    correct: [0], explain: "Python/Java słabo pełnią rolę Init. Ignorowany SIGTERM utrudnia szybkie skalowanie i aktualizację klastra.", src: "W02, slajd 80", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-49", w: "W02", c: "pid1", type: "single",
+    q: "Dockerfile ma ENTRYPOINT [\"/usr/bin/tini\", \"--\"] i CMD [\"python\", \"main.py\"]. Czym jest aplikacja AI?",
+    options: ["Procesem potomnym tini", "Procesem PID 1 kontenera", "Procesem zombie po starcie", "Osobną usługą w Compose"],
+    correct: [0], explain: "ENTRYPOINT czyni tini procesem PID 1. CMD definiuje aplikację, która staje się procesem potomnym tini.", src: "W02, slajd 81", note: "W02-modele-obliczeniowe" },
+
   { id: "W02-25", w: "W02", c: "compose", type: "single",
     q: "W docker-compose.yml usługa api ma QDRANT_HOST=vector-db. Dzięki czemu to działa?",
     options: ["Dzięki kolejności startu z depends_on", "Dzięki rozwiązywaniu nazw usług w sieci Dockera", "Dzięki NVIDIA Container Toolkit na hoście", "Dzięki współdzielonemu wolumenowi qdrant_data"],
     correct: [1], explain: "To Service Discovery po nazwie usługi. depends_on ustala tylko kolejność startu.", src: "W02, slajd 82, 84", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-50", w: "W02", c: "compose", type: "single",
+    q: "Co określa sekcja depends_on w docker-compose.yml z wykładu?",
+    options: ["Kolejność startowania kontenerów", "Rozwiązywanie nazw usług w sieci", "Limity CPU i RAM każdej usługi", "Mapowanie portów hosta na kontener"],
+    correct: [0], explain: "depends_on ustala kolejność startu. Nazwy usług rozwiązuje wewnętrzna sieć Dockera (Service Discovery).", src: "W02, slajd 84", note: "W02-modele-obliczeniowe" },
+
+  { id: "W02-51", w: "W02", c: "compose", type: "single",
+    q: "Jaką rolę pełni Qdrant w przykładowym systemie RAG uruchamianym przez Docker Compose?",
+    options: ["Przechowuje embeddingi (wektory) tekstu", "Mapuje zapytania użytkownika na wektory", "Udostępnia interfejs czatu użytkownikowi", "Sprząta procesy zombie jako PID 1"],
+    correct: [0], explain: "Qdrant to baza wektorowa. FastAPI mapuje zapytania na wektory, a Streamlit daje interfejs czatu.", src: "W02, slajd 85", note: "W02-modele-obliczeniowe" },
 ]});

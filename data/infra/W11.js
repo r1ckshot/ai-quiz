@@ -25,10 +25,25 @@
     options: ["GPU Utilization", "Tensor Core Utilization", "Interconnect Saturation", "Thermal Throttling"],
     correct: [1], explain: "GPU Utilization to ogólne zajęcie karty. Tensor Core Utilization mierzy faktyczne operacje macierzowe.", src: "W11, slajd 343", note: "W11-monitorowanie" },
 
+  { id: "W11-26", w: "W11", c: "dcgm-metryki", type: "single",
+    q: "Do czego według wykładu służy metryka DCGM VRAM Memory i Fragmentation?",
+    options: ["Do pomiaru przepustowości NVLink i PCIe", "Do wykrywania wycieków pamięci (OOM)", "Do oceny wpływu temperatury na wydajność", "Do pomiaru rzeczywistych operacji macierzowych"],
+    correct: [1], explain: "VRAM Memory i Fragmentation wykrywa wycieki pamięci (Out of Memory). NVLink i PCIe to Interconnect Saturation.", src: "W11, slajd 343", note: "W11-monitorowanie" },
+
+  { id: "W11-27", w: "W11", c: "dcgm-metryki", type: "single",
+    q: "Model rozproszony na kilku GPU zwalnia, bo łącza NVLink są przeciążone. Którą metrykę DCGM obserwować?",
+    options: ["Thermal Throttling", "VRAM Memory i Fragmentation", "Interconnect Saturation", "Tensor Core Utilization"],
+    correct: [2], explain: "Interconnect Saturation mierzy przepustowość NVLink i PCIe w modelach rozproszonych.", src: "W11, slajd 343", note: "W11-monitorowanie" },
+
   { id: "W11-06", w: "W11", c: "percentyle", type: "single",
     q: "Jak według wykładu analizować latencję w systemach z Dynamic Batching?",
     options: ["Średnią arytmetyczną czasu odpowiedzi", "Percentylami P95 i P99", "Tylko liczbą błędów 5xx", "Wartością minimalną latencji"],
     correct: [1], explain: "Wykład zaleca rezygnację ze średniej na rzecz percentyli P95 i P99.", src: "W11, slajd 343", note: "W11-monitorowanie" },
+
+  { id: "W11-28", w: "W11", c: "percentyle", type: "single",
+    q: "Zespół raportuje latencję API z Dynamic Batching jako średnią dobową. Co zmienić według wykładu?",
+    options: ["Liczyć średnią z krótszego okna, np. 10 s", "Analizować percentyle P95 i P99", "Mierzyć tylko przepustowość węzła", "Zastąpić latencję metryką GPU Utilization"],
+    correct: [1], explain: "W systemach z Dynamic Batching wykład zaleca percentyle P95 i P99 zamiast średniej.", src: "W11, slajd 343", note: "W11-monitorowanie" },
 
   { id: "W11-07", w: "W11", c: "data-drift", type: "single",
     q: "Który rodzaj dryftu opisuje wzór P_t(X) ≠ P_train(X)?",
@@ -55,25 +70,70 @@
     options: ["Zmianą rozkładu cech wejściowych P(X)", "Zmianą relacji P(Y|X)", "Zmianą rozkładu etykiet wyjściowych P(Y)", "Spadkiem wydajności przez temperaturę GPU"],
     correct: [2], explain: "Prior Probability Shift to zmiana rozkładu etykiet P(Y).", src: "W11, slajd 345", note: "W11-monitorowanie" },
 
+  { id: "W11-29", w: "W11", c: "prior-shift", type: "single",
+    q: "Jak nazywa się zmiana rozkładu etykiet wyjściowych P(Y)?",
+    options: ["Dryft danych", "Dryft pojęciowy", "Zmiana a priori", "Cicha awaria"],
+    correct: [2], explain: "Zmiana a priori (Prior Probability Shift) dotyczy P(Y). Dryft danych dotyczy P(X), a pojęciowy P(Y|X).", src: "W11, slajd 345", note: "W11-monitorowanie" },
+
+  { id: "W11-30", w: "W11", c: "prior-shift", type: "single",
+    q: "Które przyporządkowanie rodzaju dryftu do zmieniającego się rozkładu jest poprawne?",
+    options: ["Covariate Shift: zmienia się P(Y)", "Concept Drift: zmienia się P(X)", "Prior Probability Shift: zmienia się P(Y)", "Prior Probability Shift: zmienia się P(Y|X)"],
+    correct: [2], explain: "Covariate Shift to P(X), Concept Drift to P(Y|X), a Prior Probability Shift to P(Y).", src: "W11, slajd 344, 345", note: "W11-monitorowanie" },
+
   { id: "W11-12", w: "W11", c: "psi", type: "single",
     q: "PSI dla cechy wynosi 0.18. Co to oznacza według progów z wykładu?",
     options: ["Stabilność", "Ostrzeżenie", "Akcję retreningu", "Błąd obliczeń, PSI nie może przekroczyć 0.1"],
     correct: [1], explain: "Progi PSI: < 0.1 stabilność, 0.1–0.25 ostrzeżenie, > 0.25 retrening.", src: "W11, slajd 346", note: "W11-monitorowanie" },
+
+  { id: "W11-31", w: "W11", c: "psi", type: "single",
+    q: "Przy jakiej wartości PSI wykład zaleca akcję retreningu?",
+    options: ["PSI < 0.1", "PSI w zakresie 0.1–0.25", "PSI > 0.25", "PSI > 0.05"],
+    correct: [2], explain: "Progi PSI: < 0.1 stabilność, 0.1–0.25 ostrzeżenie, > 0.25 akcja retreningu.", src: "W11, slajd 346", note: "W11-monitorowanie" },
+
+  { id: "W11-32", w: "W11", c: "psi", type: "single",
+    q: "Jak wykład opisuje indeks PSI (Population Stability Index)?",
+    options: ["Miara utraconej informacji przy przybliżeniu rozkładu", "Standard w finansach dla zmiennych jednowymiarowych", "Metryka dla ciągłych zmiennych macierzowych i wektorowych", "Korekta wyników przy monitorowaniu tysięcy cech"],
+    correct: [1], explain: "PSI to standard w finansach dla zmiennych jednowymiarowych. Utracona informacja to KL, zmienne macierzowe to Wasserstein.", src: "W11, slajd 346", note: "W11-monitorowanie" },
 
   { id: "W11-13", w: "W11", c: "kl-emd", type: "single",
     q: "Która miara jest odporna na rozłączne nośniki rozkładów i stabilna numerycznie?",
     options: ["Dywergencja Kullbacka-Leiblera", "Dystans Wassersteina (EMD)", "PSI (Population Stability Index)", "Korekta Benjamini-Hochberga"],
     correct: [1], explain: "Wasserstein (Earth Mover's Distance) jest odporny na rozłączne nośniki. KL jest asymetryczna i wrażliwa na zera.", src: "W11, slajd 346", note: "W11-monitorowanie" },
 
+  { id: "W11-33", w: "W11", c: "kl-emd", type: "single",
+    q: "Co według wykładu mierzy dywergencja Kullbacka-Leiblera (KL)?",
+    options: ["Stabilność populacji dla zmiennych jednowymiarowych", "Ilość utraconej informacji przy przybliżeniu rozkładu", "Liczbę fałszywych alertów przy monitorowaniu tysięcy cech", "Zmianę relacji P(Y|X) między cechami a celem"],
+    correct: [1], explain: "KL mierzy ilość utraconej informacji przy przybliżeniu rozkładu. Jej wyzwania to asymetria i wrażliwość na zera.", src: "W11, slajd 346", note: "W11-monitorowanie" },
+
+  { id: "W11-34", w: "W11", c: "kl-emd", type: "single",
+    q: "Które zdanie poprawnie porównuje KL i dystans Wassersteina według wykładu?",
+    options: ["KL jest asymetryczna, a Wasserstein stabilny numerycznie", "Wasserstein jest asymetryczny, a KL stabilna numerycznie", "Obie miary to standard finansowy dla zmiennych jednowymiarowych", "KL jest odporna na rozłączne nośniki, a Wasserstein nie"],
+    correct: [0], explain: "KL ma problem z asymetrią i zerami. Wasserstein jest odporny na rozłączne nośniki i stabilny numerycznie.", src: "W11, slajd 346", note: "W11-monitorowanie" },
+
   { id: "W11-14", w: "W11", c: "alert-fatigue", type: "single",
     q: "Co stosuje się przeciw Alert Fatigue przy monitorowaniu tysięcy cech?",
     options: ["Korektę Benjamini-Hochberga", "Test Kołmogorowa-Smirnowa", "Strategię Canary", "Interwał próbkowania 10s"],
     correct: [0], explain: "Przy tysiącach cech potrzebna jest korekta Benjamini-Hochberga, by ograniczyć fałszywe alerty.", src: "W11, slajd 346", note: "W11-monitorowanie" },
 
+  { id: "W11-35", w: "W11", c: "alert-fatigue", type: "single",
+    q: "Z jakim problemem wykład wiąże korektę Benjamini-Hochberga przy monitorowaniu tysięcy cech?",
+    options: ["Alert Fatigue", "Cicha awaria (Silent Failure)", "Wyczerpanie puli połączeń SQL", "Asymetria dywergencji KL"],
+    correct: [0], explain: "Na slajdzie korekta Benjamini-Hochberga jest odpowiedzią na Alert Fatigue przy tysiącach cech.", src: "W11, slajd 346", note: "W11-monitorowanie" },
+
   { id: "W11-15", w: "W11", c: "async-drift", type: "single",
     q: "Gdzie we wzorcu Asynchronous Drift Detection wykonuje się obliczenia statystyczne?",
     options: ["W wątku inferencji, przy każdym żądaniu", "Poza ścieżką krytyczną API, w CronJob", "W sterowniku NVIDIA przez NVML", "Po stronie klienta, w przeglądarce"],
     correct: [1], explain: "Obliczenia dryftu idą poza ścieżką krytyczną API, np. jako CronJob.", src: "W11, slajd 347", note: "W11-monitorowanie" },
+
+  { id: "W11-36", w: "W11", c: "async-drift", type: "single",
+    q: "Co NIE jest krokiem wzorca Asynchronous Drift Detection?",
+    options: ["Pobranie próbki referencyjnej z MLflow/DVC", "Pobranie danych produkcyjnych z ClickHouse", "Obliczenia statystyczne w Kubernetes CronJob", "Obliczenia statystyczne w wątku inferencji"],
+    correct: [3], explain: "Obliczenia dryftu idą poza ścieżką krytyczną API, w Kubernetes CronJob. Wątek inferencji nie jest blokowany.", src: "W11, slajd 347", note: "W11-monitorowanie" },
+
+  { id: "W11-37", w: "W11", c: "async-drift", type: "single",
+    q: "Skąd we wzorcu Asynchronous Drift Detection pobiera się próbkę referencyjną?",
+    options: ["Z bazy analitycznej, np. ClickHouse", "Z rejestru MLflow lub z DVC", "Z kolejki Kafka przez agenta FluentBit", "Z Prometheus Pushgateway"],
+    correct: [1], explain: "Próbka referencyjna pochodzi z MLflow/DVC. Dane produkcyjne pochodzą z bazy analitycznej, np. ClickHouse.", src: "W11, slajd 347", note: "W11-monitorowanie" },
 
   { id: "W11-16", w: "W11", c: "payload-logging", type: "single",
     q: "Na czym polega rozprzężenie (Decoupling) we wzorcu Asynchronous Payload Logging?",
@@ -90,20 +150,55 @@
     options: ["Sidecar Container Pattern", "Data Lakehouse Pattern", "Dynamic Batching w Tritonie", "Prometheus Metric Relabeling"],
     correct: [0], explain: "Wzorzec przyczepki (Sidecar) to dodatkowy kontener z agentem zbierającym stdout.", src: "W11, slajd 349", note: "W11-monitorowanie" },
 
+  { id: "W11-38", w: "W11", c: "sidecar", type: "single",
+    q: "Na czym polega wzorzec przyczepki kontenera (Sidecar Container Pattern) w Payload Logging?",
+    options: ["Na emisji zdarzeń do Kafki bez blokowania inferencji", "Na przechwytywaniu stdout przez agenta, np. FluentBit", "Na zapisie danych w Parquet w magazynach obiektowych", "Na synchronicznym zapisie każdej predykcji do bazy SQL"],
+    correct: [1], explain: "Sidecar to agent, np. FluentBit, przechwytujący logi strukturalne ze stdout. Emisja do Kafki to Decoupling.", src: "W11, slajd 349", note: "W11-monitorowanie" },
+
   { id: "W11-19", w: "W11", c: "dcgm-exporter", type: "single",
     q: "Jak wdraża się NVIDIA DCGM Exporter w Kubernetesie?",
     options: ["Jako DaemonSet, jedna instancja na każdy węzeł GPU", "Jako jeden Deployment dla całego klastra", "Jako Kubernetes CronJob co 4h", "Jako sidecar w każdym podzie aplikacji"],
     correct: [0], explain: "DCGM Exporter działa jako DaemonSet i mówi ze sterownikiem NVIDIA przez API NVML.", src: "W11, slajd 353", note: "W11-monitorowanie" },
+
+  { id: "W11-39", w: "W11", c: "dcgm-exporter", type: "single",
+    q: "Jak NVIDIA DCGM Exporter komunikuje się ze sterownikiem NVIDIA?",
+    options: ["Bezpośrednio przez API NVML", "Przez kolejkę Apache Kafka", "Przez siatkę usług Istio", "Przez Prometheus Pushgateway"],
+    correct: [0], explain: "DCGM Exporter komunikuje się bezpośrednio ze sterownikiem NVIDIA przez API NVML.", src: "W11, slajd 353", note: "W11-monitorowanie" },
+
+  { id: "W11-40", w: "W11", c: "dcgm-exporter", type: "single",
+    q: "Dlaczego według wykładu w Kubernetesie potrzebny jest NVIDIA DCGM Exporter?",
+    options: ["Natywny K8s nie widzi wnętrza GPU ani TPU", "Prometheus nie zbiera metryk z DaemonSetów", "Sterownik NVIDIA nie udostępnia API NVML", "Prometheus nie obsługuje interwału 10s"],
+    correct: [0], explain: "Kubernetes nie widzi wnętrza kart graficznych ani TPU bez rozszerzeń. DCGM Exporter czyta GPU przez NVML.", src: "W11, slajd 353", note: "W11-monitorowanie" },
 
   { id: "W11-20", w: "W11", c: "ct-triggers", type: "single",
     q: "Retrening uruchamia alert Prometheusa po wzroście PSI powyżej 0.25. Jaki to typ wyzwalacza CT?",
     options: ["Planowany (czasowy)", "Wydajnościowy (SLO Alerting)", "Sterowany zdarzeniami (Event-Driven)", "Ręczny rollback"],
     correct: [1], explain: "SLO Alerting reaguje na spadek metryk lub PSI > 0.25. Event-Driven reaguje na nową partię danych.", src: "W11, slajd 355", note: "W11-monitorowanie" },
 
+  { id: "W11-41", w: "W11", c: "ct-triggers", type: "single",
+    q: "Model sprzedaży ma przewidywalną sezonowość i jest retrenowany co tydzień. Jaki to typ wyzwalacza CT?",
+    options: ["Planowany (czasowy)", "Wydajnościowy (SLO Alerting)", "Sterowany zdarzeniami (Event-Driven)", "Automatyczny rollback"],
+    correct: [0], explain: "Wyzwalacz planowany (czasowy, np. co tydzień) służy przewidywalnej sezonowości.", src: "W11, slajd 355", note: "W11-monitorowanie" },
+
+  { id: "W11-42", w: "W11", c: "ct-triggers", type: "single",
+    q: "Co NIE jest wyzwalaczem retreningu (CT Trigger) według wykładu?",
+    options: ["Upływ czasu, np. co tydzień", "Alert Prometheusa przy PSI > 0.25", "Nowa partia zweryfikowanych danych", "Skok błędów 5xx w wersji Canary"],
+    correct: [3], explain: "Skok błędów 5xx w Canary uruchamia automatyczny rollback, a nie retrening.", src: "W11, slajd 355", note: "W11-monitorowanie" },
+
   { id: "W11-21", w: "W11", c: "rollback", type: "single",
     q: "Co według wykładu dzieje się po wykryciu skoku błędów 5xx w wersji Canary?",
     options: ["Uruchamia się retrening w Kubeflow", "Istio cofa ruch do stabilnej wersji Blue", "DCGM Exporter restartuje węzeł GPU", "PSI zostaje przeliczony dla wersji Canary"],
     correct: [1], explain: "Automatyczny rollback: monitoring zintegrowany z Istio cofa ruch z Canary do Blue.", src: "W11, slajd 355", note: "W11-monitorowanie" },
+
+  { id: "W11-43", w: "W11", c: "rollback", type: "single",
+    q: "Z czym integruje się stos monitoringu, aby realizować automatyczne rollbacki?",
+    options: ["Z siatką usług Istio", "Z kolejką Apache Kafka", "Z agentem FluentBit", "Z rejestrem modeli MLflow"],
+    correct: [0], explain: "Automatyczne rollbacki wymagają integracji monitoringu z siatką usług Istio w Kubernetesie.", src: "W11, slajd 355", note: "W11-monitorowanie" },
+
+  { id: "W11-44", w: "W11", c: "rollback", type: "single",
+    q: "Co według wykładu wyzwala automatyczne wycofanie ruchu z wersji Canary?",
+    options: ["Wzrost PSI powyżej 0.25", "Skok błędów HTTP 5xx", "Nowa partia danych treningowych", "Spadek Tensor Core Utilization"],
+    correct: [1], explain: "Rollback do wersji Blue następuje po skoku błędów 5xx. PSI > 0.25 wyzwala retrening.", src: "W11, slajd 355", note: "W11-monitorowanie" },
 
   { id: "W11-22", w: "W11", c: "petla", type: "single",
     q: "Który element zamkniętej pętli MLOps wdraża nowy model na klastrze K8s jako operator GitOps?",
@@ -120,8 +215,23 @@
     options: ["ITL (Inter-Token Latency)", "TTFT (Time-to-First-Token)", "Token Throughput (tokeny/s)", "PSI (Population Stability Index)"],
     correct: [1], explain: "TTFT to czas do pierwszego tokena. ITL to czas między kolejnymi tokenami.", src: "W11, slajd 359", note: "W11-monitorowanie" },
 
+  { id: "W11-45", w: "W11", c: "llm-metryki", type: "single",
+    q: "Która metryka LLM ma według wykładu akceptowalną wartość poniżej 20 ms?",
+    options: ["TTFT (Time-to-First-Token)", "Token Throughput (tokeny/s)", "ITL (Inter-Token Latency)", "Interwał scrape DCGM Exporter"],
+    correct: [2], explain: "ITL to czas generowania kolejnych tokenów, akceptowalny poniżej 20 ms.", src: "W11, slajd 359", note: "W11-monitorowanie" },
+
+  { id: "W11-46", w: "W11", c: "llm-metryki", type: "single",
+    q: "Co mierzy Token Throughput w LLM Observability?",
+    options: ["Latencję do wygenerowania pierwszego słowa", "Czas generowania kolejnych tokenów", "Całkowitą przepustowość węzła w tokenach/s", "Koszt tokenów Prompt i Completion"],
+    correct: [2], explain: "Token Throughput to całkowita przepustowość węzła w tokenach na sekundę. Czas kolejnych tokenów to ITL.", src: "W11, slajd 359", note: "W11-monitorowanie" },
+
   { id: "W11-25", w: "W11", c: "llm-judge", type: "single",
     q: "Do czego służą biblioteki Ragas i TruLens w LLM Observability?",
     options: ["Do śledzenia kosztów tokenów Prompt i Completion", "Do wykrywania halucynacji i toksyczności (LLM-as-a-Judge)", "Do eksportu metryk GPU przez NVML do Prometheusa", "Do buforowania zdarzeń telemetrii w kolejce Kafka"],
     correct: [1], explain: "Ragas i TruLens realizują LLM-as-a-Judge. Koszty tokenów to FinOps Observability.", src: "W11, slajd 359", note: "W11-monitorowanie" },
+
+  { id: "W11-47", w: "W11", c: "llm-judge", type: "single",
+    q: "LLM na produkcji działa szybko, ale część odpowiedzi to halucynacje. Czego użyć według wykładu?",
+    options: ["Testu Kołmogorowa-Smirnowa na tekście odpowiedzi", "Ewaluacji LLM-as-a-Judge z Ragas lub TruLens", "Indeksu PSI liczonego dla długości odpowiedzi", "Metryki TTFT zbieranej przez DCGM Exporter"],
+    correct: [1], explain: "PSI i KS zawodzą przy nieustrukturyzowanym tekście. Halucynacje wykrywa ewaluacja semantyczna Ragas lub TruLens.", src: "W11, slajd 359", note: "W11-monitorowanie" },
 ]});
