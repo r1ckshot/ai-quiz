@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "ai-quiz",
-  "short_name": "ai-quiz",
+  "name": "AI Quiz",
+  "short_name": "AI Quiz",
   "description": "Pytania testowe z wykładów, informatyka AI, semestr 2",
   "lang": "pl",
   "start_url": "./",

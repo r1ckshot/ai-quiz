@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#EDF1F4">
-<title>ai-quiz</title>
+<title>AI Quiz</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="ai-quiz">
+<meta name="apple-mobile-web-app-title" content="AI Quiz">
 <script>
 // Motyw przed pierwszym malowaniem, żeby strona nie mrugała jasnym tłem
 try { const t = JSON.parse(localStorage.getItem("quiz.theme"));
@@ -604,7 +604,7 @@ function home() {
   run = null; stopTimer();
   document.body.classList.remove("running");
   setAccent(subjOf(state.subj));
-  header(`<span class="brand">ai<b>-</b>quiz</span>`, `<span class="hd-sub">Informatyka AI, semestr 2</span>`, themeBtn());
+  header(`<span class="brand">AI <b>Quiz</b></span>`, `<span class="hd-sub">Informatyka AI, semestr 2</span>`, themeBtn());
   let all = 0, ok = 0, total = 0, wrongN = 0;
   const cards = SUBJECTS.map((s, i) => {
     const n = (bank[s.key] || []).length, m = mastery(s), w = Object.keys(LS.get(wrongKey(s), {})).length;
@@ -666,7 +666,7 @@ async function install() {
     <ol class="steps">
       <li>Stuknij <b>Udostępnij</b> ${ico("share", 20)} na pasku Safari. W nowszym Safari jest w menu <b>⋯</b>.</li>
       <li>Wybierz <b>Do ekranu początkowego</b> ${ico("plus", 20)}.</li>
-      <li>Stuknij <b>Dodaj</b>. Ikona ai-quiz pojawi się na ekranie.</li>
+      <li>Stuknij <b>Dodaj</b>. Ikona AI Quiz pojawi się na ekranie.</li>
     </ol>
     <div class="row"><button class="btn primary" id="iosOk">Rozumiem</button></div>`);
   $("#iosOk").onclick = () => d.close();
