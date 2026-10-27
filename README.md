@@ -1,28 +1,43 @@
-# ai-quiz
+# AI Quiz
 
 Testy z wykładów na studiach magisterskich: informatyka, specjalność AI, semestr 2 (Politechnika Lubelska).
+
+**Strona:** [r1ckshot.github.io/ai-quiz](https://r1ckshot.github.io/ai-quiz/)
 
 Pytania powstały na podstawie slajdów z wykładów i mogą zawierać błędy.
 Przy każdym pytaniu jest źródło: wykład i numer slajdu.
 
 ## Tryby
 
-- **Nauka**: wyjaśnienie i źródło po każdej odpowiedzi.
-- **Egzamin**: bez podpowiedzi, z limitem czasu, wynik na końcu.
-- **Moje błędy**: pomylone pojęcia wracają w innym wariancie pytania.
+- **Nauka**: po każdej odpowiedzi wynik, wyjaśnienie i slajd, z którego pochodzi pytanie.
+- **Egzamin**: jak test na Moodle. Bez podpowiedzi, z limitem czasu, wynik i próg zaliczenia na końcu. Między pytaniami można się cofać.
+- **Moje błędy**: pomylone pojęcie wraca w innym wariancie pytania, aż odpowiedź będzie poprawna.
 
-Postęp zapisuje się tylko w przeglądarce (localStorage).
+## Co jeszcze
 
-## Jak uruchomić
+- Wybór wykładów i liczby pytań przed testem.
+- Postęp: pierścień opanowanych pojęć dla przedmiotu i pasek dla każdego wykładu.
+- Omówienie po teście: Twoja odpowiedź, poprawna odpowiedź i wyjaśnienie.
+- Jasny i ciemny motyw (domyślnie jak w systemie).
+- Skróty na komputerze: 1–9 lub a–d wybiera odpowiedź, Enter przechodzi dalej, strzałki zmieniają pytanie w egzaminie.
 
-Otworzyć `index.html` w przeglądarce. Strona działa bez serwera i bez instalacji.
+Postęp zapisuje się tylko w tej przeglądarce, bez konta i bez serwera.
 
 ## Na telefonie
 
-Stronę z GitHub Pages można zainstalować jak aplikację: przycisk „Zainstaluj” na ekranie głównym strony.
-Na iPhonie: Udostępnij → Do ekranu początkowego.
-Po pierwszym otwarciu z internetem działa też offline (`sw.js`).
+Stronę można zainstalować jak aplikację, z ikoną na ekranie głównym.
 
-## Pytania
+- **Android**: przycisk „Zainstaluj” na stronie głównej albo menu Chrome → „Zainstaluj aplikację”.
+- **iPhone**: Udostępnij → „Do ekranu początkowego”.
 
-Jeden plik na wykład: `data/<przedmiot>/W01.js` … `W15.js`, oraz `egzamin.js` z pytaniami powtórkowymi.
+Po pierwszym otwarciu z internetem działa też offline.
+Nowe pytania pojawiają się same przy następnym otwarciu z internetem.
+
+## Technologie
+
+Czysty HTML, CSS i JavaScript, bez bibliotek i bez kroku budowania. Tryb offline zapewnia service worker.
+
+## Autor
+
+Mykhailo Kapustianyk, [@r1ckshot](https://github.com/r1ckshot).
+Zbudowane z pomocą Claude Code.
