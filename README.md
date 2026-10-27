@@ -27,11 +27,11 @@ Postęp zapisuje się tylko w tej przeglądarce, bez konta i bez serwera.
 
 Stronę można zainstalować jak aplikację, z ikoną na ekranie głównym.
 
-- **Android**: przycisk „Zainstaluj” na stronie głównej albo menu Chrome → „Zainstaluj aplikację”.
+- **Android**: powiadomienie „Zainstaluj” u góry strony albo menu Chrome → „Zainstaluj aplikację”.
 - **iPhone**: Udostępnij → „Do ekranu początkowego”.
 
 Po pierwszym otwarciu z internetem działa też offline.
-Nowe pytania pojawiają się same przy następnym otwarciu z internetem.
+Nowe pytania pojawiają się same przy następnym otwarciu z internetem, a powiadomienie u góry pokazuje, ile ich doszło.
 
 ## Technologie
 
