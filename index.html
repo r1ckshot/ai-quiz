@@ -41,6 +41,8 @@ try { const t = JSON.parse(localStorage.getItem("quiz.theme"));
   color-scheme: dark;
 }
 /* Kolor przedmiotu: na ciemnym tle rozjaśniony, żeby miał kontrast */
+@property --sc { syntax: "<color>"; inherits: true; initial-value: #c2410c; } /* zarejestrowany kolor da się płynnie zmieniać */
+:root.ready { transition: --sc .7s var(--ease); } /* poświata i akcenty przechodzą w kolor nowego przedmiotu, bez skoku */
 :root, .tint { --accent: var(--sc, #c2410c); }
 :root[data-theme="dark"], :root[data-theme="dark"] .tint { --accent: color-mix(in oklab, var(--sc, #c2410c) 72%, #fff); }
 
@@ -52,8 +54,19 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-even
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 code { background: var(--soft); border: 1px solid var(--line); border-radius: 5px; padding: 0 4px; font-size: 90%; }
+/* Przejścia między ekranami (View Transitions): stary ekran gaśnie, nowy wjeżdża; nagłówek zostaje na miejscu */
+#hd { view-transition-name: hd; }
+@media (max-width: 699px) { .dock { view-transition-name: dock; } } /* dolny pasek telefonu też stoi w miejscu */
+::view-transition-group(*) { animation-duration: .42s; animation-timing-function: var(--ease); }
+html[data-vt="page"]::view-transition-old(root) { animation: vt-out .2s ease-in both; }
+html[data-vt="page"]::view-transition-new(root) { animation: vt-rise .45s var(--ease) both; }
+html[data-vt="fwd"]::view-transition-old(root) { animation: vt-to-left .22s ease-in both; }
+html[data-vt="fwd"]::view-transition-new(root) { animation: vt-from-right .42s var(--ease) both; }
+html[data-vt="back"]::view-transition-old(root) { animation: vt-to-right .22s ease-in both; }
+html[data-vt="back"]::view-transition-new(root) { animation: vt-from-left .42s var(--ease) both; }
 /* Zmiana motywu: nowy motyw odsłania się kołem od przycisku, bez przenikania kolorów */
-::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+html[data-vt="theme"]::view-transition-old(root), html[data-vt="theme"]::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+html[data-vt="theme"] #hd, html[data-vt="theme"] .dock { view-transition-name: none; }
 .ico { display: block; flex: none; }
 [hidden] { display: none !important; }
 
@@ -249,8 +262,12 @@ code { background: var(--soft); border: 1px solid var(--line); border-radius: 5p
 .seg.pop::after { animation: segpop .5s var(--ease); }
 .track .bar { flex: 1; height: 8px; margin: 0; }
 .track .bar i { animation: none; transition: width .4s var(--ease); }
-.streak { flex: none; display: inline-flex; align-items: center; gap: 3px; color: var(--warn); font: 800 17px/1 var(--display); font-variant-numeric: tabular-nums; }
-.streak.pop { animation: pop .45s var(--ease); }
+/* Seria: stałe miejsce w nagłówku, więc pasek nie skacze; płomień pojawia się i znika płynnie */
+.streak { flex: none; width: 52px; display: inline-flex; align-items: center; justify-content: flex-end; gap: 3px; color: var(--warn);
+          font: 800 17px/1 var(--display); font-variant-numeric: tabular-nums;
+          opacity: 0; transform: scale(.6); transition: opacity .35s var(--ease), transform .55s cubic-bezier(.34, 1.56, .64, 1); }
+.streak.on { opacity: 1; transform: none; }
+.streak.bump .ico { animation: bump .55s var(--ease); }
 
 /* Pytanie */
 .qmeta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; margin: 0 0 10px; }
@@ -299,6 +316,9 @@ code { background: var(--soft); border: 1px solid var(--line); border-radius: 5p
        max-height: calc(100dvh - 48px); box-shadow: 0 30px 80px rgba(0, 0, 0, .35); }
 .dlg::backdrop { background: rgba(5, 8, 12, .55); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
 .dlg[open] { animation: lift .3s var(--ease); }
+.dlg[open]::backdrop { animation: dlg-fade-in .3s ease-out; }
+.dlg.out { animation: dlg-out .2s ease-in forwards; } /* zamykanie: okno opada i gaśnie, tło razem z nim */
+.dlg.out::backdrop { animation: dlg-fade-out .22s ease-in forwards; }
 .dlg-in { padding: 20px 20px 16px; }
 .dlg-h { font: 800 21px/1.25 var(--display); margin: 0 0 8px; }
 .dlg-in > p { margin: 0; }
@@ -307,6 +327,7 @@ code { background: var(--soft); border: 1px solid var(--line); border-radius: 5p
 @media (max-width: 599px) {
   .dlg { width: 100%; max-width: 100%; margin: auto 0 0; border-radius: 24px 24px 0 0; border-bottom: 0; max-height: 88dvh; }
   .dlg[open] { animation: sheet .38s var(--ease); }
+  .dlg.out { animation: sheet-out .24s cubic-bezier(.4, 0, 1, 1) forwards; } /* telefon: arkusz zjeżdża w dół */
   .dlg-in { padding: 12px 20px calc(18px + env(safe-area-inset-bottom)); }
   .dlg-in::before { content: ""; display: block; width: 40px; height: 5px; border-radius: 99px; background: var(--line2); margin: 0 auto 16px; }
   .dlg .row .btn { flex: 1; }
@@ -377,8 +398,19 @@ button.sq:active { transform: scale(.9); }
 @keyframes enter  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes rise   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes sheet  { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes sheet-out { to { transform: translateY(100%); } }
+@keyframes dlg-out { to { opacity: 0; transform: translateY(10px) scale(.98); } }
+@keyframes dlg-fade-in { from { opacity: 0; } }
+@keyframes dlg-fade-out { to { opacity: 0; } }
 @keyframes grow   { from { width: 0; } }
-@keyframes pop    { 0% { transform: scale(1); } 45% { transform: scale(1.3); } 100% { transform: scale(1); } }
+@keyframes pop    { 0% { transform: scale(1); } 40% { transform: scale(1.16); } 100% { transform: scale(1); } }
+@keyframes bump   { 0% { transform: none; } 35% { transform: scale(1.22) rotate(-8deg); } 100% { transform: none; } }
+@keyframes vt-out       { to { opacity: 0; } }
+@keyframes vt-rise      { from { opacity: 0; transform: translateY(12px); } }
+@keyframes vt-to-left   { to { opacity: 0; transform: translateX(-28px); } }
+@keyframes vt-from-right { from { opacity: 0; transform: translateX(28px); } }
+@keyframes vt-to-right  { to { opacity: 0; transform: translateX(28px); } }
+@keyframes vt-from-left { from { opacity: 0; transform: translateX(-28px); } }
 @keyframes segpop { 0% { transform: scaleY(1); } 45% { transform: scaleY(2.1); } 100% { transform: scaleY(1); } }
 @keyframes bounce { 0% { transform: scale(1); } 40% { transform: scale(1.025); } 100% { transform: scale(1); } }
 @keyframes shake  { 0%, 100% { transform: none; } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
@@ -498,10 +530,35 @@ function toggleTheme(e) {
   if (!document.startViewTransition || calm()) return flip(); // starsze przeglądarki: zmiana od razu
   const b = e.currentTarget.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + b.height / 2;
   const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-  document.startViewTransition(flip).ready.then(() => root.animate(
+  root.dataset.vt = "theme";
+  const t = document.startViewTransition(flip);
+  t.ready.then(() => root.animate(
     { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
     { duration: 500, easing: "cubic-bezier(.22, 1, .36, 1)", pseudoElement: "::view-transition-new(root)" })).catch(() => {}); // ukryta karta: przejście przerwane, motyw i tak zmieniony
+  t.finished.finally(() => { if (root.dataset.vt === "theme") delete root.dataset.vt; });
 }
+
+// Płynna zmiana ekranu (View Transitions): fwd i back przesuwają pytanie w bok, page wjeżdża od dołu.
+// Bez wsparcia, przy ukrytej karcie albo przy ograniczonym ruchu ekran zmienia się od razu z animacją .enter.
+// Nowy ekran rysuje się dopiero w następnej klatce, więc przejścia idą po kolei, a stary ekran do tego czasu nie reaguje na kliknięcia.
+let swapping = false, pending = 0, queue = Promise.resolve();
+function swap(render, kind = "page") {
+  if (swapping || (!pending && (!document.startViewTransition || calm() || document.hidden))) return render(); // już w przejściu: bez zagnieżdżania
+  pending++;
+  app.inert = hd.inert = true; // np. podwójne „Dalej” nie przeskoczy pytania
+  queue = queue.then(() => {
+    root.dataset.vt = kind;
+    const t = document.startViewTransition(() => {
+      swapping = true; app.inert = hd.inert = false;
+      try { render(); } finally { swapping = false; }
+    });
+    t.ready.catch(() => {});
+    t.finished.finally(() => { if (root.dataset.vt === kind) delete root.dataset.vt; });
+    return t.updateCallbackDone.catch(() => {}).finally(() => { pending--; });
+  });
+}
+const busy = () => pending > 0;
+const enter = () => swapping ? "" : " enter"; // w przejściu ekran już wjeżdża, druga animacja byłaby zbędna
 sysDark.addEventListener?.("change", applyTheme);
 const themeBtn = () => `<button class="ib" id="themeBtn"></button>`;
 
@@ -590,11 +647,9 @@ function route() {
     history.pushState(null, "", "#" + run.s.key);
     return askQuit(false);
   }
-  if (SUBJECTS.some(s => s.key === k)) {
-    if (k !== state.subj) { state.subj = k; state.lectures = null; state.count = null; state.mode = "nauka"; LS.set("quiz.subj", k); }
-    setup();
-  } else home();
-  scrollTo({ top: 0 });
+  const subject = SUBJECTS.some(s => s.key === k);
+  if (subject && k !== state.subj) { state.subj = k; state.lectures = null; state.count = null; state.mode = "nauka"; LS.set("quiz.subj", k); }
+  swap(() => { subject ? setup() : home(); scrollTo({ top: 0 }); });
 }
 addEventListener("hashchange", route);
 const goHome = () => { location.hash = ""; };
@@ -618,7 +673,7 @@ function home() {
       ${n ? `<span class="card-prog"><i style="width:${m.pct}%"></i></span>` : ""}</a>`;
   }).join("");
   const gp = total ? Math.round(ok / total * 100) : 0;
-  app.innerHTML = `<section class="screen enter">
+  app.innerHTML = `<section class="screen${enter()}">
     <div class="hero">${ring(gp, 86, 9)}<div class="hero-txt"><h1 class="title">Testy z wykładów</h1>
       <p class="lead">Wybierz przedmiot. Pierścień pokazuje opanowane pojęcia ze wszystkich przedmiotów.</p></div></div>
     <div class="tiles">
@@ -669,7 +724,7 @@ async function install() {
       <li>Stuknij <b>Dodaj</b>. Ikona AI Quiz pojawi się na ekranie.</li>
     </ol>
     <div class="row"><button class="btn primary" id="iosOk">Rozumiem</button></div>`);
-  $("#iosOk").onclick = () => d.close();
+  $("#iosOk").onclick = () => shut(d);
 }
 
 // Bez internetu: service worker zapisuje pliki strony (nie działa przy otwarciu z dysku, file://)
@@ -693,7 +748,7 @@ function setup(animate = true) {
   $("#hdBack").onclick = goHome;
   const qs = bank[s.key] || [];
   if (!qs.length) {
-    app.innerHTML = `<section class="screen enter"><div class="hero"><div class="hero-txt"><h1 class="title">${esc(s.dir)}</h1>
+    app.innerHTML = `<section class="screen${enter()}"><div class="hero"><div class="hero-txt"><h1 class="title">${esc(s.dir)}</h1>
       <p class="lead">Pytań z tego przedmiotu jeszcze nie ma. Wybierz inny przedmiot.</p></div></div>
       <div class="block"><button class="btn ghost wide" id="toHome">Wszystkie przedmioty</button></div></section>`;
     $("#toHome").onclick = goHome;
@@ -711,7 +766,7 @@ function setup(animate = true) {
   if (s.sec) facts.push(`${s.sec} s na pytanie`);
   const m = mastery(s);
 
-  app.innerHTML = `<section class="screen${animate ? " enter" : " still"}">
+  app.innerHTML = `<section class="screen${animate ? enter() : " still"}">
     <div class="hero">${ring(m.pct, 76, 8)}<div class="hero-txt"><h1 class="title" title="${esc(s.dir)}">${esc(s.name)}</h1>
       <ul class="chips">${facts.map(f => `<li class="chip">${f}</li>`).join("")}</ul></div></div>
 
@@ -803,11 +858,13 @@ function start(s, n, only) {
   if (!items.length) return;
   run = { s, items, i: 0, mode: state.mode, t0: Date.now(), streak: 0 };
   if (run.mode === "egzamin" && s.sec) run.deadline = run.t0 + items.length * s.sec * 1000;
-  document.body.classList.add("running");
-  runHeader(); // nagłówek raz na test, potem zmienia się tylko pasek
-  startTimer();
-  showQ(true);
-  scrollTo({ top: 0 });
+  swap(() => {
+    document.body.classList.add("running");
+    runHeader(); // nagłówek raz na test, potem zmienia się tylko pasek
+    startTimer();
+    showQ(true);
+    scrollTo({ top: 0 });
+  });
 }
 
 function startTimer() { stopTimer(); timerId = setInterval(tick, 500); }
@@ -855,7 +912,7 @@ function runHeader() {
   header(`<button class="ib" id="quit" aria-label="Zakończ test">${ico("close")}</button>`,
     `<div class="track" id="strip" role="progressbar" aria-label="Postęp testu" aria-valuemin="0" aria-valuemax="100"></div>`,
     exam ? `<span class="timer" id="timer" aria-label="${run.deadline ? "Pozostały czas" : "Czas"}"></span><button class="ib" id="navBtn" aria-label="Lista pytań">${ico("grid")}</button>` // czas egzaminu zawsze widoczny
-         : `<span class="streak" id="streak" aria-label="Seria poprawnych odpowiedzi" hidden>${ico("flame", 20)}<span>0</span></span>`);
+         : `<span class="streak" id="streak" aria-label="Seria poprawnych odpowiedzi">${ico("flame", 20)}<span>0</span></span>`);
   $("#quit").onclick = () => askQuit(false);
   if (exam) $("#navBtn").onclick = showNav;
   fitStrip();
@@ -863,9 +920,11 @@ function runHeader() {
 function updateStreak() {
   const el = $("#streak");
   if (!el) return;
-  el.hidden = run.streak < 2;
+  const on = run.streak >= 2;
+  el.classList.toggle("on", on);
+  if (!on) return; // przy znikaniu zostaje stara liczba, aż płomień zgaśnie
   $("span", el).textContent = run.streak;
-  el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop");
+  el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
 }
 
 addEventListener("resize", () => { fitStrip(); syncDock(); }); // obrót telefonu
@@ -873,7 +932,7 @@ addEventListener("resize", () => { fitStrip(); syncDock(); }); // obrót telefon
 function showQ(animate) {
   const it = run.items[run.i], q = it.q, exam = run.mode === "egzamin";
   refreshStrip();
-  app.innerHTML = `<section class="screen run${animate ? " enter" : ""}">
+  app.innerHTML = `<section class="screen run${animate ? enter() : ""}">
     <p class="qmeta"><span class="pos">${run.i + 1} / ${run.items.length}</span><span class="tag acc">${esc(q.w)}</span>${q.type !== "single" ? `<span class="tag">${TYPE[q.type] || q.type}</span>` : ""}
       ${exam ? "" : `<span class="timer" id="timer" aria-label="Czas"></span>`}</p>
     <h2 class="q">${fmt(q.q)}</h2>
@@ -993,21 +1052,32 @@ function modal(html) {
   let d = $("#dlg");
   if (!d) {
     d = document.createElement("dialog"); d.id = "dlg"; d.className = "dlg"; document.body.append(d);
-    d.addEventListener("click", e => { if (e.target === d) d.close(); }); // klik w tło zamyka
+    d.addEventListener("click", e => { if (e.target === d) shut(d); }); // klik w tło zamyka
+    d.addEventListener("cancel", e => { e.preventDefault(); shut(d); }); // Esc też z animacją
     d.addEventListener("close", () => { d.innerHTML = ""; }); // stare przyciski nie łapią Entera
   }
   if (d.open) d.close();
+  d.classList.remove("out");
   d.innerHTML = `<div class="dlg-in">${html}</div>`;
   d.showModal();
   return d;
+}
+// Zamknięcie okna z animacją; następny krok (np. kolejne pytanie) dopiero po niej
+function shut(d, then) {
+  if (!d?.open) return then?.();
+  if (d.classList.contains("out")) return; // już się zamyka
+  const done = () => { d.classList.remove("out"); d.close(); then?.(); };
+  if (calm()) return done();
+  d.classList.add("out");
+  setTimeout(done, 240); // tyle trwa animacja wyjścia
 }
 function showWhy() {
   const it = run.items[run.i], last = run.i === run.items.length - 1;
   if (!it.fb) return;
   const d = modal(`${it.fb}<div class="row"><button class="btn ghost" id="dClose">Zamknij</button>
     <button class="btn primary" id="dNext">${last ? "Zobacz wynik" : "Dalej"}</button></div>`);
-  $("#dClose").onclick = () => d.close();
-  $("#dNext").onclick = () => { d.close(); next(); };
+  $("#dClose").onclick = () => shut(d);
+  $("#dNext").onclick = () => shut(d, next);
   $("#dNext").focus();
 }
 function showNav() {
@@ -1017,12 +1087,17 @@ function showNav() {
     <div class="navgrid">${run.items.map((it, i) =>
       `<button class="sq ${answered(it) ? "filled" : "todo"}${i === run.i ? " cur" : ""}" data-go="${i}" aria-label="Pytanie ${i + 1}${answered(it) ? ", z odpowiedzią" : ""}">${i + 1}</button>`).join("")}</div>
     <p class="legend"><span><i class="filled"></i>z odpowiedzią</span><span><i></i>bez odpowiedzi</span><span><i class="cur"></i>bieżące</span></p>`);
-  $(".navgrid", d).onclick = e => { const b = e.target.closest("[data-go]"); if (b) { d.close(); go(+b.dataset.go); } };
-  $("#nClose").onclick = () => d.close();
+  $(".navgrid", d).onclick = e => { const b = e.target.closest("[data-go]"); if (b) shut(d, () => go(+b.dataset.go)); };
+  $("#nClose").onclick = () => shut(d);
 }
 
-function go(i) { if (i < 0 || i >= run.items.length) return; run.i = i; showQ(false); scrollTo({ top: 0 }); }
-function next() { run.i++; if (run.i < run.items.length) { showQ(true); scrollTo({ top: 0 }); } else finish(); }
+function go(i) {
+  if (busy() || i < 0 || i >= run.items.length || i === run.i) return;
+  const dir = i < run.i ? "back" : "fwd";
+  run.i = i;
+  swap(() => { showQ(false); scrollTo({ top: 0 }); }, dir);
+}
+function next() { if (busy()) return; run.i++; if (run.i < run.items.length) swap(() => { showQ(true); scrollTo({ top: 0 }); }, "fwd"); else finish(); }
 
 function askQuit(fromLast) {
   const exam = run.mode === "egzamin", left = run.items.filter(it => !answered(it)).length;
@@ -1032,8 +1107,8 @@ function askQuit(fromLast) {
     : "Wynik obejmie tylko pytania z odpowiedzią.";
   const d = modal(`<h3 class="dlg-h">Zakończyć teraz?</h3><p>${msg}</p>
     <div class="row"><button class="btn ghost" id="cNo">Wróć do pytań</button><button class="btn primary" id="cYes">Zakończ i pokaż wynik</button></div>`);
-  $("#cYes").onclick = () => { d.close(); finish(fromLast ? undefined : "early"); };
-  $("#cNo").onclick = () => d.close();
+  $("#cYes").onclick = () => shut(d, () => finish(fromLast ? undefined : "early"));
+  $("#cNo").onclick = () => shut(d);
   $("#cYes").focus();
 }
 
@@ -1068,16 +1143,20 @@ function finish(reason) {
   const took = Date.now() - t0;
   last = { s, mode, badConcepts: new Set(bad.map(x => conceptOf(x.it.q))) };
   run = null;
+  swap(() => showResult(s, items, mode, exam, counted, good, pct, bad, took, reason));
+}
+
+function showResult(s, items, mode, exam, counted, good, pct, bad, took, reason) {
   document.body.classList.remove("running");
   header(`<button class="ib" id="hdBack" aria-label="Wróć do ustawień">${ico("close")}</button>`,
     `<span class="hd-title"><span class="dot"></span>Wynik</span>`, themeBtn());
-  $("#hdBack").onclick = () => { setup(); scrollTo({ top: 0 }); };
+  $("#hdBack").onclick = () => swap(() => { setup(); scrollTo({ top: 0 }); });
 
   const passed = exam && s.prog != null && pct >= s.prog;
   const verdict = !exam ? "" : s.prog == null ? `<p class="verdict none">Próg zaliczenia nieznany</p>`
     : `<p class="verdict ${passed ? "pass" : "fail"}">${passed ? "Zaliczone" : "Niezaliczone"}, próg ${s.prog}%</p>`;
   const note = reason === "time" ? ", koniec czasu" : reason === "early" ? ", zakończono wcześniej" : "";
-  app.innerHTML = `<section class="screen enter">
+  app.innerHTML = `<section class="screen${enter()}">
     <div class="hero res-hero">${ring(pct, 132, 12, "pct")}
       <div class="res-txt"><p class="qmeta" style="margin:0 0 6px;justify-content:inherit"><span class="tag acc">${MODES[mode].name}</span><span class="tag">${esc(s.short)}</span></p>
         <p class="big-line">${good} z ${counted.length} poprawnie</p>${verdict}<p class="hint">Czas ${mmss(took)}${note}</p></div></div>
@@ -1126,8 +1205,8 @@ function finish(reason) {
     li.classList.remove("flash"); void li.offsetWidth; li.classList.add("flash");
   });
   if ($("#retry")) $("#retry").onclick = () => { state.mode = "bledy"; start(last.s, last.badConcepts.size, last.badConcepts); };
-  $("#again").onclick = () => { setup(); start(subjOf(state.subj), state.count); };
-  $("#back").onclick = () => { setup(); scrollTo({ top: 0 }); };
+  $("#again").onclick = () => swap(() => { setup(); start(subjOf(state.subj), state.count); }); // start w tym samym przejściu
+  $("#back").onclick = () => swap(() => { setup(); scrollTo({ top: 0 }); });
 }
 
 // Płynne rozwijanie i zwijanie omówienia (wysokość + przezroczystość)
@@ -1176,7 +1255,7 @@ function confetti(s) {
 
 /* ---------- Klawiatura ---------- */
 document.addEventListener("keydown", e => {
-  if (!run || e.metaKey || e.altKey || $("#dlg")?.open) return; // w oknie działa Enter/Esc przeglądarki
+  if (!run || busy() || e.metaKey || e.altKey || $("#dlg")?.open) return; // w oknie działa Enter/Esc przeglądarki
   const typing = /^(TEXTAREA|INPUT)$/.test(e.target.tagName);
   if (!typing && !e.ctrlKey) {
     let idx = /^[1-9]$/.test(e.key) ? +e.key - 1 : e.key.length === 1 ? LETTERS.indexOf(e.key.toLowerCase()) : -1;
@@ -1195,7 +1274,9 @@ document.addEventListener("keydown", e => {
   }
 });
 
-route();
+// Pierwsze wczytanie bez przejścia: ekran wjeżdża animacją .enter
+SUBJECTS.some(s => s.key === location.hash.slice(1)) ? setup() : home();
+requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add("ready"))); // od teraz kolor przedmiotu zmienia się płynnie
 </script>
 </body>
 </html>
