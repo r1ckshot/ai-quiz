@@ -160,6 +160,7 @@ html[data-vt="theme"] #hd, html[data-vt="theme"] .dock, html[data-vt="theme"] #t
 .ring-fg { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 1.1s var(--ease) .15s; }
 .ring-n { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.tiles.two { grid-template-columns: 1fr 1fr; }
 .tile { padding: 10px 12px; animation: lift .45s var(--ease) backwards; animation-delay: calc(var(--d, 0) * 60ms + 80ms); }
 .tile b { display: block; font: 800 24px/1.1 var(--display); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .tile span { color: var(--muted); font-size: 14px; }
@@ -187,7 +188,7 @@ html[data-vt="theme"] #hd, html[data-vt="theme"] .dock, html[data-vt="theme"] #t
 /* Postęp: cienka linia przy dolnej krawędzi karty */
 .card-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: color-mix(in srgb, var(--accent) 14%, transparent); }
 .card-prog i { display: block; height: 100%; background: var(--accent); border-radius: 0 3px 3px 0; animation: grow .9s var(--ease) backwards .3s; }
-.card .badge { position: absolute; top: 12px; right: 12px; }
+.card-meta .badge { align-self: center; } /* licznik błędów na dole karty: nazwa ma całą szerokość */
 .card.empty { opacity: .55; box-shadow: none; }
 .card.last { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
 .bar { height: 6px; margin-top: 7px; background: color-mix(in srgb, var(--accent) 14%, var(--soft)); border-radius: 99px; overflow: hidden; }
@@ -670,15 +671,14 @@ function home() {
   document.body.classList.remove("running");
   setAccent(subjOf(state.subj));
   header(`<span class="brand">AI <b>Quiz</b></span>`, `<span class="hd-sub">Informatyka AI, semestr 2</span>`, themeBtn());
-  let all = 0, ok = 0, total = 0, wrongN = 0;
+  let ok = 0, total = 0, wrongN = 0;
   const cards = SUBJECTS.map((s, i) => {
     const n = (bank[s.key] || []).length, m = mastery(s), w = Object.keys(LS.get(wrongKey(s), {})).length;
-    all += n; ok += m.ok; total += m.total; wrongN += w;
+    ok += m.ok; total += m.total; wrongN += w;
     return `<a class="card tint${n ? "" : " empty"}${s.key === state.subj && n ? " last" : ""}" href="#${s.key}" style="--sc:${s.color};--d:${i}" title="${esc(s.name)}">
-      ${w ? `<span class="badge" aria-label="${pl(w, "błąd", "błędy", "błędów")}">${w}</span>` : ""}
       <span class="card-name">${esc(s.short)}</span><span class="card-full">${esc(s.name)}</span>
       <span class="card-meta">${n
-        ? `<span>${pl(n, "pytanie", "pytania", "pytań")}</span><span class="card-pct${m.pct ? " on" : ""}" aria-label="opanowane ${m.pct}%">${m.pct}%</span>`
+        ? `<span>${w ? `<span class="badge" aria-label="${pl(w, "błąd", "błędy", "błędów")}">${w}</span>` : ""}</span><span class="card-pct${m.pct ? " on" : ""}" aria-label="opanowane ${m.pct}%">${m.pct}%</span>`
         : `<span>Pytania wkrótce</span>`}</span>
       ${n ? `<span class="card-prog"><i style="width:${m.pct}%"></i></span>` : ""}</a>`;
   }).join("");
@@ -686,10 +686,9 @@ function home() {
   app.innerHTML = `<section class="screen${enter()}">
     <div class="hero">${ring(gp, 86, 9)}<div class="hero-txt"><h1 class="title">Testy z wykładów</h1>
       <p class="lead">Wybierz przedmiot. Pierścień pokazuje opanowane pojęcia ze wszystkich przedmiotów.</p></div></div>
-    <div class="tiles">
-      <div class="tile panel" style="--d:0"><b>${all}</b><span>${plural(all, "pytanie", "pytania", "pytań")}</span></div>
-      <div class="tile panel ok" style="--d:1"><b>${ok}</b><span>opanowane</span></div>
-      <div class="tile panel bad" style="--d:2"><b>${wrongN}</b><span>do powtórki</span></div>
+    <div class="tiles two">
+      <div class="tile panel ok" style="--d:0"><b>${ok}</b><span>opanowane</span></div>
+      <div class="tile panel bad" style="--d:1"><b>${wrongN}</b><span>do powtórki</span></div>
     </div>
     <div class="block"><h2 class="lbl">Przedmioty</h2><div class="cards">${cards}</div></div>
     <p class="foot">Pytania powstały na podstawie slajdów z wykładów i mogą zawierać błędy. Postęp zapisuje się tylko w tej przeglądarce.</p>
@@ -817,7 +816,7 @@ function setup(animate = true) {
   const avail = groups(s).size;
   if (state.count == null) state.count = state.mode === "egzamin" ? Math.min(avail, 30) : avail;
   state.count = clamp(state.count, avail ? 1 : 0, avail);
-  const facts = [pl(qs.length, "pytanie", "pytania", "pytań"), pl(ws.filter(isLecture).length, "wykład", "wykłady", "wykładów"),
+  const facts = [pl(ws.filter(isLecture).length, "wykład", "wykłady", "wykładów"),
                  s.prog ? `próg ${s.prog}%` : "próg nieznany"];
   if (s.sec) facts.push(`${s.sec} s na pytanie`);
   const m = mastery(s);
