@@ -431,6 +431,9 @@ button.sq:active { transform: scale(.9); }
 .enter { animation: enter .22s var(--ease) backwards; }
 .still .hero, .still .ring-fg { animation: none; transition: none; } /* przerysowanie po kliknięciu: bez animacji wejścia */
 .vt :is(.hero, .tile, .card, .card-prog i, .bar i, .mode, .opt, .fb, .sq) { animation: none; }
+body.boot #shell { animation: boot .4s ease-out both; } /* start strony: całość naraz, bez kaskady kart */
+body.boot :is(.hero, .tile, .card, .mode, .opt) { animation: none; }
+@keyframes boot { from { opacity: 0; transform: translateY(4px); } }
 html.flip *, html.flip *::before, html.flip *::after { transition: none !important; } /* zmiana motywu: kolory od razu, koło odsłania całość */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
@@ -461,11 +464,10 @@ window.QUIZ_DATA = window.QUIZ_DATA || [];
 
 <!-- Pytania: data/<klucz>/W01.js … W15.js i egzamin.js (w: "Egzamin"). Brakujący plik jest pomijany. -->
 <script>
-for (const s of SUBJECTS) {
-  for (let n = 1; n <= 15; n++)
-    document.write(`<script src="data/${s.key}/W${String(n).padStart(2, "0")}.js"><\/script>`);
-  document.write(`<script src="data/${s.key}/egzamin.js"><\/script>`);
-}
+// Wszystkie pliki naraz: strona nie czeka na każdy plik (i każdy brakujący wykład) po kolei
+const loadJs = src => new Promise(r => { const e = document.createElement("script"); e.src = src; e.onload = e.onerror = r; document.head.append(e); });
+window.QUIZ_READY = Promise.all(SUBJECTS.flatMap(s =>
+  [...Array.from({ length: 15 }, (_, i) => `W${String(i + 1).padStart(2, "0")}`), "egzamin"].map(f => loadJs(`data/${s.key}/${f}.js`))));
 </script>
 
 <script>
@@ -511,8 +513,7 @@ const ICONS = {
 };
 const ico = (n, sz = 20) => `<svg class="ico" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
 
-const bank = {};
-for (const pack of window.QUIZ_DATA) (bank[pack.subject] ||= []).push(...pack.questions);
+const bank = {}; // wypełniany po wczytaniu plików, na dole skryptu
 
 const TYPE = { single: "jednokrotny wybór", multi: "wielokrotny wybór", open: "pytanie otwarte", calc: "obliczenia" };
 const MODES = {
@@ -572,7 +573,7 @@ function swap(render, kind = "page") {
   });
 }
 const busy = () => pending > 0;
-const enter = () => swapping ? " vt" : " enter"; // w przejściu ekran już wjeżdża w całości, bez animacji kart i opcji
+const enter = () => swapping ? " vt" : document.body.classList.contains("boot") ? "" : " enter"; // w przejściu ekran już wjeżdża w całości, bez animacji kart i opcji
 sysDark.addEventListener?.("change", applyTheme);
 const themeBtn = () => `<button class="ib" id="themeBtn"></button>`;
 
@@ -1332,10 +1333,17 @@ document.addEventListener("keydown", e => {
   }
 });
 
-// Pierwsze wczytanie bez przejścia: ekran wjeżdża animacją .enter
-SUBJECTS.some(s => s.key === location.hash.slice(1)) ? setup() : home();
+// Pierwsze wczytanie: czekamy na pytania i czcionki (najwyżej 600 ms), potem cała strona łagodnie się pojawia
 let booted = false;
-setTimeout(() => { booted = true; showNews(); offerInstall(); }, 800); // powiadomienia dopiero po wejściu strony
+const fontsOr = ms => Promise.race([document.fonts ? document.fonts.ready : null, new Promise(r => setTimeout(r, ms))]);
+window.QUIZ_READY.then(() => fontsOr(600)).then(() => {
+  for (const pack of window.QUIZ_DATA) (bank[pack.subject] ||= []).push(...pack.questions);
+  for (const k in bank) bank[k].sort((a, b) => a.w.localeCompare(b.w)); // pliki przychodzą w dowolnej kolejności
+  document.body.classList.add("boot");
+  SUBJECTS.some(s => s.key === location.hash.slice(1)) ? setup() : home();
+  setTimeout(() => document.body.classList.remove("boot"), 500);
+  setTimeout(() => { booted = true; showNews(); offerInstall(); }, 800); // powiadomienia dopiero po wejściu strony
+});
 </script>
 </body>
 </html>
