@@ -163,7 +163,6 @@ html[data-vt="theme"] #hd, html[data-vt="theme"] .dock, html[data-vt="theme"] #t
 .ring-fg { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset .6s var(--ease); }
 .ring-n { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
-.tiles.two { grid-template-columns: 1fr 1fr; }
 .tile { padding: 10px 12px; animation: lift .25s var(--ease) backwards; animation-delay: calc(var(--d, 0) * 30ms + 40ms); }
 .tile b { display: block; font: 800 24px/1.1 var(--display); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .tile span { color: var(--muted); font-size: 14px; }
@@ -186,12 +185,12 @@ html[data-vt="theme"] #hd, html[data-vt="theme"] .dock, html[data-vt="theme"] #t
 .card-name { display: flex; align-items: center; gap: 8px; font: 800 clamp(15px, 4.4vw, 19px)/1.15 var(--display); letter-spacing: -.01em; overflow-wrap: anywhere; } /* „Przetwarzanie” mieści się w karcie telefonu */
 .card-name::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
 .card-full { color: var(--muted); font-size: 13.5px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.card-meta { display: flex; justify-content: space-between; gap: 6px; margin-top: auto; padding-top: 8px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.card-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 6px; margin-top: auto; padding-top: 8px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .card-pct.on { color: var(--accent); font-weight: 700; }
 /* Postęp: cienka linia przy dolnej krawędzi karty */
 .card-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: color-mix(in srgb, var(--accent) 14%, transparent); }
 .card-prog i { display: block; height: 100%; background: var(--accent); border-radius: 0 3px 3px 0; transform-origin: left; animation: grow .5s var(--ease) backwards .1s; }
-.card-meta .badge { align-self: center; } /* licznik błędów na dole karty: nazwa ma całą szerokość */
+.card-end { display: inline-flex; align-items: center; gap: 6px; } /* licznik błędów na dole karty: nazwa ma całą szerokość */
 .card.empty { opacity: .55; box-shadow: none; }
 .card.last { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
 .bar { height: 6px; margin-top: 7px; background: color-mix(in srgb, var(--accent) 14%, var(--soft)); border-radius: 99px; overflow: hidden; }
@@ -684,7 +683,7 @@ function home() {
     return `<a class="card tint${n ? "" : " empty"}${s.key === state.subj && n ? " last" : ""}" href="#${s.key}" style="--sc:${s.color};--d:${i}" title="${esc(s.name)}">
       <span class="card-name">${esc(s.short)}</span><span class="card-full">${esc(s.name)}</span>
       <span class="card-meta">${n
-        ? `<span>${w ? `<span class="badge" aria-label="${pl(w, "błąd", "błędy", "błędów")}">${w}</span>` : ""}</span><span class="card-pct${m.pct ? " on" : ""}" aria-label="opanowane ${m.pct}%">${m.pct}%</span>`
+        ? `<span>${pl(m.total, "pytanie", "pytania", "pytań")}</span><span class="card-end">${w ? `<span class="badge" aria-label="${pl(w, "błąd", "błędy", "błędów")}">${w}</span>` : ""}<span class="card-pct${m.pct ? " on" : ""}" aria-label="opanowane ${m.pct}%">${m.pct}%</span></span>`
         : `<span>Pytania wkrótce</span>`}</span>
       ${n ? `<span class="card-prog"><i style="width:${m.pct}%"></i></span>` : ""}</a>`;
   }).join("");
@@ -692,9 +691,10 @@ function home() {
   app.innerHTML = `<section class="screen${enter()}">
     <div class="hero">${ring(gp, 86, 9)}<div class="hero-txt"><h1 class="title">Testy z wykładów</h1>
       <p class="lead">Wybierz przedmiot. Pierścień pokazuje opanowane pojęcia ze wszystkich przedmiotów.</p></div></div>
-    <div class="tiles two">
-      <div class="tile panel ok" style="--d:0"><b>${ok}</b><span>opanowane</span></div>
-      <div class="tile panel bad" style="--d:1"><b>${wrongN}</b><span>do powtórki</span></div>
+    <div class="tiles">
+      <div class="tile panel" style="--d:0"><b>${total}</b><span>${plural(total, "pytanie", "pytania", "pytań")}</span></div>
+      <div class="tile panel ok" style="--d:1"><b>${ok}</b><span>opanowane</span></div>
+      <div class="tile panel bad" style="--d:2"><b>${wrongN}</b><span>do powtórki</span></div>
     </div>
     <div class="block"><h2 class="lbl">Przedmioty</h2><div class="cards">${cards}</div></div>
     <p class="foot">Pytania powstały na podstawie slajdów z wykładów i mogą zawierać błędy. Postęp zapisuje się tylko w tej przeglądarce.</p>
@@ -822,10 +822,10 @@ function setup(animate = true) {
   const avail = groups(s).size;
   if (state.count == null) state.count = state.mode === "egzamin" ? Math.min(avail, 30) : avail;
   state.count = clamp(state.count, avail ? 1 : 0, avail);
-  const facts = [pl(ws.filter(isLecture).length, "wykład", "wykłady", "wykładów"),
+  const m = mastery(s);
+  const facts = [pl(m.total, "pytanie", "pytania", "pytań"), pl(ws.filter(isLecture).length, "wykład", "wykłady", "wykładów"),
                  s.prog ? `próg ${s.prog}%` : "próg nieznany"];
   if (s.sec) facts.push(`${s.sec} s na pytanie`);
-  const m = mastery(s);
 
   app.innerHTML = `<section class="screen${animate ? enter() : " still"}">
     <div class="hero">${ring(m.pct, 76, 8)}<div class="hero-txt"><h1 class="title" title="${esc(s.dir)}">${esc(s.name)}</h1>
