@@ -404,9 +404,9 @@ button.sq:active { transform: scale(.9); }
 .cp { position: absolute; top: -20px; animation: fall linear forwards; }
 
 /* Ruch: tylko jako odpowiedź na działanie */
-@keyframes lift   { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-@keyframes enter  { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@keyframes rise   { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes lift   { from { opacity: 0; transform: translateY(8px); } } /* bez „to”: element kończy na własnej przezroczystości, np. wyszarzona karta */
+@keyframes enter  { from { opacity: 0; transform: translateY(6px); } }
+@keyframes rise   { from { opacity: 0; transform: translateY(8px); } }
 @keyframes sheet  { from { transform: translateY(100%); } to { transform: none; } }
 @keyframes sheet-out { to { transform: translateY(100%); } }
 @keyframes dlg-out { to { opacity: 0; transform: translateY(10px) scale(.98); } }
@@ -424,7 +424,7 @@ button.sq:active { transform: scale(.9); }
 @keyframes segpop { 0% { transform: scaleY(1); } 45% { transform: scaleY(1.6); } 100% { transform: scaleY(1); } }
 @keyframes bounce { 0% { transform: scale(1); } 40% { transform: scale(1.025); } 100% { transform: scale(1); } }
 @keyframes shake  { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); } }
-@keyframes fill   { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: none; } }
+@keyframes fill   { from { opacity: 0; transform: scale(.5); } }
 @keyframes flash  { from { background: color-mix(in srgb, var(--accent) 16%, transparent); } to { background: transparent; } }
 @keyframes blink  { 50% { opacity: .55; } }
 @keyframes fall   { 0% { transform: translateY(-20px) rotate(0); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
