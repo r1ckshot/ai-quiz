@@ -539,18 +539,20 @@ function applyTheme() {
   const b = $("#themeBtn");
   if (b) { b.innerHTML = ico(t === "dark" ? "sun" : "moon"); b.setAttribute("aria-label", t === "dark" ? "Jasny motyw" : "Ciemny motyw"); }
 }
+let themeVT = null;
 function toggleTheme(e) {
+  if (themeVT) return; // koło jeszcze się rozwija: drugi tap przerwałby je w połowie
   const flip = () => { LS.set("quiz.theme", themeNow() === "dark" ? "light" : "dark"); applyTheme(); };
-  if (!document.startViewTransition || calm()) return flip(); // starsze przeglądarki: zmiana od razu
+  if (!document.startViewTransition || calm() || busy()) return flip(); // starsze przeglądarki albo trwa zmiana ekranu: kolory od razu
   const b = e.currentTarget.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + b.height / 2;
-  const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y, screen.height - y)); // telefon: zrzut sięga pod pasek przeglądarki, więc liczymy do dołu całego ekranu
   root.dataset.vt = "theme";
   root.classList.add("flip");
-  const t = document.startViewTransition(flip);
+  const t = themeVT = document.startViewTransition(flip);
   t.ready.then(() => root.animate(
     { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
     { duration: 420, easing: "cubic-bezier(.22, 1, .36, 1)", pseudoElement: "::view-transition-new(root)" })).catch(() => {}); // ukryta karta: przejście przerwane, motyw i tak zmieniony
-  t.finished.finally(() => { root.classList.remove("flip"); if (root.dataset.vt === "theme") delete root.dataset.vt; });
+  t.finished.finally(() => { themeVT = null; root.classList.remove("flip"); if (root.dataset.vt === "theme") delete root.dataset.vt; });
 }
 
 // Płynna zmiana ekranu (View Transitions): fwd i back przesuwają pytanie w bok, page wjeżdża od dołu.
