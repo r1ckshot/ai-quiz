@@ -461,12 +461,14 @@ const VAULT = "2 semestr";
 window.QUIZ_DATA = window.QUIZ_DATA || [];
 </script>
 
-<!-- Pytania: data/<klucz>/W01.js … W15.js i egzamin.js (w: "Egzamin"). Brakujący plik jest pomijany. -->
+<!-- Pytania: data/<klucz>/WNN.js i egzamin.js (w: "Egzamin"). Spis istniejących plików: data/files.js (node build-files.js). -->
+<script src="data/files.js"></script>
 <script>
 // Wszystkie pliki naraz: strona nie czeka na każdy plik (i każdy brakujący wykład) po kolei
 const loadJs = src => new Promise(r => { const e = document.createElement("script"); e.src = src; e.onload = e.onerror = r; document.head.append(e); });
-window.QUIZ_READY = Promise.all(SUBJECTS.flatMap(s =>
-  [...Array.from({ length: 15 }, (_, i) => `W${String(i + 1).padStart(2, "0")}`), "egzamin"].map(f => loadJs(`data/${s.key}/${f}.js`))));
+const ALL = [...Array.from({ length: 15 }, (_, i) => `W${String(i + 1).padStart(2, "0")}`), "egzamin"]; // bez spisu: próba wszystkich nazw
+const filesOf = key => window.QUIZ_FILES ? window.QUIZ_FILES[key] || [] : ALL;
+window.QUIZ_READY = Promise.all(SUBJECTS.flatMap(s => filesOf(s.key).map(f => loadJs(`data/${s.key}/${f}.js`))));
 </script>
 
 <script>
@@ -1342,11 +1344,10 @@ document.addEventListener("keydown", e => {
   }
 });
 
-// Pierwsze wczytanie: nagłówek i kolor przedmiotu od razu, treść łagodnie się pojawia, gdy są pytania i czcionki (najwyżej 600 ms)
+// Pierwsze wczytanie: nagłówek i kolor przedmiotu od razu, treść łagodnie się pojawia, gdy są pytania
 let booted = false, ready = false;
 SUBJECTS.some(s => s.key === location.hash.slice(1)) ? subjHeader(subjOf(state.subj)) : homeHeader();
-const fontsOr = ms => Promise.race([document.fonts ? document.fonts.ready : null, new Promise(r => setTimeout(r, ms))]);
-window.QUIZ_READY.then(() => fontsOr(600)).then(() => {
+window.QUIZ_READY.then(() => {
   for (const pack of window.QUIZ_DATA) (bank[pack.subject] ||= []).push(...pack.questions);
   for (const k in bank) bank[k].sort((a, b) => a.w.localeCompare(b.w)); // pliki przychodzą w dowolnej kolejności
   ready = true;
