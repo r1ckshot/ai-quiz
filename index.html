@@ -21,7 +21,8 @@ try { const t = JSON.parse(localStorage.getItem("quiz.theme"));
 <!-- Bez internetu czcionki się nie wczytają i strona użyje systemowych -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=optional">
+<!-- optional: czcionka nie podmienia się po wyświetleniu strony (tekst nie skacze); przy pierwszej wizycie może zostać systemowa, potem jest w pamięci -->
 <style>
 /* Motyw jasny (domyślny) */
 :root {
