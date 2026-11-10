@@ -18,18 +18,17 @@ try { const t = JSON.parse(localStorage.getItem("quiz.theme"));
   document.documentElement.dataset.theme = t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 } catch { document.documentElement.dataset.theme = "light"; }
 </script>
-<!-- Bez internetu czcionki się nie wczytają i strona użyje systemowych -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=optional">
-<!-- optional: czcionka nie podmienia się po wyświetleniu strony (tekst nie skacze); przy pierwszej wizycie może zostać systemowa, potem jest w pamięci -->
+<!-- Czcionka z repo, jeden plik z polskimi literami: ą, ł, ż nie wypadają z innego kroju (licencja OFL: fonts/OFL.txt) -->
+<link rel="preload" href="fonts/atkinson-hyperlegible-next.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* optional: czcionka nie podmienia się po wyświetleniu strony (tekst nie skacze) */
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/atkinson-hyperlegible-next.woff2") format("woff2"); font-weight: 400 800; font-style: normal; font-display: optional; }
 /* Motyw jasny (domyślny) */
 :root {
   --bg: #EDF1F4; --card: #FFFFFF; --card2: #F6F8FA; --soft: #E7ECF0; --ink: #14202A; --muted: #5A6772; --line: #D3DBE1; --line2: #B8C3CC;
   --ok: #1C8A55; --okbg: #E3F3EA; --bad: #CC3D33; --badbg: #FBE8E6; --warn: #B45309; --on: #FFFFFF;
   --glass: rgba(237, 241, 244, .82); --shadow: 0 1px 2px rgba(20, 32, 42, .06), 0 8px 24px -12px rgba(20, 32, 42, .18);
-  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --display: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --text: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --w: 760px; --hd: 58px; --hd-gap: 8px; --r: 18px; --ease: cubic-bezier(.22, 1, .36, 1);
   color-scheme: light;
@@ -461,14 +460,10 @@ const VAULT = "2 semestr";
 window.QUIZ_DATA = window.QUIZ_DATA || [];
 </script>
 
-<!-- Pytania: data/<klucz>/WNN.js i egzamin.js (w: "Egzamin"). Spis istniejących plików: data/files.js (node build-files.js). -->
-<script src="data/files.js"></script>
+<!-- Pytania: data/<klucz>/WNN.js i egzamin.js (w: "Egzamin"), sklejone w data/all.js przez node build-files.js -->
 <script>
-// Wszystkie pliki naraz: strona nie czeka na każdy plik (i każdy brakujący wykład) po kolei
-const loadJs = src => new Promise(r => { const e = document.createElement("script"); e.src = src; e.onload = e.onerror = r; document.head.append(e); });
-const ALL = [...Array.from({ length: 15 }, (_, i) => `W${String(i + 1).padStart(2, "0")}`), "egzamin"]; // bez spisu: próba wszystkich nazw
-const filesOf = key => window.QUIZ_FILES ? window.QUIZ_FILES[key] || [] : ALL;
-window.QUIZ_READY = Promise.all(SUBJECTS.flatMap(s => filesOf(s.key).map(f => loadJs(`data/${s.key}/${f}.js`))));
+// Jeden plik zamiast kilkudziesięciu: na telefonie każde osobne zapytanie to dodatkowe czekanie
+window.QUIZ_READY = new Promise(r => { const e = document.createElement("script"); e.src = "data/all.js"; e.onload = e.onerror = r; document.head.append(e); });
 </script>
 
 <script>

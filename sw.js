@@ -3,8 +3,7 @@
 // Pytania (data/): od razu kopia z pamięci, nowa wersja pobiera się w tle i pojawi się przy następnym wejściu.
 // no-cache: pytamy serwer o nowszą wersję, zamiast brać kopię z pamięci przeglądarki (GitHub Pages trzyma ją 10 min).
 const CACHE = "ai-quiz";
-const SHELL = ["./", "index.html", "manifest.json", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"];
-const FONTS = /^https:\/\/fonts\.(googleapis|gstatic)\.com\//;
+const SHELL = ["./", "index.html", "manifest.json", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "fonts/atkinson-hyperlegible-next.woff2"];
 const WAIT = 4000; // przy słabej sieci po tylu ms bierzemy kopię
 
 self.addEventListener("install", e => {
@@ -15,10 +14,10 @@ self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
 self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
-  if (FONTS.test(req.url)) return e.respondWith(cacheFirst(req)); // pliki czcionek się nie zmieniają
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
-  if (url.pathname.includes("/data/")) return e.respondWith(cacheThenUpdate(e, req)); // 100+ plików: bez czekania na sieć przy każdym
+  if (url.pathname.includes("/fonts/")) return e.respondWith(cacheFirst(req)); // plik czcionki się nie zmienia
+  if (url.pathname.includes("/data/")) return e.respondWith(cacheThenUpdate(e, req)); // all.js: bez czekania na sieć, nowa wersja przy następnym wejściu
   e.respondWith(networkFirst(req));
 });
 

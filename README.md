@@ -35,7 +35,8 @@ Nowe pytania pojawiają się same przy następnym otwarciu z internetem, a powia
 
 ## Technologie
 
-Czysty HTML, CSS i JavaScript, bez bibliotek i bez kroku budowania. Tryb offline zapewnia service worker.
+Czysty HTML, CSS i JavaScript, bez bibliotek. Pytania skleja w jeden plik `node build-files.js`.
+Czcionka: Atkinson Hyperlegible Next (licencja SIL OFL 1.1, `fonts/OFL.txt`). Tryb offline zapewnia service worker.
 
 ## Autor
 
