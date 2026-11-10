@@ -1,5 +1,6 @@
 // Service worker: aplikacja działa bez internetu.
-// Najpierw sieć, żeby nowe pytania pojawiały się od razu; bez sieci kopia zapisana wcześniej.
+// Strona: najpierw sieć, bez sieci kopia zapisana wcześniej.
+// Pytania (data/): od razu kopia z pamięci, nowa wersja pobiera się w tle i pojawi się przy następnym wejściu.
 // no-cache: pytamy serwer o nowszą wersję, zamiast brać kopię z pamięci przeglądarki (GitHub Pages trzyma ją 10 min).
 const CACHE = "ai-quiz";
 const SHELL = ["./", "index.html", "manifest.json", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"];
@@ -15,7 +16,9 @@ self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
   if (FONTS.test(req.url)) return e.respondWith(cacheFirst(req)); // pliki czcionek się nie zmieniają
-  if (new URL(req.url).origin !== location.origin) return;
+  const url = new URL(req.url);
+  if (url.origin !== location.origin) return;
+  if (url.pathname.includes("/data/")) return e.respondWith(cacheThenUpdate(e, req)); // 100+ plików: bez czekania na sieć przy każdym
   e.respondWith(networkFirst(req));
 });
 
@@ -25,6 +28,15 @@ async function cacheFirst(req) {
   const res = await fetch(req);
   if (res.ok) (await caches.open(CACHE)).put(req, res.clone());
   return res;
+}
+
+async function cacheThenUpdate(e, req) {
+  const cache = await caches.open(CACHE);
+  const hit = await cache.match(req, { ignoreSearch: true });
+  const net = fetch(req.url, { cache: "no-cache" }).then(res => { if (res.ok) cache.put(req, res.clone()); return res; });
+  if (!hit) return net; // pierwsza wizyta albo nowy plik
+  e.waitUntil(net.catch(() => {}));
+  return hit;
 }
 
 async function networkFirst(req) {
