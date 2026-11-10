@@ -431,7 +431,6 @@ button.sq:active { transform: scale(.9); }
 .still .hero, .still .ring-fg { animation: none; transition: none; } /* przerysowanie po kliknięciu: bez animacji wejścia */
 .vt :is(.hero, .tile, .card, .card-prog i, .bar i, .mode, .opt, .fb, .sq) { animation: none; }
 body.boot #app { animation: boot .4s ease-out both; } /* start strony: treść naraz, bez kaskady kart; nagłówek już stoi */
-body.boot :is(.hero, .tile, .card, .mode, .opt) { animation: none; }
 @keyframes boot { from { opacity: 0; transform: translateY(4px); } }
 html.flip *, html.flip *::before, html.flip *::after { transition: none !important; } /* zmiana motywu: kolory od razu, koło odsłania całość */
 @media (prefers-reduced-motion: reduce) {
@@ -574,7 +573,7 @@ function swap(render, kind = "page") {
   });
 }
 const busy = () => pending > 0;
-const enter = () => swapping ? " vt" : document.body.classList.contains("boot") ? "" : " enter"; // w przejściu ekran już wjeżdża w całości, bez animacji kart i opcji
+const enter = () => swapping || document.body.classList.contains("boot") ? " vt" : " enter"; // .vt zostaje na ekranie: animacje kart nie ruszą po zdjęciu klasy boot // w przejściu ekran już wjeżdża w całości, bez animacji kart i opcji
 sysDark.addEventListener?.("change", applyTheme);
 const themeBtn = () => `<button class="ib" id="themeBtn"></button>`;
 
