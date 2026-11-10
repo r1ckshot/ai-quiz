@@ -430,7 +430,7 @@ button.sq:active { transform: scale(.9); }
 .enter { animation: enter .22s var(--ease) backwards; }
 .still .hero, .still .ring-fg { animation: none; transition: none; } /* przerysowanie po kliknięciu: bez animacji wejścia */
 .vt :is(.hero, .tile, .card, .card-prog i, .bar i, .mode, .opt, .fb, .sq) { animation: none; }
-body.boot #shell { animation: boot .4s ease-out both; } /* start strony: całość naraz, bez kaskady kart */
+body.boot #app { animation: boot .4s ease-out both; } /* start strony: treść naraz, bez kaskady kart; nagłówek już stoi */
 body.boot :is(.hero, .tile, .card, .mode, .opt) { animation: none; }
 @keyframes boot { from { opacity: 0; transform: translateY(4px); } }
 html.flip *, html.flip *::before, html.flip *::after { transition: none !important; } /* zmiana motywu: kolory od razu, koło odsłania całość */
@@ -658,6 +658,7 @@ const drawRings = () => requestAnimationFrame(() => requestAnimationFrame(() => 
 
 /* ---------- Nawigacja: #klucz = przedmiot, pusty = ekran główny ---------- */
 function route() {
+  if (!ready) return; // pytania jeszcze się wczytują: ekran z adresu narysuje się po wczytaniu
   const k = location.hash.slice(1);
   if (run) { // „wstecz” w trakcie testu pyta o zakończenie zamiast wychodzić
     history.pushState(null, "", "#" + run.s.key);
@@ -671,11 +672,20 @@ addEventListener("hashchange", route);
 const goHome = () => { location.hash = ""; };
 
 /* ---------- Ekran główny ---------- */
+function homeHeader() {
+  setAccent(subjOf(state.subj));
+  header(`<span class="brand">AI <b>Quiz</b></span>`, `<span class="hd-sub">Informatyka AI, semestr 2</span>`, themeBtn());
+}
+function subjHeader(s) {
+  setAccent(s);
+  header(`<button class="ib" id="hdBack" aria-label="Wszystkie przedmioty">${ico("back")}</button>`,
+    `<span class="hd-title"><span class="dot"></span>${esc(s.short)}</span>`, themeBtn());
+  $("#hdBack").onclick = goHome;
+}
 function home() {
   run = null; stopTimer();
   document.body.classList.remove("running");
-  setAccent(subjOf(state.subj));
-  header(`<span class="brand">AI <b>Quiz</b></span>`, `<span class="hd-sub">Informatyka AI, semestr 2</span>`, themeBtn());
+  homeHeader();
   let ok = 0, total = 0, wrongN = 0;
   const cards = SUBJECTS.map((s, i) => {
     const n = (bank[s.key] || []).length, m = mastery(s), w = Object.keys(LS.get(wrongKey(s), {})).length;
@@ -803,10 +813,7 @@ function setup(animate = true) {
   run = null; stopTimer();
   document.body.classList.remove("running");
   const s = subjOf(state.subj);
-  setAccent(s);
-  header(`<button class="ib" id="hdBack" aria-label="Wszystkie przedmioty">${ico("back")}</button>`,
-    `<span class="hd-title"><span class="dot"></span>${esc(s.short)}</span>`, themeBtn());
-  $("#hdBack").onclick = goHome;
+  subjHeader(s);
   const qs = bank[s.key] || [];
   if (!qs.length) {
     app.innerHTML = `<section class="screen${enter()}"><div class="hero"><div class="hero-txt"><h1 class="title">${esc(s.dir)}</h1>
@@ -1335,12 +1342,14 @@ document.addEventListener("keydown", e => {
   }
 });
 
-// Pierwsze wczytanie: czekamy na pytania i czcionki (najwyżej 600 ms), potem cała strona łagodnie się pojawia
-let booted = false;
+// Pierwsze wczytanie: nagłówek i kolor przedmiotu od razu, treść łagodnie się pojawia, gdy są pytania i czcionki (najwyżej 600 ms)
+let booted = false, ready = false;
+SUBJECTS.some(s => s.key === location.hash.slice(1)) ? subjHeader(subjOf(state.subj)) : homeHeader();
 const fontsOr = ms => Promise.race([document.fonts ? document.fonts.ready : null, new Promise(r => setTimeout(r, ms))]);
 window.QUIZ_READY.then(() => fontsOr(600)).then(() => {
   for (const pack of window.QUIZ_DATA) (bank[pack.subject] ||= []).push(...pack.questions);
   for (const k in bank) bank[k].sort((a, b) => a.w.localeCompare(b.w)); // pliki przychodzą w dowolnej kolejności
+  ready = true;
   document.body.classList.add("boot");
   SUBJECTS.some(s => s.key === location.hash.slice(1)) ? setup() : home();
   setTimeout(() => document.body.classList.remove("boot"), 500);
