@@ -1,6 +1,6 @@
 // Service worker: aplikacja działa bez internetu.
 // Strona: najpierw sieć, bez sieci kopia zapisana wcześniej.
-// Pytania (data/): od razu kopia z pamięci, nowa wersja pobiera się w tle i pojawi się przy następnym wejściu.
+// Pytania (data/): od razu kopia z pamięci, nowa wersja pobiera się w tle; gdy się różni, strona proponuje odświeżenie.
 // no-cache: pytamy serwer o nowszą wersję, zamiast brać kopię z pamięci przeglądarki (GitHub Pages trzyma ją 10 min).
 const CACHE = "ai-quiz";
 const SHELL = ["./", "index.html", "manifest.json", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "fonts/atkinson-hyperlegible-next.woff2"];
@@ -32,10 +32,22 @@ async function cacheFirst(req) {
 async function cacheThenUpdate(e, req) {
   const cache = await caches.open(CACHE);
   const hit = await cache.match(req, { ignoreSearch: true });
-  const net = fetch(req.url, { cache: "no-cache" }).then(res => { if (res.ok) cache.put(req, res.clone()); return res; });
+  const old = hit?.clone(); // kopia przed oddaniem stronie, potem treści nie da się już odczytać
+  const net = fetch(req.url, { cache: "no-cache" }).then(async res => {
+    if (res.ok) {
+      // inna treść niż w pamięci: strona pokaże przycisk „Odśwież”
+      if (old && await old.text() !== await res.clone().text()) tell("data-updated");
+      await cache.put(req, res.clone());
+    }
+    return res;
+  });
   if (!hit) return net; // pierwsza wizyta albo nowy plik
   e.waitUntil(net.catch(() => {}));
   return hit;
+}
+
+async function tell(type) {
+  (await self.clients.matchAll({ type: "window" })).forEach(c => c.postMessage({ type }));
 }
 
 async function networkFirst(req) {

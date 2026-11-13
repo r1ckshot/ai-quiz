@@ -803,6 +803,24 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
   if (first) navigator.serviceWorker.addEventListener("controllerchange", () => {
     [location.href.split("#")[0], ...performance.getEntriesByType("resource").map(r => r.name)].forEach(u => fetch(u).catch(() => {}));
   }, { once: true });
+  // Nowa wersja pytań pobrana w tle: proponujemy odświeżenie zamiast czekać na następne wejście
+  navigator.serviceWorker.addEventListener("message", e => { if (e.data?.type === "data-updated") offerReload(); });
+  // Aplikacja na telefonie wraca z tła bez przeładowania, więc wtedy sprawdzamy pytania jeszcze raz
+  let checked = Date.now();
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden || Date.now() - checked < 60000) return;
+    checked = Date.now();
+    fetch("data/all.js").catch(() => {});
+  });
+}
+let reloadShown = false;
+function offerReload() {
+  if (reloadShown) return;
+  reloadShown = true;
+  toast({ ms: 15000, html: `<span class="toast-ico">${ico("spark", 24)}</span>
+    <span class="toast-txt"><b>Nowe pytania</b><span>${run ? "Odświeżenie przerwie bieżący test." : "Odśwież, aby je wczytać."}</span></span>
+    <button class="btn small primary" id="reloadGo">Odśwież</button>`,
+    wire: () => $("#reloadGo").onclick = () => location.reload() });
 }
 
 /* ---------- Ustawienia testu ---------- */
